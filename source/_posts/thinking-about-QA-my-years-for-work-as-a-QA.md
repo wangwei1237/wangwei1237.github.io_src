@@ -1,7 +1,7 @@
 ---
 title: '对QA的思考——我的这些年'
 date: 2020-02-05 12:12:37
-reward: true
+reward: false
 categories: 总结
 tags: 测试工作
 ---
