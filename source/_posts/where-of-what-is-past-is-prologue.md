@@ -43,6 +43,8 @@ tags: 测试工作
 
 未来，在创新的路上，需要更多的践行work smarter not work harder。
 
+![](2.jpg)
+
 ## 突破
 毫无疑问，未来肯定是新人的天下。
 
