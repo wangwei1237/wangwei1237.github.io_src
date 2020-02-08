@@ -116,9 +116,9 @@ busuanzi:
   enable: false
 
 # 友盟cnzz统计(url填js代码src链接)
-#cnzz:
-#  enable: false
-#  url: https://s9.cnzz.com/z_stat.php?id=1278069914&web_id=1278069914
+cnzz:
+  enable: true
+  url: https://s4.cnzz.com/z_stat.php?id=1278605528&web_id=1278605528
 
 # Google Analytics
 google_analytics: ''

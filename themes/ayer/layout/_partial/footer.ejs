@@ -25,9 +25,15 @@
       <li>
         <!-- cnzz统计 -->
         <% if (theme.cnzz&&theme.cnzz.enable){ %>
-        <script type="text/javascript" src='<%= theme.cnzz.url%>'></script>
+        <script type="text/javascript">
+            var cnzz_protocol = (("https:" == document.location.protocol) ? "https://" : "http://");
+            document.write(unescape("%3Cspan id='cnzz_stat_icon_1278605528'%3E%3C/span%3E%3Cscript src='" + 
+                cnzz_protocol + 
+                "s4.cnzz.com/z_stat.php%3Fid%3D1278605528%26online%3D1%26show%3Dline' type='text/javascript'%3E%3C/script%3E"));
+            </script>
         <% } %>
       </li>
     </ul>
   </div>
 </footer>
+
