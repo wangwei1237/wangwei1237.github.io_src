@@ -52,8 +52,9 @@
     margin-left 0
 
 .article-entry
-  font-size 110%
+  font-size 100%
   margin-top .5rem
+  line-height 1.6
   clearfix()
   @extend $base-style
   color body-color
@@ -94,7 +95,7 @@
     margin 0
   .article-title
     display block
-    font-size 1.8em
+    font-size 1.5em
     font-weight bold
     margin-bottom 3rem
     text-decoration none
@@ -104,7 +105,16 @@
 
 .article-footer
   clearfix()
-  margin-top 3rem
+
+.declare
+  margin 0 0 1rem
+  padding-bottom 1rem
+  color #999
+  border-bottom 1px solid #f6f6f6
+  ul
+    list-style none
+    li
+      list-style none
 
 // Tags
 .article-tag-list
@@ -151,9 +161,9 @@
 .article-nav
   clearfix()
   position relative
-  padding-top 3rem
-  margin-top 5rem
-  border-top border-width border-color solid
+  padding-top 1.5rem
+  margin 1rem 0 2rem
+  border-top border-width solid #eee
 
 .article-nav-link
   display block

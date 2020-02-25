@@ -130,7 +130,7 @@ $s12=\sum_{i=0}^{3}\sum_{j=0}^{3}{\big(x(i,j) \cdot y(i,j)\big)}$
 * $\sigma_x^2+\sigma_y^2=\frac{1}{64 \cdot 63}\big(64 \cdot ss-(s1)^2- (s2)^2\big)$
 * $\sigma_{xy}=\frac{1}{64 \cdot 63}(64 \cdot s12 - s1 \cdot s2)$
 
-利用如上的公式对$SSIM$的公式进行计算可以得到：
+利用如上的公式（具体推导可以参考[ssim_end1()的推导](/2020/02/18/the-proof-of-the-SSIM-in-FFMpeg/)）对$SSIM$的公式进行计算可以得到：
 $$
 SSIM(x,y)=\frac{(2\mu_x\mu_y+C_1)(2\sigma_{xy}+C_2)}{(\mu_x^2+\mu_y^2+C_1)(\sigma_x^2+\sigma_y^2+C_2)}
 $$

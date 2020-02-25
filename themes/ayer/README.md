@@ -14,7 +14,7 @@
   </a>
   <br>
   <a href="https://github.com/Shen-Yu/hexo-theme-ayer/releases" target="_blank" rel="noopener noreferrer">
-    <img alt="GitHub release" src="https://img.shields.io/badge/release-v1.7-blue.svg">
+    <img alt="GitHub release" src="https://img.shields.io/badge/release-v1.8-blue.svg">
   </a>
  <img alt="language" src="https://img.shields.io/badge/language-ejs--stylus-orange.svg">
   <a href="https://hexo.io/zh-cn/" target="_blank" rel="noopener noreferrer">
@@ -25,7 +25,7 @@
 
 ---
 
-:ocean: Ayer is a clean and elegant theme for Hexo, also fast, powerful and responsive. It contains many awesome features, It's perfect for your blog, "Ayer" means "water" in Malaysian and "yesterday" in Spanish. If you have any queries or advice during the process of using, Please contact me!  
+:ocean: Ayer is a clean and elegant theme for Hexo, also fast, powerful and responsive. It contains many awesome features, It's perfect for your blog, "Ayer" means "water" in Malaysian and "yesterday" in Spanish. If you have any queries or advice during the process of using, Please contact me!  shenyu@hotmail.com
 
 <b>注：收藏本主题请点右上角Star，谢谢~</b>
 
@@ -103,6 +103,12 @@ progressBar: ture
 # Article Setting
 # (Use this to excerpt if article is too long：<!--more-->)
 excerpt_link: Read More...
+excerpt_all: false
+
+# Share
+share_enable: true
+# If you are not in China, maybe you prefer to set:false
+share_china: true
 # share text
 share_text: Share
 # search text
@@ -136,7 +142,12 @@ alipay: /images/alipay.jpg
 # qrcode image path
 weixin: /images/wechat.jpg
 
+# Copyright
+# type：0-close all； 1-only display in article which you have configured copyright: true； 2-all articles
+copyright_type: 2
+
 # Search
+# https://github.com/theme-next/hexo-generator-searchdb
 search: true
 
 # RSS
@@ -245,7 +256,7 @@ pageFooter: true
 ``` bash
   hexo new page categories
 ```
-Then paste following codes to file: _posts/categories/index.md
+Then paste following codes to file: /source/categories/index.md
 ``` md
 ---
 title: categories
