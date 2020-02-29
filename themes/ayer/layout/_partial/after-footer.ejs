@@ -1,7 +1,9 @@
 <%- js('/js/jquery-2.0.3.min') %>
 <%- js('/js/jquery.justifiedGallery.min') %>
 <%- js('/js/lazyload.min') %>
+<% if (theme.busuanzi && theme.busuanzi.enable){ %>
 <%- js('/js/busuanzi-2.3.pure.min') %>
+<% } %>
 <%- js('/js/share') %>
 <% if (theme.fancybox){ %>
 <%- js('fancybox/jquery.fancybox.min') %>
