@@ -1,7 +1,7 @@
 ---
 title: {{ title }}
 date: {{ date }}
-reward: true
+reward: false
 categories:
 tags:
 ---

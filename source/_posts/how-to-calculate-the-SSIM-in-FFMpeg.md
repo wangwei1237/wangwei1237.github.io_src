@@ -9,7 +9,7 @@ tags:
 ---
 
 ## SSIM基本概念
-关于$SSIM$的具体解释，此处不再介绍，具体可以参见：[SSIM算法](https://wangwei1237.gitbook.io/digital_video_concepts/shi-pin-zhi-liang-du-liang/4_2_0_videoqualityevaluationmethodsandmetrics/4_2_2_0_objectivevideoqualityevaluationmethodsandmetrics/4_2_2_3_structuralsimilaritybasedapproaches)。
+关于$SSIM$的具体解释，此处不再介绍，具体可以参见[数字视频相关概念](https://wangwei1237.gitbook.io/digital_video_concepts/)中的[SSIM算法](https://wangwei1237.gitbook.io/digital_video_concepts/shi-pin-zhi-liang-du-liang/4_2_0_videoqualityevaluationmethodsandmetrics/4_2_2_0_objectivevideoqualityevaluationmethodsandmetrics/4_2_2_3_structuralsimilaritybasedapproaches)一节的介绍。
 
 直接给出$SSIM$的计算方法：
 $$

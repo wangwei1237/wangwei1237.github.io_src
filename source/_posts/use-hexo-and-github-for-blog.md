@@ -16,11 +16,13 @@ tags:
 
 在建好的仓库右侧有个**settings**按钮，点击**settings**，向下滑动到**GitHub Pages**，会发现有个网址，github会把该仓库中的项目部署到该网址下，该网址也是博客的默认地址。当然也可以购买域名，将其换成喜欢的地址。
 
+<!--more-->
+
 ![](1.jpg)
 
 ![](2.jpg)
 
-<!--more-->
+
 
 ## 准备node.js环境
 由于hexo是基于[node.js](https://nodejs.org/en/)开发的，因此在安装hexo之前，需要先安装node.js并配置响应的node.js环境。具体如下所示：
