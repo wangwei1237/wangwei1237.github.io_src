@@ -5,6 +5,6 @@ HEXO=/usr/local/bin/hexo
 $HEXO clean
 $HEXO generate
 
-cd public/digital-video-concept && \
-rm -f index.html && \
-cp -r /Users/wangwei/Documents/Project/webroot/book/video/* .
+cd public && \
+rm -rf digital-video-concept && \
+cp -r /Users/wangwei/Documents/Project/webroot/book/video digital-video-concept
