@@ -7,4 +7,4 @@ $HEXO generate
 
 cd public && \
 rm -rf digital-video-concept && \
-cp -r /Users/wangwei/Documents/Project/webroot/book/video digital-video-concept
+cp -r /$HOME/Documents/Project/webroot/book/video digital-video-concept
