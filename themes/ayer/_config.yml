@@ -10,7 +10,7 @@ menu:
 # https://github.com/mattboldt/typed.js
 subtitle:
   enable: true  # 是否开启动效
-  text: 面朝大海，春暖花开  # 显示的文字
+  text: 春暖花开  # 显示的文字
   text2:    # 滚动播放，如果不需要可以留空
   text3:    # 最多支持三段文字
   startDelay: 0   # 延迟时间
@@ -27,7 +27,7 @@ logo: /images/ayer-side.svg
 # enable-是否启用封面；path-封面背景图；logo-封面logo
 cover:
   enable: true
-  path: /images/cover1.jpg  # images目录下附送多张美图，可更换
+  path: /images/Flower6.jpg  # images目录下附送多张美图，可更换
   logo: false #/images/ayer.svg，如果不要直接设置成false
 
 # 页面顶部进度条  
@@ -35,7 +35,7 @@ progressBar: ture
 
 # 网易云音乐插件
 music:
-  enable: true
+  enable: false
   # 播放器尺寸类型(1：小尺寸、2：大尺寸)
   type: 1
   id: 201714  # 网易云分享的音乐ID(更换音乐请更改此配置项)
