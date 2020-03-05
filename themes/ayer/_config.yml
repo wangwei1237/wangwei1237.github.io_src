@@ -9,8 +9,8 @@ menu:
 # 站点次标题和打字动效
 # https://github.com/mattboldt/typed.js
 subtitle:
-  enable: true  # 是否开启动效
-  text: 春暖花开  # 显示的文字
+  enable: false  # 是否开启动效
+  text:   # 显示的文字
   text2:    # 滚动播放，如果不需要可以留空
   text3:    # 最多支持三段文字
   startDelay: 0   # 延迟时间
