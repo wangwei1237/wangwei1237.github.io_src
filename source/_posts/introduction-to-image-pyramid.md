@@ -77,16 +77,49 @@ $\{L_i | i \in 1...n\}$则构成拉普拉斯金字塔。
 拉普拉斯金字塔由高斯金字塔而形成，并没有其它的额外功能，并且拉普拉斯金字塔图像和图像的边缘图像很像。在拉普拉斯金字塔中的图像的大多数元素为零。一个4级拉普拉斯金字塔的图像如下所示（已调整图像的曝光度以增强图像内容）：
 ![](4.jpg)
 
+## 尺度空间和图像金字塔卷积核的选择
+在现实世界中，客观物体在不同尺度时有着不同的结构。这意味着，如果从不同的尺度去观察同一个物体，会得出不一样的结果。例如，从不同的距离观察同一个图像时，随着距离的不断缩小，能够观察到的图像的结构也有所不同。
+
+观察一棵树的尺度和观察一片树叶的尺度也是不同的：观察一棵树的适当尺度应该是**米**，而观察一片叶子可能需要更细粒度的尺度才能得出较好的结果。
+
+当计算机系统要对一个未知的场景进行分析时，并不能提前预知用什么样的尺度来描述图像信息中的**interesting structures**是最合适的。因此，唯一可行的方案就是将多个不同尺度的描述都考虑进来，以便捕获未知的尺度变化。
+
+尺度空间理论和生物视觉之间也有着十分密切的联系。哺乳动物的视网膜以及视觉皮层第一阶段所记录的接受场的分布，与许多尺度空间操作都高度近似。
+
+如[高斯金字塔](#高斯金字塔)的描述，在生成高斯金字塔时，会采用高斯核(*filter*)对图像进行处理，那么为什么非要采用高斯核呢？
+
+实际上，并非任何低通滤波器（*low-pass filter*）都可用于生成尺度空间。可用于生成尺度空间的filter必须满足如下的条件：
+
+> 由该平滑filter生成的粗尺度图像（高层图像）不会引入不存在于细尺度图像（低层图像）中的杂散结构。
+
+如上的条件的言外之意就是：给定粗尺度图像中的任何一个区域，细尺度图像上总能找到相应的区域。对这两个区域而言，粗尺度图像区域不能有新的结构。
+
+受制于[尺度空间公理](https://en.wikipedia.org/wiki/Scale-space_axioms)，高斯卷积核是实现尺度变换的唯一线性核。因此，在图像金字塔中，需要采用高斯卷积核对图像进行处理。
+
+[尺度空间公理](https://en.wikipedia.org/wiki/Scale-space_axioms)需要满足如下的条件：
+* 线性
+* 平移不变性
+* 半群特性
+* 旋转不变性
+* 尺度不变性
+* 正定性
+* 正规性(积分为1)
+* 不会引入新的极点
+* 不会增强极点
+* 存在无穷小的算子（可微性）
+
 ## 图像金字塔的应用
-图像金字塔的一种应用是图像融合。例如，在图像拼接中会将两个图像堆叠，但是由于图像之间的不连续性，这种对原始图像的直接拼接的效果并不好。例如，我们直接拼接如下图所以的两幅图像：
+图像金字塔的一种应用是图像融合。例如，在图像拼接中会将两个图像堆叠，但是由于图像之间的不连续性，这种对原始图像的直接拼接的效果并不好。例如，我们对如下图所示的两幅图像：
 
 ![](5.jpg)
 
-的效果为：
+的直接拼接效果和采用图像金字塔拼接效果分别为（左图为直接拼接）：
 
-![Direct_blending](7.jpg)
+![](8.jpg)
 
-此时，使用“图像金字塔”融合图像则可以让拼接之后的图像看起来天衣无缝。例如，按照如下的步骤使用“图像金字塔”来拼接如上的图像：
+由此可以看出，使用“图像金字塔”融合图像则可以让拼接之后的图像看起来天衣无缝。
+
+可以按照如下的步骤使用“图像金字塔”来拼接如上的图像（[玩转多尺度图像融合](https://github.com/wangwei1237/wangwei1237.github.io/blob/master/2020/03/18/introduction-to-image-pyramid/image_pyramid_blend.ipynb))：
 
 1. 加载图像
 2. 计算图像的高斯金字塔（在此示例中，级数为6）
@@ -94,65 +127,9 @@ $\{L_i | i \in 1...n\}$则构成拉普拉斯金字塔。
 4. 在每个拉普拉斯金字塔中加入苹果的左半部分和橙子的右半部分
 5. 最后，从联合图像金字塔中重建原始图像
 
-最终的拼接效果如下所示：
-![](6.jpg)
-
-如下则是该示例的完成代码。
-
-```python
-import cv2
-import numpy as np,sys
-
-A = cv2.imread('apple.jpg')
-B = cv2.imread('orange.jpg')
-
-# generate Gaussian pyramid for A
-G = A.copy()
-gpA = [G]
-for i in range(6):
-    G = cv2.pyrDown(G)
-    gpA.append(G)
-
-# generate Gaussian pyramid for B
-G = B.copy()
-gpB = [G]
-for i in range(6):
-    G = cv2.pyrDown(G)
-    gpB.append(G)
-
-# generate Laplacian Pyramid for A
-lpA = [gpA[5]]
-for i in range(5,0,-1):
-    GE = cv2.pyrUp(gpA[i])
-    L = cv2.subtract(gpA[i-1],GE)
-    lpA.append(L)
-
-# generate Laplacian Pyramid for B
-lpB = [gpB[5]]
-for i in range(5,0,-1):
-    GE = cv2.pyrUp(gpB[i])
-    L = cv2.subtract(gpB[i-1],GE)
-    lpB.append(L)
-
-# Now add left and right halves of images in each level
-LS = []
-ii = 0
-for la,lb in zip(lpA,lpB):
-    ii=ii+1
-    rows,cols,dpt = la.shape
-    ls = np.hstack((la[:,0:int(cols/2)], lb[:,int(cols/2):]))
-    cv2.imwrite('py_' + str(ii) + '.jpg', ls)
-    LS.append(ls)
-
-# now reconstruct
-ls_ = LS[0]
-for i in range(1,6):
-    ls_ = cv2.pyrUp(ls_)
-    ls_ = cv2.add(ls_, LS[i])
-
-# image with direct connecting each half
-real = np.hstack((A[:,:int(cols/2)],B[:,int(cols/2):]))
-
-cv2.imwrite('Pyramid_blending2.jpg',ls_)
-cv2.imwrite('Direct_blending.jpg',real)
-```
+除了如上的**多分辨率图像融合算法会用到图像金字塔**之外，图像金字塔还可用于如下的场景：
+* sift算法
+* 在from coarse to fine由粗到精的搜索策略中都可以用金字塔
+* optical flow光流法
+* slam当中的姿态估计 
+* ……
