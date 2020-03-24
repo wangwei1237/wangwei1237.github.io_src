@@ -25,6 +25,8 @@ logo: /images/ayer-side.svg
 
 # 封面配置
 # enable-是否启用封面；path-封面背景图；logo-封面logo
+
+
 cover:
   enable: false
   path: /images/Flower6.jpg  # images目录下附送多张美图，可更换
@@ -49,6 +51,7 @@ excerpt_all: false
 
 # 是否开启文章分享按钮
 share_enable: true
+# 国内的社交平台(If you are not in China, maybe you prefer to set:false)
 share_china: true
 # 文章分享文字
 share_text: 分享
@@ -89,6 +92,9 @@ search: true
 
 # RSS订阅(先安装hexo-generator-feed插件，再去博客根目录config进行配置)
 # rss: /atom.xml
+
+# 是否启用黑夜模式开关
+darkmode: true
 
 # 评论：1、Valine(推荐)；2、Gitalk
 
