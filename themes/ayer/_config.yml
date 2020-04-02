@@ -33,7 +33,7 @@ cover:
   logo: false #/images/ayer.svg，如果不要直接设置成false
 
 # 页面顶部进度条  
-progressBar: ture
+progressBar: true
 
 # 网易云音乐插件
 music:
@@ -96,6 +96,14 @@ search: true
 # 是否启用黑夜模式开关
 darkmode: true
 
+# 页面点击小红心(开启请设置为true)
+clickLove: false
+
+# 页面宽度自定义（不建议修改，可能造成布局混乱），article_width文章宽度，sidebar_width侧边栏宽度
+layout:
+  article_width: 80rem
+  sidebar_width: 8rem
+
 # 评论：1、Valine(推荐)；2、Gitalk
 
 # 1、Valine[一款快速、简洁且高效的无后端评论系统](https://github.com/xCss/Valine)
@@ -135,7 +143,7 @@ busuanzi:
 # 友盟cnzz统计(url填js代码src链接)
 cnzz:
   enable: true
-  url: https://s4.cnzz.com/z_stat.php?id=1278605528&web_id=1278605528
+  url: https://s4.cnzz.com/z_stat.php?id=1278605528&online=1&show=line
 
 # Google Analytics
 google_analytics: ''
@@ -144,6 +152,12 @@ baidu_analytics: ''
 
 # 数学公式
 mathjax: true
+
+# Katex数学公式(allpost设置为false时只有头部设置math:true的文章才开启)
+katex:
+  enable: true # true
+  allpost: true
+  copy_tex: true
 
 # 网站成立年份(默认为 2019，若填入年份小于当前年份，则显示为 2018-2019 类似的格式)
 since: 2020

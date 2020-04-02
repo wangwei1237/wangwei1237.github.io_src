@@ -14,8 +14,8 @@
   </a>
   <br>
   <a href="https://github.com/Shen-Yu/hexo-theme-ayer/releases" target="_blank" rel="noopener noreferrer">
-    <img alt="GitHub release" src="https://img.shields.io/badge/release-v1.8-blue.svg">
-  </a>
+    <img alt="GitHub release" src="https://img.shields.io/badge/release-v2.0-blue.svg">
+  </a> 
  <img alt="language" src="https://img.shields.io/badge/language-ejs--stylus-orange.svg">
   <a href="https://hexo.io/zh-cn/" target="_blank" rel="noopener noreferrer">
     <img alt="hexo" src="https://img.shields.io/badge/hexo-%3E%3D3.0-blue.svg">
@@ -98,7 +98,7 @@ cover:
   logo: /images/ayer.svg
 
 # ProgressBar  
-progressBar: ture
+progressBar: true
 
 # Article Setting
 # (Use this to excerpt if article is too long：<!--more-->)
@@ -153,6 +153,17 @@ search: true
 # RSS
 rss: /atom.xml
 
+# DarkMode
+darkmode: true
+
+# ClickLove
+clickLove: false
+
+# articleWidth and sidebarWidth
+layout:
+  article_width: 80rem
+  sidebar_width: 8rem
+
 # Comment：1、Valine (recommended)；2、Gitalk
 
 # 1、Valine [A fast, simple & powerful comment system](https://github.com/xCss/Valine)
@@ -182,9 +193,6 @@ github:
   # (Set false if you don't need)
   url: https://github.com/Shen-Yu/hexo-theme-ayer
 
-# fancybox(Use for gallery, set false if you don't need)
-fancybox: true
-
 # pv&uv statistics
 busuanzi:
   enable: true
@@ -199,8 +207,14 @@ google_analytics: ''
 # Baidu Analytics
 baidu_analytics: ''
 
-# mathjax
+# Mathjax Support
 mathjax: true
+
+# Katex Support
+katex:
+  enable: false # true
+  allpost: true
+  copy_tex: false
 
 # since year
 since: 2019
@@ -296,7 +310,7 @@ Use Tocbot to parse the title tags (h1~h6) in the content and insert the directo
 
 	``` md
 	---
-  toc: false
+  no_toc: true
   ---
 	```
 

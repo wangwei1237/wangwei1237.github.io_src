@@ -1,7 +1,7 @@
 ---
 title: 数字视频技术导论
 reward: false
-top: true
+top: false
 date: 2020-02-28 08:49:46
 categories: 视频技术
 tags: 

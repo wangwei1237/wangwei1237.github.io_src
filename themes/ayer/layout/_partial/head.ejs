@@ -1,8 +1,9 @@
 <!DOCTYPE html>
+
 <% if (config.language){ %>
 <html lang="<%= config.language %>" >
 <% } else { %>
-<html lang="zh-CN">
+<html lang="en">
 <% }%>
 
 <head>
@@ -28,10 +29,10 @@
   <link rel="shortcut icon" href="<%- theme.favicon %>" />
   <% } %>
   <%- css('dist/main') %>
+  <%- css('css/custom') %>
   <% if (theme.progressBar){ %>
   <script src="https://cdn.jsdelivr.net/npm/pace-js@1.0.2/pace.min.js"></script>
   <% } %>
-
   <%- partial('google-analytics') %>
   <%- partial('baidu-analytics') %>
 </head>
