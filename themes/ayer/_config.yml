@@ -25,8 +25,6 @@ logo: /images/ayer-side.svg
 
 # 封面配置
 # enable-是否启用封面；path-封面背景图；logo-封面logo
-
-
 cover:
   enable: false
   path: /images/Flower6.jpg  # images目录下附送多张美图，可更换
@@ -87,7 +85,12 @@ reward_wording: '请我喝杯咖啡吧~'
 # 微信二维码图片地址
 #weixin: /images/wechat.jpg
 
+# 版权声明
+# 版权声明type设定：0-关闭版权声明； 1-文章对应的md文件里有copyright: true属性，才有版权声明； 2-所有文章均有版权声明
+copyright_type: 2
+
 # 是否启用搜索
+# 需要安装hexo-generator-searchdb(https://github.com/theme-next/hexo-generator-searchdb)
 search: true
 
 # RSS订阅(先安装hexo-generator-feed插件，再去博客根目录config进行配置)
