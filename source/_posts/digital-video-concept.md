@@ -22,7 +22,7 @@ tags:
 
 项目主页地址：[github仓库](https://github.com/wangwei1237/digital_video_concepts.git)
 
-在线预览地址：[预览地址1](https://wangwei1237.github.io/digital-video-concept), [预览地址2](https://wangwei1237.gitbook.io/digital_video_concepts)
+在线预览地址：[预览地址1](https://wangwei1237.gitee.io/digital-video-concept), [预览地址2](https://wangwei1237.github.io/digital-video-concept), [预览地址3](https://wangwei1237.gitbook.io/digital_video_concepts)
 
 在阅读过程中有任何意见或建议，欢迎在github上提交issue，我们也会快速跟进。
 

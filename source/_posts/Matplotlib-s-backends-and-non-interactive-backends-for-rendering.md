@@ -38,7 +38,7 @@ import matplotlib.pyplot as plt
 * 为什么这样就可以解决？
 * 解决方案和之前的写法的差异在哪里？
 
-因此查阅了matplotlib的文档，然后就有了该文接下来的内容。为了保证材料的原汁原味，如下的内容均摘录自matplotlib的开发文档。
+因此查阅了matplotlib的文档，然后就有了该文接下来的内容。为了保证材料的原汁原味，如下的内容均摘录自[matplotlib的开发文档](https://matplotlib.org/3.2.1/tutorials/introductory/usage.html#backends)。
 
 ## matplotlib中backend的概念
 A lot of documentation on the website and in the mailing lists refers to the **"backend"** and many new users are confused by this term. matplotlib targets many different use cases and output formats. Some people use matplotlib interactively from the python shell and have plotting windows pop up when they type commands. Some people run Jupyter notebooks and draw inline plots for quick data analysis. Others embed matplotlib into graphical user interfaces like wxpython or pygtk to build rich applications. Some people use matplotlib in batch scripts to generate postscript images from numerical simulations, and still others run web application servers to dynamically serve up graphs.

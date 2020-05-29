@@ -15,7 +15,7 @@ tags:
 
 基于如上的原因，将该材料的相关内容转载到此处。大家可以直接访问该材料的github仓库[**digital_video_introduction**](https://github.com/leandromoreira/digital_video_introduction)获取相关内容。如下的所有内容皆来自[**digital_video_introduction**](https://github.com/leandromoreira/digital_video_introduction)，特此标注。
 
-[![license](https://img.shields.io/badge/license-BSD--3--Clause-blue.svg)](https://img.shields.io/badge/license-BSD--3--Clause-blue.svg)
+[![license](license-BSD--3--Clause-blue.svg)](license-BSD--3--Clause-blue.svg)
 
 <!--more-->
 
