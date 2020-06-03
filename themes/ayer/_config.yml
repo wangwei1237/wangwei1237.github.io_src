@@ -166,7 +166,7 @@ google_analytics: ''
 baidu_analytics: ''
 
 # 数学公式
-mathjax: true
+mathjax: false
 
 # Katex数学公式(allpost设置为false时只有头部设置math:true的文章才开启)
 katex:
