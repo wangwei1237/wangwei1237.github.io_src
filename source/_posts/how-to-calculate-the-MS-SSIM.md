@@ -116,4 +116,4 @@ float ms_ssim_plane(pixel *pix1, pixel *pix2, int width, int height, int scale) 
 }
 ```
 
-完整的代码可以参考[test_msssim.cpp](https://github.com/wangwei1237/wangwei1237.github.io/blob/master/2020/02/25/how-to-calculate-the-MS-SSIM/test_msssim.cpp)。代码的很大部分是由我的同事*贤杰*(github: [@bodhisatan](https://github.com/bodhisatan))实现的，在此一并表示感谢。
+完整的代码可以参考[test_msssim.cpp](https://gitee.com/wangwei1237/wangwei1237/blob/master/2020/02/25/how-to-calculate-the-MS-SSIM/test_msssim.cpp)。代码的很大部分是由我的同事*贤杰*(github: [@bodhisatan](https://github.com/bodhisatan))实现的，在此一并表示感谢。

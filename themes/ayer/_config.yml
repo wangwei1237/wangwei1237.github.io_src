@@ -97,7 +97,7 @@ search: true
 darkmode: true
 
 # 动态背景效果: 0-关闭，1-动态线条(跟随鼠标)
-canvas_bg: 1
+canvas_bg: 0
 
 # 自定义鼠标样式，直接替换/images/mouse.cur文件
 mouse:
@@ -178,7 +178,7 @@ katex:
 since: 2020
 
 #是否显示页脚信息(建议保留，有助于本主题的推广)
-pageFooter: false
+pageFooter: true
 
 #ICP备案信息尾部显示
 icp:

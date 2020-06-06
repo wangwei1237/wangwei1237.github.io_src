@@ -121,7 +121,7 @@ $\\{L_i | i \in 1...n\\}$则构成拉普拉斯金字塔。
 
 由此可以看出，使用“图像金字塔”融合图像则可以让拼接之后的图像看起来天衣无缝。
 
-可以按照如下的步骤使用“图像金字塔”来拼接如上的图像（[玩转多尺度图像融合](https://github.com/wangwei1237/wangwei1237.github.io/blob/master/2020/03/18/introduction-to-image-pyramid/image_pyramid_blend.ipynb))：
+可以按照如下的步骤使用“图像金字塔”来拼接如上的图像（[玩转多尺度图像融合](https://gitee.com/wangwei1237/wangwei1237/blob/master/2020/03/18/introduction-to-image-pyramid/image_pyramid_blend.ipynb))：
 
 1. 加载图像
 2. 计算图像的高斯金字塔（在此示例中，级数为6）

@@ -113,9 +113,9 @@ tags:
 
 > ### 自己动手：玩转图像和颜色
 >
-> 你可以使用 [jupyter](#如何使用-jupyter)（python, numpy, matplotlib 等等）[玩转图像](https://github.com/wangwei1237/wangwei1237.github.io/blob/master/2020/02/28/Introduction-to-digital-video-technology/py/image_as_3d_array.ipynb)。
+> 你可以使用 [jupyter](#如何使用-jupyter)（python, numpy, matplotlib 等等）[玩转图像](https://gitee.com/wangwei1237/wangwei1237/blob/master/2020/02/28/Introduction-to-digital-video-technology/py/image_as_3d_array.ipynb)。
 >
-> 你也可以学习[图像滤镜（边缘检测，磨皮，模糊。。。）的原理](https://github.com/wangwei1237/wangwei1237.github.io/blob/master/2020/02/28/Introduction-to-digital-video-technology/py/filters_are_easy.ipynb)。
+> 你也可以学习[图像滤镜（边缘检测，磨皮，模糊。。。）的原理](https://gitee.com/wangwei1237/wangwei1237/blob/master/2020/02/28/Introduction-to-digital-video-technology/py/filters_are_easy.ipynb)。
 
 图像或视频还有一个属性是宽高比，它简单地描述了图像或像素的宽度和高度之间的比例关系。
 
@@ -335,7 +335,7 @@ P 帧利用了一个事实：当前的画面几乎总能**使用之前的一帧�
 
 ![运动预测 vs 残差 ](i/comparison_delta_vs_motion_estimation.png "运动预测 vs 残差")
 
-你可以[使用 jupyter 玩转这些概念](https://github.com/wangwei1237/wangwei1237.github.io/blob/master/2020/02/28/Introduction-to-digital-video-technology/py/frame_difference_vs_motion_estimation_plus_residual.ipynb)。
+你可以[使用 jupyter 玩转这些概念](https://gitee.com/wangwei1237/wangwei1237/blob/master/2020/02/28/Introduction-to-digital-video-technology/py/frame_difference_vs_motion_estimation_plus_residual.ipynb)。
 
 > ### 自己动手：查看运动向量
 >
@@ -507,14 +507,14 @@ P 帧利用了一个事实：当前的画面几乎总能**使用之前的一帧�
 >
 > 来源：[https://web.archive.org/web/20150129171151/https://www.iem.thm.de/telekom-labor/zinke/mk/mpeg2beg/whatisit.htm](https://web.archive.org/web/20150129171151/https://www.iem.thm.de/telekom-labor/zinke/mk/mpeg2beg/whatisit.htm)
 >  
-> 你也可以尝试[通过查看在 DCT 基础上形成的简单图片来可视化 DCT](https://github.com/wangwei1237/wangwei1237.github.io/blob/master/2020/02/28/Introduction-to-digital-video-technology/py/dct_better_explained.ipynb)。例如，这是使用每个系数权重[形成的字符 A](https://en.wikipedia.org/wiki/Discrete_cosine_transform#Example_of_IDCT)。
+> 你也可以尝试[通过查看在 DCT 基础上形成的简单图片来可视化 DCT](https://gitee.com/wangwei1237/wangwei1237/blob/master/2020/02/28/Introduction-to-digital-video-technology/py/dct_better_explained.ipynb)。例如，这是使用每个系数权重[形成的字符 A](https://en.wikipedia.org/wiki/Discrete_cosine_transform#Example_of_IDCT)。
 >
 > ![](https://upload.wikimedia.org/wikipedia/commons/5/5e/Idct-animation.gif )
 
 <br/>
 
 > ### 自己动手：丢弃不同的系数
-> 你可以玩转 [DCT 变换](https://github.com/wangwei1237/wangwei1237.github.io/blob/master/2020/02/28/Introduction-to-digital-video-technology/py/uniform_quantization_experience.ipynb)
+> 你可以玩转 [DCT 变换](https://gitee.com/wangwei1237/wangwei1237/blob/master/2020/02/28/Introduction-to-digital-video-technology/py/uniform_quantization_experience.ipynb)
 
 ## 第四步 - 量化
 
@@ -531,7 +531,7 @@ P 帧利用了一个事实：当前的画面几乎总能**使用之前的一帧�
 这**不是最好的方法**，因为它没有考虑到每个系数的重要性，我们可以使用一个**量化矩阵**来代替单个值，这个矩阵可以利用 DCT 的属性，多量化右下部，而少（量化）左上部，[JPEG 使用了类似的方法](https://www.hdm-stuttgart.de/~maucher/Python/MMCodecs/html/jpegUpToQuant.html)，你可以通过[查看源码看看这个矩阵](https://github.com/google/guetzli/blob/master/guetzli/jpeg_data.h#L40)。
 
 > ### 自己动手：量化
-> 你可以玩转[量化](https://github.com/wangwei1237/wangwei1237.github.io/blob/master/2020/02/28/Introduction-to-digital-video-technology/py/dct_experiences.ipynb)
+> 你可以玩转[量化](https://gitee.com/wangwei1237/wangwei1237/blob/master/2020/02/28/Introduction-to-digital-video-technology/py/dct_experiences.ipynb)
 
 ## 第五步 - 熵编码
 
