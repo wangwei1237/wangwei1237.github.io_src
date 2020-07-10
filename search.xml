@@ -28,7 +28,7 @@
 <h2 id="自动化测试的定位">自动化测试的定位</h2>
 <p>接下来，我从3个方面来阐述自动化测试的定位。</p>
 <h3 id="测试的4大活动">测试的4大活动</h3>
-<p>根据乔梁老师的<a href="https://item.jd.com/12512514.html" target="_blank" rel="noopener">《持续集成2.0》</a>一书中所述，测试领域的4大基本活动如<a href="#f1">图1</a>所示。</p>
+<p>根据乔梁老师的<a href="https://item.jd.com/12512514.html" target="_blank" rel="noopener">《持续集成2.0》</a>一书中所述，测试领域有4大基本活动，如<a href="#f1">图1</a>所示。</p>
 <p><span id="f1"><img src="/2020/07/08/autotest-is-a-working-culture-first/f1.png" alt></span></p>
 <p>图1. 测试的4大基本活动</p>
 <p>其中，各活动的基本含义如下：</p>
