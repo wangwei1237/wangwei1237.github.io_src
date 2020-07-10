@@ -76,7 +76,7 @@
         <span class="post-meta-item-icon">
             <i class="ri-quill-pen-line"></i>
             <span class="post-meta-item-text"> 字数统计:</span>
-            <span class="post-count">968</span>
+            <span class="post-count">1.5k</span>
         </span>
     </span>
 
@@ -85,7 +85,7 @@
         <span class="post-meta-item-icon">
             <i class="ri-book-open-line"></i>
             <span class="post-meta-item-text"> 阅读时长≈</span>
-            <span class="post-count">3 分钟</span>
+            <span class="post-count">5 分钟</span>
         </span>
     </span>
 </div>
@@ -122,8 +122,39 @@
 但是，正如本文开篇所述，整个人类社会都是证明自动化的历史，为什么还有那么多的团队在质疑自动化测试呢？<br>
 为什么有那么多的测试实践已经证明了自动化测试的成效——例如谷歌的<a href="https://mike-bland.com/2012/07/10/test-mercenaries.html" target="_blank" rel="noopener"><strong>Test Mercenaries</strong></a>计划，还是有那么多的团队对自动化测试心存质疑呢？</p>
 <p>正如Sam NewMan在<a href="https://samnewman.io/books/monolith-to-microservices/" target="_blank" rel="noopener"><strong>Monolith To Microservices</strong></a>一书中说的那样：<a href="/monolith-to-microservices/docs/The_Monolith.html#ref_denigrating_monolith">一旦我们陷入系统性抹黑单体的陷阱，我们就会面临很大的麻烦</a>。</p>
-<h2 id="从自动化测试的目标说起">从自动化测试的目标说起</h2>
+<h2 id="自动化测试的定位">自动化测试的定位</h2>
+<p>接下来，我从3个方面来阐述自动化测试的定位。</p>
+<h3 id="测试的4大活动">测试的4大活动</h3>
+<p>根据乔梁老师的<a href="https://item.jd.com/12512514.html" target="_blank" rel="noopener">《持续集成2.0》</a>一书中所述，测试领域的4大基本活动如<a href="#f1">图1</a>所示。</p>
+<p><span id="f1"><img src="/2020/07/08/autotest-is-a-working-culture-first/f1.png" alt></span></p>
+<p>图1. 测试的4大基本活动</p>
+<p>其中，各活动的基本含义如下：</p>
+<ul>
+<li><strong>问题认知</strong>：对业务问题本身的理解和认知，包括需求理解，技术设计理解……</li>
+<li><strong>分析</strong>：测试分析和测试设计，根据对问题的认知，设计测试方案和用例，保证业务质量</li>
+<li><strong>执行</strong>：执行分析阶段的测试用例，产出测试结论</li>
+<li><strong>决策</strong>：根据测试结论进行相关决策，包括是否存在风险，是否达到上线标准……</li>
+</ul>
+<h3 id="敏捷测试4象限">敏捷测试4象限</h3>
+<p>根据测试所支持的对象，测试可以分为：<a href="https://www.tutorialspoint.com/agile_testing/agile_testing_quadrants.htm" target="_blank" rel="noopener">面向业务业务的测试和面向研发的测试</a>。<a href="http://www.exampler.com/old-blog/2003/08/22/#agile-testing-project-2" target="_blank" rel="noopener">Brian Marick</a>根据这两种测试类型提出了<strong>敏捷测试4象限</strong>的概念，如<a href="#f2">图2</a>所示。</p>
+<p><span id="f2"><img src="/2020/07/08/autotest-is-a-working-culture-first/f2.png" alt></span></p>
+<p>图2. 敏捷测试4象限</p>
+<p>在<a href="#f2">图2</a>中：</p>
+<ul>
+<li><strong>功能验收测试</strong>：从用户的角度来验收功能</li>
+<li><strong>第三象限的自动化测试</strong>：研发团队对自我软件技术实现的验证</li>
+</ul>
+<h3 id="自动化测试的4要素">自动化测试的4要素</h3>
+<p>在测试的4大活动中，“执行”环节会存在大量的重复工作，而其中的大部分工作都可以由机器来承担。此时就可以发挥自动化测试的优势，释放人的重复劳动。</p>
+<p>而在Brian Marick的敏捷测试4象限中，第2、第3象限的测试类型也可以发挥自动化测试的优势，提升整个测试执行的效率。</p>
+<p>对于自动化测试而言，我总结了自动化测试的4要素：自动部署、自动执行、自动校验、自动报告，如<a href="#f3">图3</a>所示。</p>
+<p><span id="f3"><img src="/2020/07/08/autotest-is-a-working-culture-first/f3.gif" alt></span></p>
+<p>图3. 自动化测试的4要素</p>
+<h2 id="自动化测试的误区">自动化测试的误区</h2>
 <p>待续……</p>
+<h3 id="误区1：只看短期效率收益-忽略长期累积收益">误区1：只看短期效率收益，忽略长期累积收益</h3>
+<h3 id="误区2：只看个人收益-忽略团队收益">误区2：只看个人收益，忽略团队收益</h3>
+<h3 id="误区3：成本核算标准不一致">误区3：成本核算标准不一致</h3>
  
       <!-- reward -->
       
