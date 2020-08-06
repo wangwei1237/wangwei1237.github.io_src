@@ -27,4 +27,16 @@
 <url> <loc>https://wangwei1237.github.io/monolith-to-microservices/docs/Pattern_Parallel_Run.html</loc> <changefreq>weekly</changefreq> <priority>0.5</priority> </url>
 <url> <loc>https://wangwei1237.github.io/monolith-to-microservices/docs/Pattern_Decorating_Collaborator.html</loc> <changefreq>weekly</changefreq> <priority>0.5</priority> </url>
 <url> <loc>https://wangwei1237.github.io/monolith-to-microservices/docs/Pattern_Change_Data_Capture.html</loc> <changefreq>weekly</changefreq> <priority>0.5</priority> </url>
+<url> <loc>https://wangwei1237.github.io/monolith-to-microservices/docs/More_Services_More_Pain.html</loc> <changefreq>weekly</changefreq> <priority>0.5</priority> </url>
+<url> <loc>https://wangwei1237.github.io/monolith-to-microservices/docs/Ownership_at_Scale.html</loc> <changefreq>weekly</changefreq> <priority>0.5</priority> </url>
+<url> <loc>https://wangwei1237.github.io/monolith-to-microservices/docs/Breaking_Changes.html</loc> <changefreq>weekly</changefreq> <priority>0.5</priority> </url>
+<url> <loc>https://wangwei1237.github.io/monolith-to-microservices/docs/Reporting.html</loc> <changefreq>weekly</changefreq> <priority>0.5</priority> </url>
+<url> <loc>https://wangwei1237.github.io/monolith-to-microservices/docs/Monitoring_and_Troubleshooting.html</loc> <changefreq>weekly</changefreq> <priority>0.5</priority> </url>
+<url> <loc>https://wangwei1237.github.io/monolith-to-microservices/docs/Local_Developer_Experience.html</loc> <changefreq>weekly</changefreq> <priority>0.5</priority> </url>
+<url> <loc>https://wangwei1237.github.io/monolith-to-microservices/docs/Running_Too_Many_Things.html</loc> <changefreq>weekly</changefreq> <priority>0.5</priority> </url>
+<url> <loc>https://wangwei1237.github.io/monolith-to-microservices/docs/End-to-End_Testing.html</loc> <changefreq>weekly</changefreq> <priority>0.5</priority> </url>
+<url> <loc>https://wangwei1237.github.io/monolith-to-microservices/docs/Global_Versus_Local_Optimization.html</loc> <changefreq>weekly</changefreq> <priority>0.5</priority> </url>
+<url> <loc>https://wangwei1237.github.io/monolith-to-microservices/docs/Robustness_and_Resiliency.html</loc> <changefreq>weekly</changefreq> <priority>0.5</priority> </url>
+<url> <loc>https://wangwei1237.github.io/monolith-to-microservices/docs/Orphaned_Services.html</loc> <changefreq>weekly</changefreq> <priority>0.5</priority> </url>
+<url> <loc>https://wangwei1237.github.io/monolith-to-microservices/docs/Closing_Words.html</loc> <changefreq>weekly</changefreq> <priority>0.5</priority> </url>
 </urlset>
