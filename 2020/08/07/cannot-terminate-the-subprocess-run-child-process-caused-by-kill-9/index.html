@@ -11,7 +11,7 @@
    
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
   <title>
-    kill -9导致的subprocess.run启动的子进程无法退出 |  17哥
+    kill -9导致subprocess.run启动的子进程无法退出 |  17哥
   </title>
   <meta name="generator" content="hexo-theme-ayer">
   
@@ -57,7 +57,7 @@
     <header class="article-header">
        
 <h1 class="article-title sea-center" style="border-left:0" itemprop="name">
-  kill -9导致的subprocess.run启动的子进程无法退出
+  kill -9导致subprocess.run启动的子进程无法退出
 </h1>
  
 
@@ -76,7 +76,7 @@
         <span class="post-meta-item-icon">
             <i class="ri-quill-pen-line"></i>
             <span class="post-meta-item-text"> 字数统计:</span>
-            <span class="post-count">196</span>
+            <span class="post-count">1.2k</span>
         </span>
     </span>
 
@@ -85,7 +85,7 @@
         <span class="post-meta-item-icon">
             <i class="ri-book-open-line"></i>
             <span class="post-meta-item-text"> 阅读时长≈</span>
-            <span class="post-count">1 分钟</span>
+            <span class="post-count">4 分钟</span>
         </span>
     </span>
 </div>
@@ -105,7 +105,35 @@
 <a id="more"></a>
 <h2 id="subprocess模块">subprocess模块</h2>
 <p>我们使用subprocess.run()来创建新的shell进程，具体如下：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">ret &#x3D; subprocess.run(</span><br><span class="line">          cmd,</span><br><span class="line">          cwd&#x3D;cwd,</span><br><span class="line">          shell&#x3D;True,</span><br><span class="line">          stdout&#x3D;subprocess.PIPE,</span><br><span class="line">          stderr&#x3D;subprocess.PIPE,</span><br><span class="line">          encoding&#x3D;&quot;utf-8&quot;,</span><br><span class="line">          timeout&#x3D;600</span><br><span class="line">      )</span><br></pre></td></tr></table></figure>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">subprocess.run(</span><br><span class="line">    cmd,</span><br><span class="line">    cwd=cwd,</span><br><span class="line">    shell=<span class="literal">True</span>,</span><br><span class="line">    stdout=subprocess.PIPE,</span><br><span class="line">    stderr=subprocess.PIPE,</span><br><span class="line">    encoding=<span class="string">"utf-8"</span>,</span><br><span class="line">    timeout=<span class="number">600</span></span><br><span class="line">)</span><br></pre></td></tr></table></figure>
+<p>为了方便测试，分别写了一段<a href="https://gitee.com/wangwei1237/wangwei1237/blob/master/2020/08/07/cannot-terminate-the-subprocess-run-child-process-caused-by-kill-9/timeout.py" target="_blank" rel="noopener"><code>python</code>代码</a>和<a href="https://gitee.com/wangwei1237/wangwei1237/blob/master/2020/08/07/cannot-terminate-the-subprocess-run-child-process-caused-by-kill-9/timeout.sh" target="_blank" rel="noopener"><code>shell</code>代码</a>，可以点击链接查看具体代码。其中，<code>shell</code>脚本为一个死循环，具体如下：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">for((i=0;;i++))</span><br><span class="line">do</span><br><span class="line">    echo "$i" &gt;log 2&gt;&amp;1</span><br><span class="line">done</span><br></pre></td></tr></table></figure>
+<p>然后，我们在本地使用<code>kill -2（ctrl+c）</code>结束父进程的时候，子进程也确实结束了。具体如下图所示：</p>
+<p><img src="/2020/08/07/cannot-terminate-the-subprocess-run-child-process-caused-by-kill-9/sigint.png" alt></p>
+<p>我们继续查出问题的原因，我们咨询了任务托管平台的负责人：任务托管平台页面上的<code>结束任务</code>是怎么实现的？</p>
+<p>平台的负责人回应说：<code>kill -9</code>命令结束的。</p>
+<p>在这时候，我知道，我可能大概知道问题的原因了。</p>
+<h2 id="kill和signal">kill和signal</h2>
+<p>关于<code>kill</code>命令，此处不做详细介绍，具体可以参考<a href="https://man7.org/linux/man-pages/man1/kill.1.html" target="_blank" rel="noopener">kill(1)手册</a>。<code>kill</code>的作用是向某个特殊的进程或进程组发送一个特殊的信号，从而达到结束进程的目的。关于<code>信号(signal)</code>，此处也不做详细介绍，具体可以参考<a href="https://man7.org/linux/man-pages/man7/signal.7.html" target="_blank" rel="noopener">signal(7)手册</a>。</p>
+<p>而<code>kill -9</code>命令实际上是向进程发送了<code>SIGKILL</code>信号，而在<a href="https://man7.org/linux/man-pages/man7/signal.7.html" target="_blank" rel="noopener">signal(7)手册</a>中可以看到：<strong>The signals SIGKILL and SIGSTOP cannot be caught, blocked, or ignored.</strong> 因此，<code>kill -9</code>是一种不可捕获的、不可忽略的信号，用来在特殊情况下紧急结束进程（如果该信号可以捕获和忽略的话，就达不到这个目的了）。</p>
+<p>而对于一个单进程的程序而言，直接<code>kill -9</code>结束并没有什么问题，但是对于一个多进程的程序，例如本文中的例子，在<code>python</code>进程中又创建了<code>shell</code>子进程，那么直接用<code>kill -9</code>粗暴的结束父进程是非常不安全的，具体如下图所示：</p>
+<p><img src="/2020/08/07/cannot-terminate-the-subprocess-run-child-process-caused-by-kill-9/sig9.jpg" alt></p>
+<p>可见，在<code>kill -9</code>结束父进程之后，<code>shell</code>编写的子进程成为了<a href="https://www.geeksforgeeks.org/zombie-and-orphan-processes-in-c/" target="_blank" rel="noopener">孤儿进程</a>，并继续执行。</p>
+<p>这也就是，我们在任务托管平台上结束任务后，子进程并没有退出的根本原因。父进程结束的信号根本就没有机会通知到子进程，子进程也就不可能结束了。</p>
+<p>那么，我们换另外一个可以被捕获和忽略的信号，例如<code>SIGTERM</code>是否能结束子进程呢？</p>
+<p><img src="/2020/08/07/cannot-terminate-the-subprocess-run-child-process-caused-by-kill-9/sigterm.jpg" alt></p>
+<p>从图中可以看出，<code>SIGTERM</code>信号也没有结束子进程。</p>
+<h2 id="subprocess-run-所捕获的异常">subprocess.run()所捕获的异常</h2>
+<p>我们从<a href="https://github.com/python/cpython/blob/3.8/Lib/subprocess.py" target="_blank" rel="noopener">subprocess模块的源码</a>中可以发现，<code>subprocess.run()</code>实际上只捕获自定义的<code>TimeoutExpired</code>异常和<code>KeyboardInterrupt</code>异常，而在<code>python</code>中，<code>KeyboardInterrupt</code>异常对应的就是<strong>用户中断执行</strong>，一般就是输入<code>ctl+c</code>或发送<code>SIGINT</code>信号。具体如下：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">with</span> Popen(*popenargs, **kwargs) <span class="keyword">as</span> process:</span><br><span class="line">    <span class="keyword">try</span>:</span><br><span class="line">        stdout, stderr = process.communicate(input, timeout=timeout)</span><br><span class="line">    <span class="keyword">except</span> TimeoutExpired <span class="keyword">as</span> exc:</span><br><span class="line">        <span class="comment"># ...</span></span><br><span class="line">        <span class="keyword">raise</span></span><br><span class="line">    <span class="keyword">except</span>:  <span class="comment"># Including KeyboardInterrupt, communicate handled that.</span></span><br><span class="line">        process.kill()</span><br><span class="line">        <span class="comment"># We don't call process.wait() as .__exit__ does that for us.</span></span><br><span class="line">        <span class="keyword">raise</span></span><br></pre></td></tr></table></figure>
+<p>可见，对于<code>SIGINT</code>信号而言，<code>subprocess.run()</code>函数会调用<code>Popen.kill()</code>来结束子进程。</p>
+<p>因此，对于多进程而言，当父进结束之前，需要通过某种机制来通知其子进程，进而让子进程知晓父进程的退出信息，并作出合理的后续行为。否则，就会出现本文中出现的孤儿进程的现象。</p>
+<p>因此，对于其他的信号，<code>subprocess</code>模块本身就无法处理了。</p>
+<h2 id="捕获sigint信号">捕获SIGINT信号</h2>
+<p>如果要捕获<code>SIGINT</code>信号，使得<code>kill -9</code>结束python任务的时候，同时也能结束子进程，那么就要使用<code>subprocess.Popen()</code>了，具体可以参见<a href="https://gitee.com/wangwei1237/wangwei1237/blob/master/2020/08/07/cannot-terminate-the-subprocess-run-child-process-caused-by-kill-9/timeout_1.py" target="_blank" rel="noopener">timeout_1.py</a>。具体执行效果如下所示：</p>
+<p><img src="/2020/08/07/cannot-terminate-the-subprocess-run-child-process-caused-by-kill-9/popen.jpg" alt></p>
+<h2 id="结语">结语</h2>
+<p>查完这个问题，也算是对进程相关的内容有了更深入的了解。孤儿进程，僵尸进程，不可屏蔽进程……，好像经过很多时间之后，忽然都不记得自己曾经也钻研过这些概念一样。感谢我的同事<em>一卓</em>(<a href="https://github.com/GerenLiu" target="_blank" rel="noopener">@GerenLiu</a>)，在工作之余抽时间来一起讨论这个问题。</p>
  
       <!-- reward -->
       
