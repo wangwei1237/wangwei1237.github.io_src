@@ -130,7 +130,7 @@
 <p>因此，对于多进程而言，当父进结束之前，需要通过某种机制来通知其子进程，进而让子进程知晓父进程的退出信息，并作出合理的后续行为。否则，就会出现本文中出现的孤儿进程的现象。</p>
 <p>因此，对于其他的信号，<code>subprocess</code>模块本身就无法处理了。</p>
 <h2 id="捕获sigint信号">捕获SIGINT信号</h2>
-<p>如果要捕获<code>SIGINT</code>信号，使得<code>kill -9</code>结束python任务的时候，同时也能结束子进程，那么就要使用<code>subprocess.Popen()</code>了，具体可以参见<a href="https://gitee.com/wangwei1237/wangwei1237/blob/master/2020/08/07/cannot-terminate-the-subprocess-run-child-process-caused-by-kill-9/timeout_1.py" target="_blank" rel="noopener">timeout_1.py</a>。具体执行效果如下所示：</p>
+<p>如果要捕获<code>SIGINT</code>信号，使得<code>kill -15</code>结束python任务的时候，同时也能结束子进程，那么就要使用<code>subprocess.Popen()</code>了，具体可以参见<a href="https://gitee.com/wangwei1237/wangwei1237/blob/master/2020/08/07/cannot-terminate-the-subprocess-run-child-process-caused-by-kill-9/timeout_1.py" target="_blank" rel="noopener">timeout_1.py</a>。具体执行效果如下所示：</p>
 <p><img src="/2020/08/07/cannot-terminate-the-subprocess-run-child-process-caused-by-kill-9/popen.jpg" alt></p>
 <h2 id="结语">结语</h2>
 <p>查完这个问题，也算是对进程相关的内容有了更深入的了解。孤儿进程，僵尸进程，不可屏蔽进程……，好像经过很多时间之后，忽然都不记得自己曾经也钻研过这些概念一样。感谢我的同事<em>一卓</em>(<a href="https://github.com/GerenLiu" target="_blank" rel="noopener">@GerenLiu</a>)，在工作之余抽时间来一起讨论这个问题。</p>
