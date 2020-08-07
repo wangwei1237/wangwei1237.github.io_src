@@ -1,6 +1,49 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title>软件的熵和破窗原理</title>
+    <url>/2020/05/20/Software-Entropy-and-A-Broken-Window/</url>
+    <content><![CDATA[<blockquote>
+<p><strong>如下的内容，摘选自《程序员修炼之道——通向务实的最高境界（第二版）》。</strong></p>
+</blockquote>
+<p>虽然软件开发不受绝大多数物理法则的约束，但我们无法躲避来自“熵”的增加的重击。“熵”是一个物理学术语，它定义了一个系统的“无序”总量。不幸的是，热力学法则决定了宇宙中的熵会趋向最大化。当软件中的无序化增加时，程序员会说“软件在腐烂”。有些人可能会用更乐观的术语来称呼它，即“技术债”，潜台词是说他们总有一天会偿还的——恐怕不会还了。</p>
+<p><img src="/2020/05/20/Software-Entropy-and-A-Broken-Window/1.png" alt></p>
+<a id="more"></a>
+<p>不过不管叫什么名字，债务和腐烂都可能失控地蔓延开。</p>
+<p>有很多因素会导致软件腐烂。最重要的一个似乎是项目工作中的心理性状态，或者说文化。即使是一个单人团队，你的项目的心理性状态也是个非常脆弱的东西。即使有最合理的计划和最佳的人员，项目还是可能在生命周期中逐步荒废、腐烂。但也有一些项目在经历了巨大的困难、持续不断的挫折之后，成功地对抗了天然的无序化倾向，走出了困境。</p>
+<p>是什么造成了差异？</p>
+<p>在城市中心，有些建筑干净漂亮，而另一些则破落不堪。为什么会这样？一些犯罪和城市衰败领域的研究人员发现了一个有趣的触发机制，只需一样东西就能非常迅速地把一幢干净完好的宜居建筑变成一个破败的废弃物。</p>
+<h2 id="破窗原理">破窗原理</h2>
+<p>一扇破损的窗户，只要一段时间不去修理，建筑中的居民就会潜移默化地产生一种被遗弃的感觉——当权者不关心这幢建筑的感觉。然后，其他的窗户也开始损坏，居民开始乱丢废物，墙上开始出现涂鸦，建筑开始出现严重的结构性损坏。在看上去很短的时间内，建筑的损坏程度就足以打消业主们想修好它的期望，被遗弃的感觉终变成了现实。</p>
+<p><img src="/2020/05/20/Software-Entropy-and-A-Broken-Window/2.jpeg" alt></p>
+<p>为何造成这样的影响？</p>
+<p><strong>心理学家的研究表明，绝望是会传染的，就像狭窄空间中的流感病毒。无视一个明显损坏的东西，会强化这样一种观念：看来没有什么是能修好的，也没人在乎，一切都命中注定了。所有的负面情绪会在团队成员间蔓延，变成恶性循环。</strong></p>
+<h2 id="不要放任破窗">不要放任破窗</h2>
+<p><strong>不要搁置“破窗”(糟糕的设计、错误的决定、低劣的代码）不去修理。</strong></p>
+<p>每发现一个就赶紧修一个。如果没有足够的时间完全修好，那么就把它钉起来。也许你可以注释掉那些糟糕的代码，显示一行“尚未实现”的信息，或用假数据先替代一下。采取行动，预防进一步的损害发生，表明一切尽在你的掌握中。</p>
+<p>现在我们了解了一旦窗户开始破裂，运转良好的干净系统会迅速恶化。还有一些其他因素会导致软件腐烂，我们将在别处探讨，但与其他任何因素相比，漠视会加速腐烂的过程。</p>
+<p>你或许会觉得，没人有时间来来回回清理项目中所有的碎玻璃。如果你真这么想，劝你还是趁早多想想怎么料理这个项目的后事，或是直接离开是非之地。</p>
+<p>不要让熵赢得胜利。</p>
+<h2 id="先勿伤害">先勿伤害</h2>
+<p>多年以前，Andy认识一个土豪。他的房子富丽堂皇，屋子里摆满了无价的古董，到处陈列着精美的艺术品。有一天，一张挂毯因为离客厅壁炉太近而着火了。消防员奋勇冲进去救民于水火，当然主要是火。但是在把巨大的水管拖进屋子前，他们停了下来——尽管里面火势紧急——消防员毅然选择先在前门和火源之间铺上垫子，因为他们觉得水管太脏。</p>
+<p>他们不想弄坏地毯。</p>
+<p>现在听起来这很偏激。消防部门的首要任务当然是灭火，何必管过程中的那些附带损害呢？但是，他们在清醒地评估了形势后，出于对自己控制这场火势能力的绝对自信，还是尽力兼顾了不对财物造成不必要的毁害。</p>
+<p>这也是软件开发中应该遵循的方法：<strong>不要只是因为一些东西非常危急，就去造成附带损害。破窗一扇都嫌太多</strong>。</p>
+<p><img src="/2020/05/20/Software-Entropy-and-A-Broken-Window/3.jpg" alt></p>
+<p><strong>一扇破窗——一段设计情糕的代码，一个让团队在整个项目周期内都必须要遵守的糟糕的管理决策——是一切衰退的开始。</strong></p>
+<p>如果你发现自己正处在有几扇破窗的项目中，就非常容易陷入这样的想法——“反正代码所有其他部分都是一坨屎，我只是随大流而已。”</p>
+<p>项目在这个时间点之前是否一直良好运行并不重要。在最初启发“破窗理论”的实验中，一辆废弃的汽车完好无损地停放了一个星期。但是一旦有一块玻璃被打破，这辆车在几个小时内就会被扒光并翻了个底朝天。</p>
+<p><strong>出于同样原因，如果身处一个健康团队，你们项目的代码如此完美——编写清晰、设计优良、简洁优雅——你就会倾向于格外地小心，不把它弄糟。</strong> 就像那些消防员一样，即使屋内火势熊熊（截止时限、发行日期、销售演示，等等），你也不想成为第一个弄乱它、造成附带损害的人。反之，这个项目就会从某一扇破窗（糟糕的设计，混乱的代码……）开始衰退，腐烂……</p>
+<p>一定要告诉自己，“不要打破窗户”。</p>
+]]></content>
+      <categories>
+        <category>软件理论</category>
+      </categories>
+      <tags>
+        <tag>技术债</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>matplotlib的backends以及非交互式绘图</title>
     <url>/2020/04/28/Matplotlib-s-backends-and-non-interactive-backends-for-rendering/</url>
     <content><![CDATA[<p>在分析视频的psnr时，需要用到<code>matplotlib</code>来绘制视频每一帧的psnr。在Mac调试的时候可以正常生成如下所示的psnr趋势图：</p>
@@ -81,46 +124,96 @@
       </tags>
   </entry>
   <entry>
-    <title>软件的熵和破窗原理</title>
-    <url>/2020/05/20/Software-Entropy-and-A-Broken-Window/</url>
-    <content><![CDATA[<blockquote>
-<p><strong>如下的内容，摘选自《程序员修炼之道——通向务实的最高境界（第二版）》。</strong></p>
-</blockquote>
-<p>虽然软件开发不受绝大多数物理法则的约束，但我们无法躲避来自“熵”的增加的重击。“熵”是一个物理学术语，它定义了一个系统的“无序”总量。不幸的是，热力学法则决定了宇宙中的熵会趋向最大化。当软件中的无序化增加时，程序员会说“软件在腐烂”。有些人可能会用更乐观的术语来称呼它，即“技术债”，潜台词是说他们总有一天会偿还的——恐怕不会还了。</p>
-<p><img src="/2020/05/20/Software-Entropy-and-A-Broken-Window/1.png" alt></p>
+    <title>kill -9导致subprocess.run启动的子进程无法退出</title>
+    <url>/2020/08/07/cannot-terminate-the-subprocess-run-child-process-caused-by-kill-9/</url>
+    <content><![CDATA[<h2 id="背景">背景</h2>
+<p>我们有一个任务托管平台，该平台可以托管<code>python</code>语言编写任务，并且可以对任务状态进行管理。由于业务的需要，我们需要在<code>python</code>的任务中调起一个<code>shell</code>脚本来完成一些额外的事情。当我们把编写好的任务部署到任务托管平台之后，我们发现一个奇怪的现象：当在任务的超时时间内手动结束任务的时候，只有<code>python</code>的父进程退出了，而<code>python</code>启动的<code>shell</code>子进程却没有退出。</p>
 <a id="more"></a>
-<p>不过不管叫什么名字，债务和腐烂都可能失控地蔓延开。</p>
-<p>有很多因素会导致软件腐烂。最重要的一个似乎是项目工作中的心理性状态，或者说文化。即使是一个单人团队，你的项目的心理性状态也是个非常脆弱的东西。即使有最合理的计划和最佳的人员，项目还是可能在生命周期中逐步荒废、腐烂。但也有一些项目在经历了巨大的困难、持续不断的挫折之后，成功地对抗了天然的无序化倾向，走出了困境。</p>
-<p>是什么造成了差异？</p>
-<p>在城市中心，有些建筑干净漂亮，而另一些则破落不堪。为什么会这样？一些犯罪和城市衰败领域的研究人员发现了一个有趣的触发机制，只需一样东西就能非常迅速地把一幢干净完好的宜居建筑变成一个破败的废弃物。</p>
-<h2 id="破窗原理">破窗原理</h2>
-<p>一扇破损的窗户，只要一段时间不去修理，建筑中的居民就会潜移默化地产生一种被遗弃的感觉——当权者不关心这幢建筑的感觉。然后，其他的窗户也开始损坏，居民开始乱丢废物，墙上开始出现涂鸦，建筑开始出现严重的结构性损坏。在看上去很短的时间内，建筑的损坏程度就足以打消业主们想修好它的期望，被遗弃的感觉终变成了现实。</p>
-<p><img src="/2020/05/20/Software-Entropy-and-A-Broken-Window/2.jpeg" alt></p>
-<p>为何造成这样的影响？</p>
-<p><strong>心理学家的研究表明，绝望是会传染的，就像狭窄空间中的流感病毒。无视一个明显损坏的东西，会强化这样一种观念：看来没有什么是能修好的，也没人在乎，一切都命中注定了。所有的负面情绪会在团队成员间蔓延，变成恶性循环。</strong></p>
-<h2 id="不要放任破窗">不要放任破窗</h2>
-<p><strong>不要搁置“破窗”(糟糕的设计、错误的决定、低劣的代码）不去修理。</strong></p>
-<p>每发现一个就赶紧修一个。如果没有足够的时间完全修好，那么就把它钉起来。也许你可以注释掉那些糟糕的代码，显示一行“尚未实现”的信息，或用假数据先替代一下。采取行动，预防进一步的损害发生，表明一切尽在你的掌握中。</p>
-<p>现在我们了解了一旦窗户开始破裂，运转良好的干净系统会迅速恶化。还有一些其他因素会导致软件腐烂，我们将在别处探讨，但与其他任何因素相比，漠视会加速腐烂的过程。</p>
-<p>你或许会觉得，没人有时间来来回回清理项目中所有的碎玻璃。如果你真这么想，劝你还是趁早多想想怎么料理这个项目的后事，或是直接离开是非之地。</p>
-<p>不要让熵赢得胜利。</p>
-<h2 id="先勿伤害">先勿伤害</h2>
-<p>多年以前，Andy认识一个土豪。他的房子富丽堂皇，屋子里摆满了无价的古董，到处陈列着精美的艺术品。有一天，一张挂毯因为离客厅壁炉太近而着火了。消防员奋勇冲进去救民于水火，当然主要是火。但是在把巨大的水管拖进屋子前，他们停了下来——尽管里面火势紧急——消防员毅然选择先在前门和火源之间铺上垫子，因为他们觉得水管太脏。</p>
-<p>他们不想弄坏地毯。</p>
-<p>现在听起来这很偏激。消防部门的首要任务当然是灭火，何必管过程中的那些附带损害呢？但是，他们在清醒地评估了形势后，出于对自己控制这场火势能力的绝对自信，还是尽力兼顾了不对财物造成不必要的毁害。</p>
-<p>这也是软件开发中应该遵循的方法：<strong>不要只是因为一些东西非常危急，就去造成附带损害。破窗一扇都嫌太多</strong>。</p>
-<p><img src="/2020/05/20/Software-Entropy-and-A-Broken-Window/3.jpg" alt></p>
-<p><strong>一扇破窗——一段设计情糕的代码，一个让团队在整个项目周期内都必须要遵守的糟糕的管理决策——是一切衰退的开始。</strong></p>
-<p>如果你发现自己正处在有几扇破窗的项目中，就非常容易陷入这样的想法——“反正代码所有其他部分都是一坨屎，我只是随大流而已。”</p>
-<p>项目在这个时间点之前是否一直良好运行并不重要。在最初启发“破窗理论”的实验中，一辆废弃的汽车完好无损地停放了一个星期。但是一旦有一块玻璃被打破，这辆车在几个小时内就会被扒光并翻了个底朝天。</p>
-<p><strong>出于同样原因，如果身处一个健康团队，你们项目的代码如此完美——编写清晰、设计优良、简洁优雅——你就会倾向于格外地小心，不把它弄糟。</strong> 就像那些消防员一样，即使屋内火势熊熊（截止时限、发行日期、销售演示，等等），你也不想成为第一个弄乱它、造成附带损害的人。反之，这个项目就会从某一扇破窗（糟糕的设计，混乱的代码……）开始衰退，腐烂……</p>
-<p>一定要告诉自己，“不要打破窗户”。</p>
+<h2 id="subprocess模块">subprocess模块</h2>
+<p>我们使用subprocess.run()来创建新的shell进程，具体如下：</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">subprocess.run(</span><br><span class="line">    cmd,</span><br><span class="line">    cwd=cwd,</span><br><span class="line">    shell=<span class="literal">True</span>,</span><br><span class="line">    stdout=subprocess.PIPE,</span><br><span class="line">    stderr=subprocess.PIPE,</span><br><span class="line">    encoding=<span class="string">"utf-8"</span>,</span><br><span class="line">    timeout=<span class="number">600</span></span><br><span class="line">)</span><br></pre></td></tr></table></figure>
+<p>为了方便测试，分别写了一段<a href="https://gitee.com/wangwei1237/wangwei1237/blob/master/2020/08/07/cannot-terminate-the-subprocess-run-child-process-caused-by-kill-9/timeout.py" target="_blank" rel="noopener"><code>python</code>代码</a>和<a href="https://gitee.com/wangwei1237/wangwei1237/blob/master/2020/08/07/cannot-terminate-the-subprocess-run-child-process-caused-by-kill-9/timeout.sh" target="_blank" rel="noopener"><code>shell</code>代码</a>，可以点击链接查看具体代码。其中，<code>shell</code>脚本为一个死循环，具体如下：</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">for((i=0;;i++))</span><br><span class="line">do</span><br><span class="line">    echo "$i" &gt;log 2&gt;&amp;1</span><br><span class="line">done</span><br></pre></td></tr></table></figure>
+<p>然后，我们在本地使用<code>kill -2（ctrl+c）</code>结束父进程的时候，子进程也确实结束了。具体如下图所示：</p>
+<p><img src="/2020/08/07/cannot-terminate-the-subprocess-run-child-process-caused-by-kill-9/sigint.png" alt></p>
+<p>我们继续查出问题的原因，我们咨询了任务托管平台的负责人：任务托管平台页面上的<code>结束任务</code>是怎么实现的？</p>
+<p>平台的负责人回应说：<code>kill -9</code>命令结束的。</p>
+<p>在这时候，我知道，我可能大概知道问题的原因了。</p>
+<h2 id="kill和signal">kill和signal</h2>
+<p>关于<code>kill</code>命令，此处不做详细介绍，具体可以参考<a href="https://man7.org/linux/man-pages/man1/kill.1.html" target="_blank" rel="noopener">kill(1)手册</a>。<code>kill</code>的作用是向某个特殊的进程或进程组发送一个特殊的信号，从而达到结束进程的目的。关于<code>信号(signal)</code>，此处也不做详细介绍，具体可以参考<a href="https://man7.org/linux/man-pages/man7/signal.7.html" target="_blank" rel="noopener">signal(7)手册</a>。</p>
+<p>而<code>kill -9</code>命令实际上是向进程发送了<code>SIGKILL</code>信号，而在<a href="https://man7.org/linux/man-pages/man7/signal.7.html" target="_blank" rel="noopener">signal(7)手册</a>中可以看到：<strong>The signals SIGKILL and SIGSTOP cannot be caught, blocked, or ignored.</strong> 因此，<code>kill -9</code>是一种不可捕获的、不可忽略的信号，用来在特殊情况下紧急结束进程（如果该信号可以捕获和忽略的话，就达不到这个目的了）。</p>
+<p>而对于一个单进程的程序而言，直接<code>kill -9</code>结束并没有什么问题，但是对于一个多进程的程序，例如本文中的例子，在<code>python</code>进程中又创建了<code>shell</code>子进程，那么直接用<code>kill -9</code>粗暴的结束父进程是非常不安全的，具体如下图所示：</p>
+<p><img src="/2020/08/07/cannot-terminate-the-subprocess-run-child-process-caused-by-kill-9/sig9.jpg" alt></p>
+<p>可见，在<code>kill -9</code>结束父进程之后，<code>shell</code>编写的子进程成为了<a href="https://www.geeksforgeeks.org/zombie-and-orphan-processes-in-c/" target="_blank" rel="noopener">孤儿进程</a>，并继续执行。</p>
+<p>这也就是，我们在任务托管平台上结束任务后，子进程并没有退出的根本原因。父进程结束的信号根本就没有机会通知到子进程，子进程也就不可能结束了。</p>
+<p>那么，我们换另外一个可以被捕获和忽略的信号，例如<code>SIGTERM</code>是否能结束子进程呢？</p>
+<p><img src="/2020/08/07/cannot-terminate-the-subprocess-run-child-process-caused-by-kill-9/sigterm.jpg" alt></p>
+<p>从图中可以看出，<code>SIGTERM</code>信号也没有结束子进程。</p>
+<h2 id="subprocess-run-所捕获的异常">subprocess.run()所捕获的异常</h2>
+<p>我们从<a href="https://github.com/python/cpython/blob/3.8/Lib/subprocess.py" target="_blank" rel="noopener">subprocess模块的源码</a>中可以发现，<code>subprocess.run()</code>实际上只捕获自定义的<code>TimeoutExpired</code>异常和<code>KeyboardInterrupt</code>异常，而在<code>python</code>中，<code>KeyboardInterrupt</code>异常对应的就是<strong>用户中断执行</strong>，一般就是输入<code>ctl+c</code>或发送<code>SIGINT</code>信号。具体如下：</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">with</span> Popen(*popenargs, **kwargs) <span class="keyword">as</span> process:</span><br><span class="line">    <span class="keyword">try</span>:</span><br><span class="line">        stdout, stderr = process.communicate(input, timeout=timeout)</span><br><span class="line">    <span class="keyword">except</span> TimeoutExpired <span class="keyword">as</span> exc:</span><br><span class="line">        <span class="comment"># ...</span></span><br><span class="line">        <span class="keyword">raise</span></span><br><span class="line">    <span class="keyword">except</span>:  <span class="comment"># Including KeyboardInterrupt, communicate handled that.</span></span><br><span class="line">        process.kill()</span><br><span class="line">        <span class="comment"># We don't call process.wait() as .__exit__ does that for us.</span></span><br><span class="line">        <span class="keyword">raise</span></span><br></pre></td></tr></table></figure>
+<p>可见，对于<code>SIGINT</code>信号而言，<code>subprocess.run()</code>函数会调用<code>Popen.kill()</code>来结束子进程。</p>
+<p>因此，对于多进程而言，当父进结束之前，需要通过某种机制来通知其子进程，进而让子进程知晓父进程的退出信息，并作出合理的后续行为。否则，就会出现本文中出现的孤儿进程的现象。</p>
+<p>因此，对于其他的信号，<code>subprocess</code>模块本身就无法处理了。</p>
+<h2 id="捕获sigint信号">捕获SIGINT信号</h2>
+<p>如果要捕获<code>SIGINT</code>信号，使得<code>kill -15</code>结束python任务的时候，同时也能结束子进程，那么就要使用<code>subprocess.Popen()</code>了，具体可以参见<a href="https://gitee.com/wangwei1237/wangwei1237/blob/master/2020/08/07/cannot-terminate-the-subprocess-run-child-process-caused-by-kill-9/timeout_1.py" target="_blank" rel="noopener">timeout_1.py</a>。具体执行效果如下所示：</p>
+<p><img src="/2020/08/07/cannot-terminate-the-subprocess-run-child-process-caused-by-kill-9/popen.jpg" alt></p>
+<p>此处，我用了一个偷懒的方法，也就是把<code>SIGTERM</code>信号捕获之后转成<code>SIGINT</code>信号，具体的代码如下：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">def sigintHandler(signum, frame):</span><br><span class="line">    raise KeyboardInterrupt</span><br><span class="line"></span><br><span class="line">    exit()</span><br><span class="line"></span><br><span class="line">def run_cmd(cmd, cwd):</span><br><span class="line">    signal.signal(signal.SIGTERM, sigintHandler)</span><br><span class="line">    # ...</span><br></pre></td></tr></table></figure>
+<h2 id="结语">结语</h2>
+<p>查完这个问题，也算是对进程相关的内容有了更深入的了解。孤儿进程，僵尸进程，不可屏蔽进程……，好像经过很多时间之后，忽然都不记得自己曾经也钻研过这些概念一样。感谢我的同事<em>一卓</em>(<a href="https://github.com/GerenLiu" target="_blank" rel="noopener">@GerenLiu</a>)，在工作之余抽时间来一起讨论这个问题。</p>
 ]]></content>
       <categories>
-        <category>软件理论</category>
+        <category>python</category>
       </categories>
       <tags>
-        <tag>技术债</tag>
+        <tag>subprocess</tag>
+        <tag>kill命令</tag>
+        <tag>多线程</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>使用Wireshark分析SRT直播流</title>
+    <url>/2020/04/09/analysize-SRT-protocol-live-stream-with-wireshark/</url>
+    <content><![CDATA[<p><a href="https://www.haivision.com/products/srt-secure-reliable-transport/" target="_blank" rel="noopener">SRT(Secure Reliable Transport)</a>是一种基于<a href="https://tools.ietf.org/html/draft-gg-udt-03" target="_blank" rel="noopener">UDT(UDP-based Data Transfer)</a>的、安全的、可靠的、开源的数据传输协议&amp;技术。SRT在UDP基础之上实现了：智能数据重传机制和AES256加密技术，这使得其成为一种安全、可靠、低延迟的传输技术。利用SRT，可以实现在不可预测的网络环境下（例如互联网）高效、安全的传输数据。<a href="https://github.com/Haivision/srt/" target="_blank" rel="noopener">SRT</a>还做了特殊优化以适合视频实时流数据的传输。根据<a href="https://www.srtalliance.org/srt-alliance-announces-the-addition-of-the-srt-low-latency-protocol-to-open-broadcaster-softwares-obs-studio/" target="_blank" rel="noopener">SRT Alliance</a>在2019-04-04的介绍，目前如下的应用已经集成并支持SRT：<a href="https://obsproject.com/" target="_blank" rel="noopener">OBS Studio</a>，<a href="https://www.videolan.org/vlc/" target="_blank" rel="noopener">VideoLAN’s VLC</a>，<a href="http://ffmpeg.org/" target="_blank" rel="noopener">FFMpeg</a>，<a href="https://www.wireshark.org/" target="_blank" rel="noopener">Wireshark</a>。</p>
+<p><img src="/2020/04/09/analysize-SRT-protocol-live-stream-with-wireshark/1.png" alt></p>
+<a id="more"></a>
+<p>本文只介绍：<strong>如何利用FFMpeg生成SRT数据流并利用Wireshark对该SRT数据进行抓包分析</strong>。关于SRT的详细内容，可以参考<a href="https://github.com/Haivision/srt/files/2489142/SRT_Protocol_TechnicalOverview_DRAFT_2018-10-17.pdf" target="_blank" rel="noopener">SRT Protocol Technical Overview Draft</a>。</p>
+<h2 id="前期准备">前期准备</h2>
+<ol>
+<li>
+<p>按照<a href="https://github.com/Haivision/srt/blob/master/README.md" target="_blank" rel="noopener">说明</a>安装SRT</p>
+</li>
+<li>
+<p>利用<code>./configure --enable-libsrt</code>重新编译FFMpeg，让ffmpeg工具集支持SRT协议。重新configure的过程如果遇到<code>ERROR: srt &gt;= 1.3.0 not found using pkg-config</code>的错误，可以查看<code>ffbuild/config.log</code>的相关信息，一般需要把srt和srt所依赖的openssl的<strong>pkgconfig</strong>路径增加到<code>PKG_CONFIG_PATH</code>环境变量中即可。</p>
+</li>
+<li>
+<p>升级Wireshark到3.0之后的版本，并且设置Wireshark取消Wireshark对UDT协议的支持，具体做法为：点击菜单栏中的<code>Analyze</code>-&gt;<code>Enabled Protocols</code>，然后从弹出的支持协议中找到UDT，并取消UDT前面的选择标记。</p>
+<p><img src="/2020/04/09/analysize-SRT-protocol-live-stream-with-wireshark/2.jpg" alt></p>
+</li>
+<li>
+<p>安装VLC播放器，用于播放SRT协议的视频流。</p>
+</li>
+</ol>
+<h2 id="生成srt直播流">生成SRT直播流</h2>
+<p>可以利用<code>ffmpeg</code>和<code>srt-live-transmit</code>（该工具在安装srt的时候会默认安装）来生成SRT直播流。主要思路是首先利用<code>ffmpeg</code>生成UDP的直播流，然后利用<code>srt-live-transmit</code>把UDP的直播流转换成SRT的直播流，更详细的方式可以参考<a href="https://github.com/Haivision/srt/blob/master/docs/srt-live-transmit.md" target="_blank" rel="noopener">srt-live-transmit的使用说明</a>。</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash"> 生成UDP视频流</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> ffmpeg -f lavfi -re -i smptebars=duration=300:size=1280x720:rate=30 \</span></span><br><span class="line">-f lavfi -re -i sine=frequency=1000:duration=60:sample_rate=44100 \</span><br><span class="line">-pix_fmt yuv420p -c:v libx264 -b:v 1000k -g 30 -keyint_min 120 \</span><br><span class="line">-profile:v baseline -preset veryfast -f mpegts \</span><br><span class="line">"udp://127.0.0.1:5000?pkt_size=1316"</span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash"> 生成SRT视频流</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> srt-live-transmit -s:10 udp://:5000 srt://:5001</span></span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash"> 使用ffplay播放SRT视频流</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> ffplay <span class="string">"srt://127.0.0.1:5001"</span></span></span><br></pre></td></tr></table></figure>
+<p>具体播放效果如下所示：</p>
+<p><img src="/2020/04/09/analysize-SRT-protocol-live-stream-with-wireshark/3.jpg" alt></p>
+<h2 id="使用wireshark分析srt">使用Wireshark分析SRT</h2>
+<p>为了可以用Wireshark抓到SRT数据包，需要使用VLC播放器来打开刚才创建的SRT视频流，具体如下所示：</p>
+<p><img src="/2020/04/09/analysize-SRT-protocol-live-stream-with-wireshark/4.jpg" alt></p>
+<p>打开Wireshark，选择Lookback（因为要捕获的SRT地址为127.0.0.1），然后在捕获的数据窗口选择srt协议过滤，稍等片刻就可以看到捕获的SRT数据包，具体如下图所示：</p>
+<p><img src="/2020/04/09/analysize-SRT-protocol-live-stream-with-wireshark/5.jpg" alt></p>
+<p>接下来就可以利用Wireshark来分析SRT协议的处理流程，例如上图中的Handshake数据包。尤其是在学习的过程中，配合<a href="https://github.com/Haivision/srt/files/2489142/SRT_Protocol_TechnicalOverview_DRAFT_2018-10-17.pdf" target="_blank" rel="noopener">SRT的协议文档</a>以及Wireshark的抓包分析，能够加深对SRT协议的理解，达到事半功倍的效果。</p>
+]]></content>
+      <categories>
+        <category>视频技术</category>
+      </categories>
+      <tags>
+        <tag>Wireshark</tag>
+        <tag>SRT</tag>
+        <tag>网络协议分析</tag>
       </tags>
   </entry>
   <entry>
@@ -235,97 +328,6 @@
         <tag>auto test</tag>
         <tag>敏捷</tag>
         <tag>方法论</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>使用Wireshark分析SRT直播流</title>
-    <url>/2020/04/09/analysize-SRT-protocol-live-stream-with-wireshark/</url>
-    <content><![CDATA[<p><a href="https://www.haivision.com/products/srt-secure-reliable-transport/" target="_blank" rel="noopener">SRT(Secure Reliable Transport)</a>是一种基于<a href="https://tools.ietf.org/html/draft-gg-udt-03" target="_blank" rel="noopener">UDT(UDP-based Data Transfer)</a>的、安全的、可靠的、开源的数据传输协议&amp;技术。SRT在UDP基础之上实现了：智能数据重传机制和AES256加密技术，这使得其成为一种安全、可靠、低延迟的传输技术。利用SRT，可以实现在不可预测的网络环境下（例如互联网）高效、安全的传输数据。<a href="https://github.com/Haivision/srt/" target="_blank" rel="noopener">SRT</a>还做了特殊优化以适合视频实时流数据的传输。根据<a href="https://www.srtalliance.org/srt-alliance-announces-the-addition-of-the-srt-low-latency-protocol-to-open-broadcaster-softwares-obs-studio/" target="_blank" rel="noopener">SRT Alliance</a>在2019-04-04的介绍，目前如下的应用已经集成并支持SRT：<a href="https://obsproject.com/" target="_blank" rel="noopener">OBS Studio</a>，<a href="https://www.videolan.org/vlc/" target="_blank" rel="noopener">VideoLAN’s VLC</a>，<a href="http://ffmpeg.org/" target="_blank" rel="noopener">FFMpeg</a>，<a href="https://www.wireshark.org/" target="_blank" rel="noopener">Wireshark</a>。</p>
-<p><img src="/2020/04/09/analysize-SRT-protocol-live-stream-with-wireshark/1.png" alt></p>
-<a id="more"></a>
-<p>本文只介绍：<strong>如何利用FFMpeg生成SRT数据流并利用Wireshark对该SRT数据进行抓包分析</strong>。关于SRT的详细内容，可以参考<a href="https://github.com/Haivision/srt/files/2489142/SRT_Protocol_TechnicalOverview_DRAFT_2018-10-17.pdf" target="_blank" rel="noopener">SRT Protocol Technical Overview Draft</a>。</p>
-<h2 id="前期准备">前期准备</h2>
-<ol>
-<li>
-<p>按照<a href="https://github.com/Haivision/srt/blob/master/README.md" target="_blank" rel="noopener">说明</a>安装SRT</p>
-</li>
-<li>
-<p>利用<code>./configure --enable-libsrt</code>重新编译FFMpeg，让ffmpeg工具集支持SRT协议。重新configure的过程如果遇到<code>ERROR: srt &gt;= 1.3.0 not found using pkg-config</code>的错误，可以查看<code>ffbuild/config.log</code>的相关信息，一般需要把srt和srt所依赖的openssl的<strong>pkgconfig</strong>路径增加到<code>PKG_CONFIG_PATH</code>环境变量中即可。</p>
-</li>
-<li>
-<p>升级Wireshark到3.0之后的版本，并且设置Wireshark取消Wireshark对UDT协议的支持，具体做法为：点击菜单栏中的<code>Analyze</code>-&gt;<code>Enabled Protocols</code>，然后从弹出的支持协议中找到UDT，并取消UDT前面的选择标记。</p>
-<p><img src="/2020/04/09/analysize-SRT-protocol-live-stream-with-wireshark/2.jpg" alt></p>
-</li>
-<li>
-<p>安装VLC播放器，用于播放SRT协议的视频流。</p>
-</li>
-</ol>
-<h2 id="生成srt直播流">生成SRT直播流</h2>
-<p>可以利用<code>ffmpeg</code>和<code>srt-live-transmit</code>（该工具在安装srt的时候会默认安装）来生成SRT直播流。主要思路是首先利用<code>ffmpeg</code>生成UDP的直播流，然后利用<code>srt-live-transmit</code>把UDP的直播流转换成SRT的直播流，更详细的方式可以参考<a href="https://github.com/Haivision/srt/blob/master/docs/srt-live-transmit.md" target="_blank" rel="noopener">srt-live-transmit的使用说明</a>。</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash"> 生成UDP视频流</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> ffmpeg -f lavfi -re -i smptebars=duration=300:size=1280x720:rate=30 \</span></span><br><span class="line">-f lavfi -re -i sine=frequency=1000:duration=60:sample_rate=44100 \</span><br><span class="line">-pix_fmt yuv420p -c:v libx264 -b:v 1000k -g 30 -keyint_min 120 \</span><br><span class="line">-profile:v baseline -preset veryfast -f mpegts \</span><br><span class="line">"udp://127.0.0.1:5000?pkt_size=1316"</span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash"> 生成SRT视频流</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> srt-live-transmit -s:10 udp://:5000 srt://:5001</span></span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash"> 使用ffplay播放SRT视频流</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> ffplay <span class="string">"srt://127.0.0.1:5001"</span></span></span><br></pre></td></tr></table></figure>
-<p>具体播放效果如下所示：</p>
-<p><img src="/2020/04/09/analysize-SRT-protocol-live-stream-with-wireshark/3.jpg" alt></p>
-<h2 id="使用wireshark分析srt">使用Wireshark分析SRT</h2>
-<p>为了可以用Wireshark抓到SRT数据包，需要使用VLC播放器来打开刚才创建的SRT视频流，具体如下所示：</p>
-<p><img src="/2020/04/09/analysize-SRT-protocol-live-stream-with-wireshark/4.jpg" alt></p>
-<p>打开Wireshark，选择Lookback（因为要捕获的SRT地址为127.0.0.1），然后在捕获的数据窗口选择srt协议过滤，稍等片刻就可以看到捕获的SRT数据包，具体如下图所示：</p>
-<p><img src="/2020/04/09/analysize-SRT-protocol-live-stream-with-wireshark/5.jpg" alt></p>
-<p>接下来就可以利用Wireshark来分析SRT协议的处理流程，例如上图中的Handshake数据包。尤其是在学习的过程中，配合<a href="https://github.com/Haivision/srt/files/2489142/SRT_Protocol_TechnicalOverview_DRAFT_2018-10-17.pdf" target="_blank" rel="noopener">SRT的协议文档</a>以及Wireshark的抓包分析，能够加深对SRT协议的理解，达到事半功倍的效果。</p>
-]]></content>
-      <categories>
-        <category>视频技术</category>
-      </categories>
-      <tags>
-        <tag>Wireshark</tag>
-        <tag>SRT</tag>
-        <tag>网络协议分析</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>kill -9导致subprocess.run启动的子进程无法退出</title>
-    <url>/2020/08/07/cannot-terminate-the-subprocess-run-child-process-caused-by-kill-9/</url>
-    <content><![CDATA[<h2 id="背景">背景</h2>
-<p>我们有一个任务托管平台，该平台可以托管<code>python</code>语言编写任务，并且可以对任务状态进行管理。由于业务的需要，我们需要在<code>python</code>的任务中调起一个<code>shell</code>脚本来完成一些额外的事情。当我们把编写好的任务部署到任务托管平台之后，我们发现一个奇怪的现象：当在任务的超时时间内手动结束任务的时候，只有<code>python</code>的父进程退出了，而<code>python</code>启动的<code>shell</code>子进程却没有退出。</p>
-<a id="more"></a>
-<h2 id="subprocess模块">subprocess模块</h2>
-<p>我们使用subprocess.run()来创建新的shell进程，具体如下：</p>
-<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">subprocess.run(</span><br><span class="line">    cmd,</span><br><span class="line">    cwd=cwd,</span><br><span class="line">    shell=<span class="literal">True</span>,</span><br><span class="line">    stdout=subprocess.PIPE,</span><br><span class="line">    stderr=subprocess.PIPE,</span><br><span class="line">    encoding=<span class="string">"utf-8"</span>,</span><br><span class="line">    timeout=<span class="number">600</span></span><br><span class="line">)</span><br></pre></td></tr></table></figure>
-<p>为了方便测试，分别写了一段<a href="https://gitee.com/wangwei1237/wangwei1237/blob/master/2020/08/07/cannot-terminate-the-subprocess-run-child-process-caused-by-kill-9/timeout.py" target="_blank" rel="noopener"><code>python</code>代码</a>和<a href="https://gitee.com/wangwei1237/wangwei1237/blob/master/2020/08/07/cannot-terminate-the-subprocess-run-child-process-caused-by-kill-9/timeout.sh" target="_blank" rel="noopener"><code>shell</code>代码</a>，可以点击链接查看具体代码。其中，<code>shell</code>脚本为一个死循环，具体如下：</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">for((i=0;;i++))</span><br><span class="line">do</span><br><span class="line">    echo "$i" &gt;log 2&gt;&amp;1</span><br><span class="line">done</span><br></pre></td></tr></table></figure>
-<p>然后，我们在本地使用<code>kill -2（ctrl+c）</code>结束父进程的时候，子进程也确实结束了。具体如下图所示：</p>
-<p><img src="/2020/08/07/cannot-terminate-the-subprocess-run-child-process-caused-by-kill-9/sigint.png" alt></p>
-<p>我们继续查出问题的原因，我们咨询了任务托管平台的负责人：任务托管平台页面上的<code>结束任务</code>是怎么实现的？</p>
-<p>平台的负责人回应说：<code>kill -9</code>命令结束的。</p>
-<p>在这时候，我知道，我可能大概知道问题的原因了。</p>
-<h2 id="kill和signal">kill和signal</h2>
-<p>关于<code>kill</code>命令，此处不做详细介绍，具体可以参考<a href="https://man7.org/linux/man-pages/man1/kill.1.html" target="_blank" rel="noopener">kill(1)手册</a>。<code>kill</code>的作用是向某个特殊的进程或进程组发送一个特殊的信号，从而达到结束进程的目的。关于<code>信号(signal)</code>，此处也不做详细介绍，具体可以参考<a href="https://man7.org/linux/man-pages/man7/signal.7.html" target="_blank" rel="noopener">signal(7)手册</a>。</p>
-<p>而<code>kill -9</code>命令实际上是向进程发送了<code>SIGKILL</code>信号，而在<a href="https://man7.org/linux/man-pages/man7/signal.7.html" target="_blank" rel="noopener">signal(7)手册</a>中可以看到：<strong>The signals SIGKILL and SIGSTOP cannot be caught, blocked, or ignored.</strong> 因此，<code>kill -9</code>是一种不可捕获的、不可忽略的信号，用来在特殊情况下紧急结束进程（如果该信号可以捕获和忽略的话，就达不到这个目的了）。</p>
-<p>而对于一个单进程的程序而言，直接<code>kill -9</code>结束并没有什么问题，但是对于一个多进程的程序，例如本文中的例子，在<code>python</code>进程中又创建了<code>shell</code>子进程，那么直接用<code>kill -9</code>粗暴的结束父进程是非常不安全的，具体如下图所示：</p>
-<p><img src="/2020/08/07/cannot-terminate-the-subprocess-run-child-process-caused-by-kill-9/sig9.jpg" alt></p>
-<p>可见，在<code>kill -9</code>结束父进程之后，<code>shell</code>编写的子进程成为了<a href="https://www.geeksforgeeks.org/zombie-and-orphan-processes-in-c/" target="_blank" rel="noopener">孤儿进程</a>，并继续执行。</p>
-<p>这也就是，我们在任务托管平台上结束任务后，子进程并没有退出的根本原因。父进程结束的信号根本就没有机会通知到子进程，子进程也就不可能结束了。</p>
-<p>那么，我们换另外一个可以被捕获和忽略的信号，例如<code>SIGTERM</code>是否能结束子进程呢？</p>
-<p><img src="/2020/08/07/cannot-terminate-the-subprocess-run-child-process-caused-by-kill-9/sigterm.jpg" alt></p>
-<p>从图中可以看出，<code>SIGTERM</code>信号也没有结束子进程。</p>
-<h2 id="subprocess-run-所捕获的异常">subprocess.run()所捕获的异常</h2>
-<p>我们从<a href="https://github.com/python/cpython/blob/3.8/Lib/subprocess.py" target="_blank" rel="noopener">subprocess模块的源码</a>中可以发现，<code>subprocess.run()</code>实际上只捕获自定义的<code>TimeoutExpired</code>异常和<code>KeyboardInterrupt</code>异常，而在<code>python</code>中，<code>KeyboardInterrupt</code>异常对应的就是<strong>用户中断执行</strong>，一般就是输入<code>ctl+c</code>或发送<code>SIGINT</code>信号。具体如下：</p>
-<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">with</span> Popen(*popenargs, **kwargs) <span class="keyword">as</span> process:</span><br><span class="line">    <span class="keyword">try</span>:</span><br><span class="line">        stdout, stderr = process.communicate(input, timeout=timeout)</span><br><span class="line">    <span class="keyword">except</span> TimeoutExpired <span class="keyword">as</span> exc:</span><br><span class="line">        <span class="comment"># ...</span></span><br><span class="line">        <span class="keyword">raise</span></span><br><span class="line">    <span class="keyword">except</span>:  <span class="comment"># Including KeyboardInterrupt, communicate handled that.</span></span><br><span class="line">        process.kill()</span><br><span class="line">        <span class="comment"># We don't call process.wait() as .__exit__ does that for us.</span></span><br><span class="line">        <span class="keyword">raise</span></span><br></pre></td></tr></table></figure>
-<p>可见，对于<code>SIGINT</code>信号而言，<code>subprocess.run()</code>函数会调用<code>Popen.kill()</code>来结束子进程。</p>
-<p>因此，对于多进程而言，当父进结束之前，需要通过某种机制来通知其子进程，进而让子进程知晓父进程的退出信息，并作出合理的后续行为。否则，就会出现本文中出现的孤儿进程的现象。</p>
-<p>因此，对于其他的信号，<code>subprocess</code>模块本身就无法处理了。</p>
-<h2 id="捕获sigint信号">捕获SIGINT信号</h2>
-<p>如果要捕获<code>SIGINT</code>信号，使得<code>kill -15</code>结束python任务的时候，同时也能结束子进程，那么就要使用<code>subprocess.Popen()</code>了，具体可以参见<a href="https://gitee.com/wangwei1237/wangwei1237/blob/master/2020/08/07/cannot-terminate-the-subprocess-run-child-process-caused-by-kill-9/timeout_1.py" target="_blank" rel="noopener">timeout_1.py</a>。具体执行效果如下所示：</p>
-<p><img src="/2020/08/07/cannot-terminate-the-subprocess-run-child-process-caused-by-kill-9/popen.jpg" alt></p>
-<h2 id="结语">结语</h2>
-<p>查完这个问题，也算是对进程相关的内容有了更深入的了解。孤儿进程，僵尸进程，不可屏蔽进程……，好像经过很多时间之后，忽然都不记得自己曾经也钻研过这些概念一样。感谢我的同事<em>一卓</em>(<a href="https://github.com/GerenLiu" target="_blank" rel="noopener">@GerenLiu</a>)，在工作之余抽时间来一起讨论这个问题。</p>
-]]></content>
-      <categories>
-        <category>python</category>
-      </categories>
-      <tags>
-        <tag>subprocess</tag>
-        <tag>kill命令</tag>
-        <tag>多线程</tag>
       </tags>
   </entry>
   <entry>

@@ -132,6 +132,8 @@
 <h2 id="捕获sigint信号">捕获SIGINT信号</h2>
 <p>如果要捕获<code>SIGINT</code>信号，使得<code>kill -15</code>结束python任务的时候，同时也能结束子进程，那么就要使用<code>subprocess.Popen()</code>了，具体可以参见<a href="https://gitee.com/wangwei1237/wangwei1237/blob/master/2020/08/07/cannot-terminate-the-subprocess-run-child-process-caused-by-kill-9/timeout_1.py" target="_blank" rel="noopener">timeout_1.py</a>。具体执行效果如下所示：</p>
 <p><img src="/2020/08/07/cannot-terminate-the-subprocess-run-child-process-caused-by-kill-9/popen.jpg" alt></p>
+<p>此处，我用了一个偷懒的方法，也就是把<code>SIGTERM</code>信号捕获之后转成<code>SIGINT</code>信号，具体的代码如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">def sigintHandler(signum, frame):</span><br><span class="line">    raise KeyboardInterrupt</span><br><span class="line"></span><br><span class="line">    exit()</span><br><span class="line"></span><br><span class="line">def run_cmd(cmd, cwd):</span><br><span class="line">    signal.signal(signal.SIGTERM, sigintHandler)</span><br><span class="line">    # ...</span><br></pre></td></tr></table></figure>
 <h2 id="结语">结语</h2>
 <p>查完这个问题，也算是对进程相关的内容有了更深入的了解。孤儿进程，僵尸进程，不可屏蔽进程……，好像经过很多时间之后，忽然都不记得自己曾经也钻研过这些概念一样。感谢我的同事<em>一卓</em>(<a href="https://github.com/GerenLiu" target="_blank" rel="noopener">@GerenLiu</a>)，在工作之余抽时间来一起讨论这个问题。</p>
  
