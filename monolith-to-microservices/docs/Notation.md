@@ -1,4 +1,5 @@
 air cover: 空中掩护
+back pressure
 bounded context: 界定的上下文
 brownfield:
 burning platform: 燃烧的平台
@@ -8,6 +9,7 @@ concorde fallacy: 协和式谬误
 continuous delivery
 cycle time: 
 delivery contention: 交付冲突
+elephant in the room: 显而易见而又没人愿意讨论的问题
 end-to-end extraction: 端到端抽取
 ESB(Enterprise Service Bus): 
 implementation couples: 实现耦合

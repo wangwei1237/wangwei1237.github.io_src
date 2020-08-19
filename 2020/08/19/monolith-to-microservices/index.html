@@ -11,7 +11,7 @@
    
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
   <title>
-    kill -9导致subprocess.run启动的子进程无法退出 |  17哥
+    从单体架构迁移到微服务架构 |  17哥
   </title>
   <meta name="generator" content="hexo-theme-ayer">
   
@@ -46,7 +46,7 @@
     <main class="content on">
       <section class="outer">
   <article
-  id="post-cannot-terminate-the-subprocess-run-child-process-caused-by-kill-9"
+  id="post-monolith-to-microservices"
   class="article article-type-post"
   itemscope
   itemprop="blogPost"
@@ -57,18 +57,18 @@
     <header class="article-header">
        
 <h1 class="article-title sea-center" style="border-left:0" itemprop="name">
-  kill -9导致subprocess.run启动的子进程无法退出
+  从单体架构迁移到微服务架构
 </h1>
  
 
     </header>
      
     <div class="article-meta">
-      <a href="/2020/08/07/cannot-terminate-the-subprocess-run-child-process-caused-by-kill-9/" class="article-date">
-  <time datetime="2020-08-07T04:06:29.000Z" itemprop="datePublished">2020-08-07</time>
+      <a href="/2020/08/19/monolith-to-microservices/" class="article-date">
+  <time datetime="2020-08-19T02:25:27.000Z" itemprop="datePublished">2020-08-19</time>
 </a> 
   <div class="article-category">
-    <a class="article-category-link" href="/categories/python/">python</a>
+    <a class="article-category-link" href="/categories/%E6%9E%B6%E6%9E%84/">架构</a>
   </div>
   
 <div class="word_count">
@@ -76,7 +76,7 @@
         <span class="post-meta-item-icon">
             <i class="ri-quill-pen-line"></i>
             <span class="post-meta-item-text"> 字数统计:</span>
-            <span class="post-count">1.2k</span>
+            <span class="post-count">380</span>
         </span>
     </span>
 
@@ -85,57 +85,27 @@
         <span class="post-meta-item-icon">
             <i class="ri-book-open-line"></i>
             <span class="post-meta-item-text"> 阅读时长≈</span>
-            <span class="post-count">4 分钟</span>
+            <span class="post-count">1 分钟</span>
         </span>
     </span>
 </div>
  
     </div>
       
-    <div class="tocbot"></div>
-
 
 
 
   
     <div class="article-entry" itemprop="articleBody">
        
-  <h2 id="背景">背景</h2>
-<p>我们有一个任务托管平台，该平台可以托管<code>python</code>语言编写任务，并且可以对任务状态进行管理。由于业务的需要，我们需要在<code>python</code>的任务中调起一个<code>shell</code>脚本来完成一些额外的事情。当我们把编写好的任务部署到任务托管平台之后，我们发现一个奇怪的现象：当在任务的超时时间内手动结束任务的时候，只有<code>python</code>的父进程退出了，而<code>python</code>启动的<code>shell</code>子进程却没有退出。</p>
+  <p><img src="/2020/08/19/monolith-to-microservices/cover.png" alt></p>
 <a id="more"></a>
-<h2 id="subprocess模块">subprocess模块</h2>
-<p>我们使用subprocess.run()来创建新的shell进程，具体如下：</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">subprocess.run(</span><br><span class="line">    cmd,</span><br><span class="line">    cwd=cwd,</span><br><span class="line">    shell=<span class="literal">True</span>,</span><br><span class="line">    stdout=subprocess.PIPE,</span><br><span class="line">    stderr=subprocess.PIPE,</span><br><span class="line">    encoding=<span class="string">"utf-8"</span>,</span><br><span class="line">    timeout=<span class="number">600</span></span><br><span class="line">)</span><br></pre></td></tr></table></figure>
-<p>为了方便测试，分别写了一段<a href="https://gitee.com/wangwei1237/wangwei1237/blob/master/2020/08/07/cannot-terminate-the-subprocess-run-child-process-caused-by-kill-9/timeout.py" target="_blank" rel="noopener"><code>python</code>代码</a>和<a href="https://gitee.com/wangwei1237/wangwei1237/blob/master/2020/08/07/cannot-terminate-the-subprocess-run-child-process-caused-by-kill-9/timeout.sh" target="_blank" rel="noopener"><code>shell</code>代码</a>，可以点击链接查看具体代码。其中，<code>shell</code>脚本为一个死循环，具体如下：</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">for((i=0;;i++))</span><br><span class="line">do</span><br><span class="line">    echo "$i" &gt;log 2&gt;&amp;1</span><br><span class="line">done</span><br></pre></td></tr></table></figure>
-<p>然后，我们在本地使用<code>kill -2（ctrl+c）</code>结束父进程的时候，子进程也确实结束了。具体如下图所示：</p>
-<p><img src="/2020/08/07/cannot-terminate-the-subprocess-run-child-process-caused-by-kill-9/sigint.png" alt></p>
-<p>我们继续查出问题的原因，我们咨询了任务托管平台的负责人：任务托管平台页面上的<code>结束任务</code>是怎么实现的？</p>
-<p>平台的负责人回应说：<code>kill -9</code>命令结束的。</p>
-<p>在这时候，我知道，我可能大概知道问题的原因了。</p>
-<h2 id="kill和signal">kill和signal</h2>
-<p>关于<code>kill</code>命令，此处不做详细介绍，具体可以参考<a href="https://man7.org/linux/man-pages/man1/kill.1.html" target="_blank" rel="noopener">kill(1)手册</a>。<code>kill</code>的作用是向某个特殊的进程或进程组发送一个特殊的信号，从而达到结束进程的目的。关于<code>信号(signal)</code>，此处也不做详细介绍，具体可以参考<a href="https://man7.org/linux/man-pages/man7/signal.7.html" target="_blank" rel="noopener">signal(7)手册</a>。</p>
-<p>而<code>kill -9</code>命令实际上是向进程发送了<code>SIGKILL</code>信号，而在<a href="https://man7.org/linux/man-pages/man7/signal.7.html" target="_blank" rel="noopener">signal(7)手册</a>中可以看到：<strong>The signals SIGKILL and SIGSTOP cannot be caught, blocked, or ignored.</strong> 因此，<code>kill -9</code>是一种不可捕获的、不可忽略的信号，用来在特殊情况下紧急结束进程（如果该信号可以捕获和忽略的话，就达不到这个目的了）。</p>
-<p>而对于一个单进程的程序而言，直接<code>kill -9</code>结束并没有什么问题，但是对于一个多进程的程序，例如本文中的例子，在<code>python</code>进程中又创建了<code>shell</code>子进程，那么直接用<code>kill -9</code>粗暴的结束父进程是非常不安全的，具体如下图所示：</p>
-<p><img src="/2020/08/07/cannot-terminate-the-subprocess-run-child-process-caused-by-kill-9/sig9.jpg" alt></p>
-<p>可见，在<code>kill -9</code>结束父进程之后，<code>shell</code>编写的子进程成为了<a href="https://www.geeksforgeeks.org/zombie-and-orphan-processes-in-c/" target="_blank" rel="noopener">孤儿进程</a>，并继续执行。</p>
-<p>这也就是，我们在任务托管平台上结束任务后，子进程并没有退出的根本原因。父进程结束的信号根本就没有机会通知到子进程，子进程也就不可能结束了。</p>
-<p>那么，我们换另外一个可以被捕获和忽略的信号，例如<code>SIGTERM</code>是否能结束子进程呢？</p>
-<p><img src="/2020/08/07/cannot-terminate-the-subprocess-run-child-process-caused-by-kill-9/sigterm.jpg" alt></p>
-<p>从图中可以看出，<code>SIGTERM</code>信号也没有结束子进程。</p>
-<h2 id="subprocess-run-所捕获的异常">subprocess.run()所捕获的异常</h2>
-<p>我们从<a href="https://github.com/python/cpython/blob/3.8/Lib/subprocess.py" target="_blank" rel="noopener">subprocess模块的源码</a>中可以发现，<code>subprocess.run()</code>实际上只捕获自定义的<code>TimeoutExpired</code>异常和<code>KeyboardInterrupt</code>异常，而在<code>python</code>中，<code>KeyboardInterrupt</code>异常对应的就是<strong>用户中断执行</strong>，一般就是输入<code>ctl+c</code>或发送<code>SIGINT</code>信号。具体如下：</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">with</span> Popen(*popenargs, **kwargs) <span class="keyword">as</span> process:</span><br><span class="line">    <span class="keyword">try</span>:</span><br><span class="line">        stdout, stderr = process.communicate(input, timeout=timeout)</span><br><span class="line">    <span class="keyword">except</span> TimeoutExpired <span class="keyword">as</span> exc:</span><br><span class="line">        <span class="comment"># ...</span></span><br><span class="line">        <span class="keyword">raise</span></span><br><span class="line">    <span class="keyword">except</span>:  <span class="comment"># Including KeyboardInterrupt, communicate handled that.</span></span><br><span class="line">        process.kill()</span><br><span class="line">        <span class="comment"># We don't call process.wait() as .__exit__ does that for us.</span></span><br><span class="line">        <span class="keyword">raise</span></span><br></pre></td></tr></table></figure>
-<p>可见，对于<code>SIGINT</code>信号而言，<code>subprocess.run()</code>函数会调用<code>Popen.kill()</code>来结束子进程。</p>
-<p>因此，对于多进程而言，当父进结束之前，需要通过某种机制来通知其子进程，进而让子进程知晓父进程的退出信息，并作出合理的后续行为。否则，就会出现本文中出现的孤儿进程的现象。</p>
-<p>因此，对于其他的信号，<code>subprocess</code>模块本身就无法处理了。</p>
-<h2 id="捕获sigterm信号">捕获SIGTERM信号</h2>
-<p>如果要捕获<code>SIGTERM</code>信号，使得<code>kill -15</code>结束python任务的时候，同时也能结束子进程，那么就要耍点小聪明了，例如：在<code>python</code>中捕获其他信号，并将其转成<code>SIGINT</code>信号，具体可以参见<a href="https://gitee.com/wangwei1237/wangwei1237/blob/master/2020/08/07/cannot-terminate-the-subprocess-run-child-process-caused-by-kill-9/timeout_1.py" target="_blank" rel="noopener">timeout_1.py</a>。具体执行效果如下所示：</p>
-<p><img src="/2020/08/07/cannot-terminate-the-subprocess-run-child-process-caused-by-kill-9/popen.jpg" alt></p>
-<p>此处，我用了一个偷懒的方法，也就是把<code>SIGTERM</code>信号捕获之后转成<code>SIGINT</code>信号，具体的代码如下：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">def sigintHandler(signum, frame):</span><br><span class="line">    raise KeyboardInterrupt</span><br><span class="line"></span><br><span class="line">    exit()</span><br><span class="line"></span><br><span class="line">def run_cmd(cmd, cwd):</span><br><span class="line">    signal.signal(signal.SIGTERM, sigintHandler)</span><br><span class="line">    # ...</span><br></pre></td></tr></table></figure>
-<h2 id="结语">结语</h2>
-<p>查完这个问题，也算是对进程相关的内容有了更深入的了解。孤儿进程，僵尸进程，不可屏蔽进程……，好像经过很多时间之后，忽然都不记得自己曾经也钻研过这些概念一样。感谢我的同事<em>一卓</em>(<a href="https://github.com/GerenLiu" target="_blank" rel="noopener">@GerenLiu</a>)，在工作之余抽时间来一起讨论这个问题。</p>
+<p>恰好今年在了解微服务相关的技术，又恰好在浏览nginx官网的时候发现了这本书，当时读完第一章的第一节就感觉这是一本我会认真阅读的技术书籍。</p>
+<p>后来，随着阅读的深入，发现我自己工作中遇到的很多的问题恰巧就是书里写的那样，与其对每一个点单独写成一篇文章或博客，还不如就以批注的形式呈现出来，这样也能更系统。</p>
+<p>基于如上的想法，在阅读本书的过程中，对整个书籍内容进行了中文版的翻译，并在正文中以批注的形式写入的自己的思考，经历。</p>
+<p>这本书是我读过的相对上乘的一本书，在亚马逊上的评价非常好，不但讲了微服务的迁移技术，更多讲了很多作者的思考和很多为什么的问题。正如一位读者的评论：这本书没有宣传什么技术，没有兜售什么技术，而更多的是让我们学会如何思考？我们是否真的需要使用微服务？使用过程要注意什么？……</p>
+<p>翻译的版本可以点击：<a href="/monolith-to-microservices"><strong>monolith to microservices中文版</strong></a>，此版本仅供学习交流使用。如有疑问，评论区留言交流。</p>
+<p>因为官方版的翻译版本至今还没有，因此，推荐大家购买英文原版，<a href="https://www.amazon.com/Monolith-Microservices-Evolutionary-Patterns-Transform/dp/1492047848" target="_blank" rel="noopener"><strong>购买链接</strong></a>。</p>
  
       <!-- reward -->
       
@@ -198,12 +168,12 @@
     <a class="modal-close" href="javascript:;"><i class="ri-close-circle-line"></i></a>
     <p>扫一扫，分享到微信</p>
     <div class="wx-qrcode">
-      <img src="//api.qrserver.com/v1/create-qr-code/?size=150x150&data=https://wangwei1237.github.io/2020/08/07/cannot-terminate-the-subprocess-run-child-process-caused-by-kill-9/" alt="微信分享二维码">
+      <img src="//api.qrserver.com/v1/create-qr-code/?size=150x150&data=https://wangwei1237.github.io/2020/08/19/monolith-to-microservices/" alt="微信分享二维码">
     </div>
 </div>
 
 <div id="share-mask"></div>  
-  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/kill%E5%91%BD%E4%BB%A4/" rel="tag">kill命令</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/subprocess/" rel="tag">subprocess</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E5%A4%9A%E7%BA%BF%E7%A8%8B/" rel="tag">多线程</a></li></ul>
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E5%8D%95%E4%BD%93/" rel="tag">单体</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E5%BE%AE%E6%9C%8D%E5%8A%A1/" rel="tag">微服务</a></li></ul>
 
     </footer>
   </div>
@@ -211,19 +181,10 @@
    
   <nav class="article-nav">
     
-      <a href="/2020/08/19/monolith-to-microservices/" class="article-nav-link">
-        <strong class="article-nav-caption">上一篇</strong>
-        <div class="article-nav-title">
-          
-            从单体架构迁移到微服务架构
-          
-        </div>
-      </a>
     
-    
-      <a href="/2020/07/08/autotest-is-a-working-culture-first/" class="article-nav-link">
+      <a href="/2020/08/07/cannot-terminate-the-subprocess-run-child-process-caused-by-kill-9/" class="article-nav-link">
         <strong class="article-nav-caption">下一篇</strong>
-        <div class="article-nav-title">自动化测试首先是一种工作文化</div>
+        <div class="article-nav-title">kill -9导致subprocess.run启动的子进程无法退出</div>
       </a>
     
   </nav>
