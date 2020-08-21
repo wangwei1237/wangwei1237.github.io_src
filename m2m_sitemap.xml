@@ -28,6 +28,7 @@
 <url> <loc>https://wangwei1237.gitee.io/monolith-to-microservices/docs/Pattern_Decorating_Collaborator.html</loc> <changefreq>weekly</changefreq> <priority>0.5</priority> </url>
 <url> <loc>https://wangwei1237.gitee.io/monolith-to-microservices/docs/Pattern_Change_Data_Capture.html</loc> <changefreq>weekly</changefreq> <priority>0.5</priority> </url>
 <url> <loc>https://wangwei1237.gitee.io/monolith-to-microservices/docs/Pattern_The_Shared_Database.html</loc> <changefreq>weekly</changefreq> <priority>0.5</priority> </url>
+<url> <loc>https://wangwei1237.gitee.io/monolith-to-microservices/docs/But_It_Cant_Be_Done.html</loc> <changefreq>weekly</changefreq> <priority>0.5</priority> </url>
 <url> <loc>https://wangwei1237.gitee.io/monolith-to-microservices/docs/More_Services_More_Pain.html</loc> <changefreq>weekly</changefreq> <priority>0.5</priority> </url>
 <url> <loc>https://wangwei1237.gitee.io/monolith-to-microservices/docs/Ownership_at_Scale.html</loc> <changefreq>weekly</changefreq> <priority>0.5</priority> </url>
 <url> <loc>https://wangwei1237.gitee.io/monolith-to-microservices/docs/Breaking_Changes.html</loc> <changefreq>weekly</changefreq> <priority>0.5</priority> </url>
