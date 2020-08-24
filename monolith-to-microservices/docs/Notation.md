@@ -1,4 +1,5 @@
 air cover: 空中掩护
+active maintenance: 主动维护
 back pressure
 bounded context: 界定的上下文
 brownfield:
@@ -22,6 +23,12 @@ organizational-silos: 组织孤岛
 project sponsor: 项目发起人
 project owner: 产品负责人
 referential integrity: 参照完整性
+re-platform: 更换平台，也称为 “修补后迁移”
+Re-Purchase: 重新购置，也称为 “放弃后购买”
+Re-Host: 重新托管，也称为 “直接迁移”
+Re-Architect: 重构/重新构建
+Retire: 停用
+Retain: 保留
 Scale-ups: 规模企业
 shallow extractions: 浅层抽取
 silos: 孤岛
