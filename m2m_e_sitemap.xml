@@ -31,6 +31,7 @@
 <url> <loc>https://wangwei1237.github.io/monolith-to-microservices/docs/But_It_Cant_Be_Done.html</loc> <changefreq>weekly</changefreq> <priority>0.5</priority> </url>
 <url> <loc>https://wangwei1237.github.io/monolith-to-microservices/docs/Pattern_Database_View.html</loc> <changefreq>weekly</changefreq> <priority>0.5</priority> </url>
 <url> <loc>https://wangwei1237.github.io/monolith-to-microservices/docs/Pattern_Database_Wrapping_Service.html</loc> <changefreq>weekly</changefreq> <priority>0.5</priority> </url>
+<url> <loc>https://wangwei1237.github.io/monolith-to-microservices/docs/Pattern_Database-as-a-Service_Interface.html</loc> <changefreq>weekly</changefreq> <priority>0.5</priority> </url>
 <url> <loc>https://wangwei1237.github.io/monolith-to-microservices/docs/More_Services_More_Pain.html</loc> <changefreq>weekly</changefreq> <priority>0.5</priority> </url>
 <url> <loc>https://wangwei1237.github.io/monolith-to-microservices/docs/Ownership_at_Scale.html</loc> <changefreq>weekly</changefreq> <priority>0.5</priority> </url>
 <url> <loc>https://wangwei1237.github.io/monolith-to-microservices/docs/Breaking_Changes.html</loc> <changefreq>weekly</changefreq> <priority>0.5</priority> </url>
