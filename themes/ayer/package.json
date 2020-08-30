@@ -1,6 +1,6 @@
 {
   "name": "ayer",
-  "version": "1.0.0",
+  "version": "1.8.0",
   "description": "a clean and elegant theme for hexo.",
   "scripts": {
     "dev": "parcel serve source-src/main.js -d source/dist",
@@ -18,7 +18,7 @@
     "ayer"
   ],
   "author": "Shen-Yu",
-  "license": "MIT License",
+  "license": "SATA",
   "bugs": {
     "url": "https://github.com/Shen-Yu/hexo-theme-ayer/issues"
   },
