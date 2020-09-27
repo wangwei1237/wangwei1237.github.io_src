@@ -4,7 +4,7 @@
     <head>
         <meta charset="UTF-8">
         <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
-        <title>2.9 我们从哪里启程 · Monolith to Microservices</title>
+        <title>4.12 数据分离的例子 · Monolith to Microservices</title>
         <meta http-equiv="X-UA-Compatible" content="IE=edge" />
         <meta name="description" content="">
         <meta name="generator" content="GitBook 3.2.3">
@@ -69,10 +69,10 @@
     <link rel="shortcut icon" href="../gitbook/images/favicon.ico" type="image/x-icon">
 
     
-    <link rel="next" href="Domain_Driven_Design.html" />
+    <link rel="next" href="Pattern_Split_Table.html" />
     
     
-    <link rel="prev" href="Cost_of_Change.html" />
+    <link rel="prev" href="Splitting_the_Database_First_or_the_Code.html" />
     
 
     </head>
@@ -295,7 +295,7 @@
             
         </li>
     
-        <li class="chapter active" data-level="3.9" data-path="So_Where_Do_We_Start.html">
+        <li class="chapter " data-level="3.9" data-path="So_Where_Do_We_Start.html">
             
                 <a href="So_Where_Do_We_Start.html">
             
@@ -634,7 +634,7 @@
             
         </li>
     
-        <li class="chapter " data-level="5.12" data-path="Schema_Separation_Examples.html">
+        <li class="chapter active" data-level="5.12" data-path="Schema_Separation_Examples.html">
             
                 <a href="Schema_Separation_Examples.html">
             
@@ -860,7 +860,7 @@
     <!-- Title -->
     <h1>
         <i class="fa fa-circle-o-notch fa-spin"></i>
-        <a href=".." >2.9 我们从哪里启程</a>
+        <a href=".." >4.12 数据分离的例子</a>
     </h1>
 </div>
 
@@ -875,10 +875,12 @@
     
                                 <section class="normal markdown-section">
                                 
-                                <h1 id="&#x6211;&#x4EEC;&#x4ECE;&#x54EA;&#x91CC;&#x542F;&#x7A0B;">&#x6211;&#x4EEC;&#x4ECE;&#x54EA;&#x91CC;&#x542F;&#x7A0B;</h1>
-<p>OK&#xFF0C;&#x6211;&#x4EEC;&#x5DF2;&#x7ECF;&#x8C08;&#x5230;&#x4E86;&#x6E05;&#x695A;&#x7684;&#x9610;&#x660E;&#x76EE;&#x6807;&#x548C;&#x7406;&#x89E3;&#x53EF;&#x80FD;&#x5B58;&#x5728;&#x7684;&#x3001;&#x6F5C;&#x5728;&#x7684;&#x6743;&#x8861;&#x6298;&#x8877;&#x7684;&#x91CD;&#x8981;&#x6027;&#x3002;</p>
-<p>&#x63A5;&#x4E0B;&#x6765;&#x5462;&#xFF1F;</p>
-<p>&#x63A5;&#x4E0B;&#x6765;&#xFF0C;&#x6211;&#x4EEC;&#x9700;&#x8981;&#x4E86;&#x89E3;&#x90A3;&#x4E9B;&#x60F3;&#x8981;&#x62BD;&#x53D6;&#x5230;&#x670D;&#x52A1;&#x4E2D;&#x7684;&#x529F;&#x80FD;&#xFF0C;&#x4EE5;&#x4FBF;&#x6211;&#x4EEC;&#x53EF;&#x4EE5;&#x5F00;&#x59CB;&#x7406;&#x6027;&#x5730;&#x601D;&#x8003;&#x6211;&#x4EEC;&#x63A5;&#x4E0B;&#x6765;&#x8981;&#x521B;&#x5EFA;&#x4EC0;&#x4E48;&#x6837;&#x7684;&#x5FAE;&#x670D;&#x52A1;&#x3002;&#x5728;&#x62C6;&#x89E3;&#x73B0;&#x6709;&#x7684;&#x5355;&#x4F53;&#x7CFB;&#x7EDF;&#x65F6;&#xFF0C;&#x6211;&#x4EEC;&#x9700;&#x8981;&#x67D0;&#x79CD;&#x5F62;&#x5F0F;&#x7684;&#x903B;&#x8F91;&#x5206;&#x89E3;&#xFF0C;&#x9886;&#x57DF;&#x9A71;&#x52A8;&#x8BBE;&#x8BA1;&#xFF08;<em>DDD: domain-driven design</em>&#xFF09;&#x5C31;&#x53EF;&#x4EE5;&#x6D3E;&#x4E0A;&#x7528;&#x573A;&#x4E86;&#x3002;</p>
+                                <h1 id="&#x6570;&#x636E;&#x5206;&#x79BB;&#x7684;&#x4F8B;&#x5B50;">&#x6570;&#x636E;&#x5206;&#x79BB;&#x7684;&#x4F8B;&#x5B50;</h1>
+<p>&#x5230;&#x76EE;&#x524D;&#x4E3A;&#x6B62;&#xFF0C;&#x6211;&#x4EEC;&#x5DF2;&#x7ECF;&#x5728;&#x8F83;&#x9AD8;&#x7684;&#x5C42;&#x6B21;&#x4E0A;&#x7814;&#x7A76;&#x4E86;&#x6570;&#x636E;&#x5206;&#x79BB;&#xFF0C;&#x4F46;&#x662F;&#x4E0E;&#x6570;&#x636E;&#x5E93;&#x62C6;&#x5206;&#x76F8;&#x5173;&#x7684;&#x6311;&#x6218;&#x975E;&#x5E38;&#x590D;&#x6742;&#xFF0C;&#x8FD8;&#x6709;&#x4E00;&#x4E9B;&#x68D8;&#x624B;&#x7684;&#x95EE;&#x9898;&#x9700;&#x8981;&#x63A2;&#x7D22;&#x3002;&#x73B0;&#x5728;&#xFF0C;&#x6211;&#x4EEC;&#x5C06;&#x7814;&#x7A76;&#x4E00;&#x4E9B;&#x66F4;&#x5E95;&#x5C42;&#x7684;&#x6570;&#x636E;&#x62C6;&#x5206;&#x6A21;&#x5F0F;&#xFF0C;&#x5E76;&#x63A2;&#x8BA8;&#x5176;&#x53EF;&#x80FD;&#x4EA7;&#x751F;&#x7684;&#x5F71;&#x54CD;&#x3002;</p>
+<blockquote>
+<p><strong><div align="center">&#x5173;&#x7CFB;&#x578B;&#x6570;&#x636E;&#x5E93; VS &#x975E;&#x5173;&#x7CFB;&#x578B;&#x6570;&#x636E;&#x5E93;</div></strong></p>
+<p>&#x672C;&#x7AE0;&#x8BE6;&#x7EC6;&#x4ECB;&#x7ECD;&#x7684;&#x8BB8;&#x591A;&#x91CD;&#x6784;&#x4F8B;&#x5B50;&#x90FD;&#x5728;&#x63A2;&#x8BA8;&#x4F7F;&#x7528;&#x5173;&#x7CFB;&#x6570;&#x636E;&#x5E93;&#x65F6;&#x9047;&#x5230;&#x7684;&#x6311;&#x6218;&#x3002;&#x5173;&#x7CFB;&#x578B;&#x6570;&#x636E;&#x5E93;&#x7684;&#x6027;&#x8D28;&#x7ED9;&#x62C6;&#x5206;&#x6570;&#x636E;&#x5E26;&#x6765;&#x4E86;&#x989D;&#x5916;&#x7684;&#x6311;&#x6218;&#x3002;&#x8BB8;&#x591A;&#x4EBA;&#x53EF;&#x80FD;&#x6B63;&#x5728;&#x4F7F;&#x7528;&#x975E;&#x5173;&#x7CFB;&#x578B;&#x6570;&#x636E;&#x5E93;&#x3002;&#x5373;&#x4F7F;&#x4F7F;&#x7528;&#x975E;&#x5173;&#x7CFB;&#x578B;&#x6570;&#x636E;&#x5E93;&#xFF0C;&#x4EE5;&#x4E0B;&#x7684;&#x8BB8;&#x591A;&#x6A21;&#x5F0F;&#x4ECD;&#x7136;&#x9002;&#x7528;&#x3002;&#x5BF9;&#x4E8E;&#x5982;&#x4F55;&#x8FDB;&#x884C;&#x53D8;&#x66F4;&#x800C;&#x8A00;&#xFF0C;&#x6211;&#x4EEC;&#x7684;&#x7EA6;&#x675F;&#x53EF;&#x80FD;&#x4F1A;&#x66F4;&#x5C11;&#xFF0C;&#x4F46;&#x662F;&#x6211;&#x4ECD;&#x7136;&#x5E0C;&#x671B;&#x8FD9;&#x4E9B;&#x5EFA;&#x8BAE;&#x662F;&#x6709;&#x7528;&#x7684;&#x3002;</p>
+</blockquote>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gitalk@1.6.2/dist/gitalk.css">
 
 <script src="https://cdn.jsdelivr.net/npm/gitalk@1.6.2/dist/gitalk.min.js"></script>
@@ -916,12 +918,12 @@
 
             
                 
-                <a href="Cost_of_Change.html" class="navigation navigation-prev " aria-label="Previous page: 2.8 变革的成本">
+                <a href="Splitting_the_Database_First_or_the_Code.html" class="navigation navigation-prev " aria-label="Previous page: 4.11 先拆分数据库还是先拆分代码">
                     <i class="fa fa-angle-left"></i>
                 </a>
                 
                 
-                <a href="Domain_Driven_Design.html" class="navigation navigation-next " aria-label="Next page: 2.10 领域驱动设计">
+                <a href="Pattern_Split_Table.html" class="navigation navigation-next " aria-label="Next page: 4.13 拆分表">
                     <i class="fa fa-angle-right"></i>
                 </a>
                 
@@ -932,7 +934,7 @@
     <script>
         var gitbook = gitbook || [];
         gitbook.push(function() {
-            gitbook.page.hasChanged({"page":{"title":"2.9 我们从哪里启程","level":"3.9","depth":1,"next":{"title":"2.10 领域驱动设计","level":"3.10","depth":1,"path":"docs/Domain_Driven_Design.md","ref":"docs/Domain_Driven_Design.md","articles":[]},"previous":{"title":"2.8 变革的成本","level":"3.8","depth":1,"path":"docs/Cost_of_Change.md","ref":"docs/Cost_of_Change.md","articles":[]},"dir":"ltr"},"config":{"plugins":["page-toc-button","tbfed-pagefooter","cnzz","hints","sitemap-general"],"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"pluginsConfig":{"tbfed-pagefooter":{"copyright":"Copyrights &copy wangwei"},"search":{},"cnzz":{"style":"1","visible":true,"siteid":"1278605528"},"hints":{"danger":"fa fa-bug","info":"fa fa-info-circle","tip":"fa fa-sticky-note","working":"fa fa-cog fa-spin"},"lunr":{"maxIndexSize":1000000,"ignoreSpecialCharacters":false},"sitemap-general":{"prefix":"https://wangwei1237.gitee.io/monolith-to-microservices/"},"fontsettings":{"theme":"white","family":"sans","size":2},"highlight":{},"page-toc-button":{"maxTocDepth":2,"minTocSize":2},"sharing":{"facebook":true,"twitter":true,"google":false,"weibo":false,"instapaper":false,"vk":false,"all":["facebook","google","twitter","weibo","instapaper"]},"theme-default":{"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"showLevel":false}},"theme":"default","author":"wangwei17","pdf":{"pageBreaksBefore":"/","headerTemplate":null,"paperSize":"a4","margin":{"right":62,"left":62,"top":36,"bottom":36},"fontSize":16,"fontFamily":"Arial","footerTemplate":null,"chapterMark":"pagebreak","pageNumbers":true},"structure":{"langs":"LANGS.md","readme":"README.md","glossary":"GLOSSARY.md","summary":"SUMMARY.md"},"isbn":"","variables":{},"title":"Monolith to Microservices","links":{"sharing":{"all":null,"facebook":null,"google":null,"twitter":null,"weibo":null},"sidebar":{"17哥的个人网站":"https://wangwei1237.gitee.io/"}},"gitbook":"*","description":"从单体应用到微服务架构","extension":null},"file":{"path":"docs/So_Where_Do_We_Start.md","mtime":"2020-06-25T11:22:01.505Z","type":"markdown"},"gitbook":{"version":"3.2.3","time":"2020-09-27T11:44:51.951Z"},"basePath":"..","book":{"language":""}});
+            gitbook.page.hasChanged({"page":{"title":"4.12 数据分离的例子","level":"5.12","depth":1,"next":{"title":"4.13 拆分表","level":"5.13","depth":1,"path":"docs/Pattern_Split_Table.md","ref":"docs/Pattern_Split_Table.md","articles":[]},"previous":{"title":"4.11 先拆分数据库还是先拆分代码","level":"5.11","depth":1,"path":"docs/Splitting_the_Database_First_or_the_Code.md","ref":"docs/Splitting_the_Database_First_or_the_Code.md","articles":[]},"dir":"ltr"},"config":{"plugins":["page-toc-button","tbfed-pagefooter","cnzz","hints","sitemap-general"],"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"pluginsConfig":{"tbfed-pagefooter":{"copyright":"Copyrights &copy wangwei"},"search":{},"cnzz":{"style":"1","visible":true,"siteid":"1278605528"},"hints":{"danger":"fa fa-bug","info":"fa fa-info-circle","tip":"fa fa-sticky-note","working":"fa fa-cog fa-spin"},"lunr":{"maxIndexSize":1000000,"ignoreSpecialCharacters":false},"sitemap-general":{"prefix":"https://wangwei1237.gitee.io/monolith-to-microservices/"},"fontsettings":{"theme":"white","family":"sans","size":2},"highlight":{},"page-toc-button":{"maxTocDepth":2,"minTocSize":2},"sharing":{"facebook":true,"twitter":true,"google":false,"weibo":false,"instapaper":false,"vk":false,"all":["facebook","google","twitter","weibo","instapaper"]},"theme-default":{"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"showLevel":false}},"theme":"default","author":"wangwei17","pdf":{"pageBreaksBefore":"/","headerTemplate":null,"paperSize":"a4","margin":{"right":62,"left":62,"top":36,"bottom":36},"fontSize":16,"fontFamily":"Arial","footerTemplate":null,"chapterMark":"pagebreak","pageNumbers":true},"structure":{"langs":"LANGS.md","readme":"README.md","glossary":"GLOSSARY.md","summary":"SUMMARY.md"},"isbn":"","variables":{},"title":"Monolith to Microservices","links":{"sharing":{"all":null,"facebook":null,"google":null,"twitter":null,"weibo":null},"sidebar":{"17哥的个人网站":"https://wangwei1237.gitee.io/"}},"gitbook":"*","description":"从单体应用到微服务架构","extension":null},"file":{"path":"docs/Schema_Separation_Examples.md","mtime":"2020-09-27T11:32:20.331Z","type":"markdown"},"gitbook":{"version":"3.2.3","time":"2020-09-27T11:44:51.951Z"},"basePath":"..","book":{"language":""}});
         });
     </script>
 </div>
