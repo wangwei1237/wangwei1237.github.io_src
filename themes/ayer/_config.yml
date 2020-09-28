@@ -9,7 +9,6 @@ menu:
   关于我: /aboutme
 
 
-
   # 站点次标题和打字动效
 # https://github.com/mattboldt/typed.js
 subtitle:
@@ -36,6 +35,12 @@ cover:
 
 # 页面顶部进度条  
 progressBar: true
+
+# 告示板模块
+broadcast:
+  enable: true # true开启，false关闭
+  type: 2 # 1：自定义输入，2：一言api(https://hitokoto.cn/)
+  text: 一个安静优雅的hexo主题，快速且响应式。 # type为1时有效
 
 # 文章配置
 # 文章太长，截断按钮文字(在需要截断的行增加此标记：<!--more-->)
@@ -163,6 +168,32 @@ icp:
   enable: false
   url: "" # 备案链接
   text: "" # 备案信息
+# 公安备案信息尾部显示
+gongan:
+  enable: false
+  img: /images/beian.png #公安备案图片
+  url: "http://www.beian.gov.cn/portal/registerSystemInfo?recordcode=01234567890123" #公安备案链接
+  text: "浙公网安备01234567890123号" #公安备案信息
+
+# 友情链接
+friends_link:
+  GitHub:
+    url: https://github.com/wangwei1237
+    img: https://avatars3.githubusercontent.com/u/3480154?s=60&v=4
+  码云:
+    url: https://gitee.com/wangwei1237
+    img: https://avatars3.githubusercontent.com/u/3480154?s=60&v=4
+  Hexo官网:
+    url: https://hexo.io
+    img: https://cdn.jsdelivr.net/gh/Shen-Yu/cdn/img/hexo.png
+
+
+
+
+
+
+
+
 
 # 评论：1、Valine(推荐)；2、Gitalk；3、MiniValine
 
