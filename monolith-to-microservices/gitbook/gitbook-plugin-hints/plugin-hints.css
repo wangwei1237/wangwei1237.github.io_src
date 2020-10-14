@@ -2,8 +2,10 @@
     display: table-cell;
     padding-right: 15px;
     padding-left: 5px;
+    width: 10%;
 }
 
 .hints-container {
     display: table-cell;
+    vertical-align: top;
 }
