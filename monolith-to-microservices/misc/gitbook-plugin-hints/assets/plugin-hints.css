@@ -1,8 +1,14 @@
-.hints-icon {
+.hints-icon-img {
     display: table-cell;
     padding-right: 15px;
     padding-left: 5px;
-    width: 10%;
+    width: 20%;
+}
+
+.hints-icon{
+    display: table-cell;
+    padding-right: 15px;
+    padding-left: 5px;
 }
 
 .hints-container {
