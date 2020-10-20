@@ -7,6 +7,7 @@ tags:
   - 数字视频
   - digital video
   - 视频基础知识
+  - 荐书
 ---
 
 在学习和研究视频技术的过程中，联合几个同事一起翻译了[Digital Video Concepts, Methods, and Metrics: Quality, Compression, Performance, and Power Trade-off Analysis](https://link.springer.com/book/10.1007/978-1-4302-6713-3)，形成了[**数字视频概念，方法和测量指标：质量，压缩，性能和电量等的权衡分析（中文版）**](/digital-video-concept)。该翻译版本仅供学习交流之用。希望对想学习和了解数字视频相关技术的同学，有所帮助。
