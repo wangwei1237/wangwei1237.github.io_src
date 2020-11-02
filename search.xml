@@ -46,7 +46,7 @@
 <p>另外，用户只是需要一种能够支持H265编码的、CDN又支持良好的、延迟又非常低的视频流媒体格式而已，不是吗？如果真的有这种格式，让FLV支持HEVC是否就不是一个问题了呢？既然，Adobe已经停止了对RTMP的维护了，那么为什么还要花时间在这个协议上呢？为什么不选择更新的技术呢？虽然选择新的技术意味着需要冒更大的风险和花费更多的成本。</p>
 <p>尤其是当不同的用户需求之间存在冲突，如何处理？To be or not to be,that’s a question!</p>
 <h2 id="对于技术-是向前看还是回头看？">对于技术，是向前看还是回头看？</h2>
-<p>”始生之物，其形必丑“。但是，新技术必然会取代旧技术，从根本上说是因为：</p>
+<p>“始生之物，其形必丑”。但是，新技术必然会取代旧技术，从根本上说是因为：</p>
 <ul>
 <li>新技术具有新的结构和功能，能适应已经变化了的环境和条件</li>
 <li>新技术是对旧技术的扬弃，并添加了旧技术所不能容纳的新内容</li>
@@ -63,7 +63,7 @@
 <p>The QUIC transport protocol incorporates stream multiplexing and per-stream flow control, similar to that provided by the HTTP/2 framing layer. By providing reliability at the stream level and congestion control across the entire connection, it has the capability to improve the performance of HTTP compared to a TCP mapping.</p>
 </blockquote>
 <p><img src="/2020/10/29/a-debate-about-supporting-HEVC-over-FLV/2.jpg" alt></p>
-<p>就像上图的”乌鸦喝水“一样，是采用吸管呢？还是对原有的石头进行各种改进呢？</p>
+<p>就像上图的“乌鸦喝水”一样，是采用吸管呢？还是对原有的石头进行各种改进呢？</p>
 <p>后来，在网上找到了又拍云的一篇<a href="https://www.cnblogs.com/upyun/p/7053150.html" target="_blank" rel="noopener">《如何将HLS延时缩短至4秒，HLS+技术详解》</a>的一篇文章。</p>
 ]]></content>
       <categories>
