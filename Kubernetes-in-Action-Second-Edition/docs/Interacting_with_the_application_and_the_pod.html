@@ -1,0 +1,721 @@
+
+<!DOCTYPE HTML>
+<html lang="" >
+    <head>
+        <meta charset="UTF-8">
+        <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
+        <title>5.3 Interacting with the application and the pod · Kubernetes实战（第二版）</title>
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <meta name="description" content="">
+        <meta name="generator" content="GitBook 3.2.3">
+        <meta name="author" content="wangwei17">
+        
+        
+    
+    <link rel="stylesheet" href="../gitbook/style.css">
+
+    
+            
+                
+                <link rel="stylesheet" href="../gitbook/gitbook-plugin-page-toc-button/plugin.css">
+                
+            
+                
+                <link rel="stylesheet" href="../gitbook/gitbook-plugin-tbfed-pagefooter/footer.css">
+                
+            
+                
+                <link rel="stylesheet" href="../gitbook/gitbook-plugin-hints/plugin-hints.css">
+                
+            
+                
+                <link rel="stylesheet" href="../gitbook/gitbook-plugin-highlight/website.css">
+                
+            
+                
+                <link rel="stylesheet" href="../gitbook/gitbook-plugin-search/search.css">
+                
+            
+                
+                <link rel="stylesheet" href="../gitbook/gitbook-plugin-fontsettings/website.css">
+                
+            
+        
+
+    
+
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+
+        
+    
+    
+    <meta name="HandheldFriendly" content="true"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <link rel="apple-touch-icon-precomposed" sizes="152x152" href="../gitbook/images/apple-touch-icon-precomposed-152.png">
+    <link rel="shortcut icon" href="../gitbook/images/favicon.ico" type="image/x-icon">
+
+    
+    <link rel="next" href="Running_multiple_containers_in_a_pod.html" />
+    
+    
+    <link rel="prev" href="Creating_pods_from_YAML_or_JSON_files.html" />
+    
+
+    </head>
+    <body>
+        
+<div class="book">
+    <div class="book-summary">
+        
+            
+<div id="book-search-input" role="search">
+    <input type="text" placeholder="Type to search" />
+</div>
+
+            
+                <nav role="navigation">
+                
+
+
+<ul class="summary">
+    
+    
+    
+        
+        <li>
+            <a href="https://wangwei1237.gitee.io/" target="_blank" class="custom-link">17哥的个人网站</a>
+        </li>
+    
+    
+
+    
+    <li class="divider"></li>
+    
+
+    
+        
+        <li class="header">0. 前言</li>
+        
+        
+    
+        <li class="chapter " data-level="1.1" data-path="../">
+            
+                <a href="../">
+            
+                    
+                    0.1 前言
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+    
+        
+        <li class="header">Welcome</li>
+        
+        
+    
+        <li class="chapter " data-level="2.1" data-path="Welcome.html">
+            
+                <a href="Welcome.html">
+            
+                    
+                    Welcome
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+    
+        
+        <li class="header">Part 1: First Time On a Boat: Introduction to Kubernetes</li>
+        
+        
+    
+        <li class="chapter " data-level="3.1" data-path="Introducing_Kubernetes_0.html">
+            
+                <a href="Introducing_Kubernetes_0.html">
+            
+                    
+                    1 Introducing Kubernetes
+            
+                </a>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="3.1.1" data-path="Introducing_Kubernetes_1.html">
+            
+                <a href="Introducing_Kubernetes_1.html">
+            
+                    
+                    1.1 Introducing Kubernetes
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="3.1.2" data-path="Understanding_Kubernetes.html">
+            
+                <a href="Understanding_Kubernetes.html">
+            
+                    
+                    1.2 Understanding Kubernetes
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="3.1.3" data-path="Introducing_Kubernetes_into_your_organization.html">
+            
+                <a href="Introducing_Kubernetes_into_your_organization.html">
+            
+                    
+                    1.3 Introducing Kubernetes into your organization
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="3.1.4" data-path="Summary_1.html">
+            
+                <a href="Summary_1.html">
+            
+                    
+                    1.4 Summary
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+        <li class="chapter " data-level="3.2" data-path="Understanding_containers.html">
+            
+                <a href="Understanding_containers.html">
+            
+                    
+                    2 Understanding containers
+            
+                </a>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="3.2.1" data-path="Introducing_containers.html">
+            
+                <a href="Introducing_containers.html">
+            
+                    
+                    2.1 Introducing containers
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+
+    
+        
+        <li class="header">Part 2: Learning the Ropes: Kubernetes API Objects</li>
+        
+        
+    
+        <li class="chapter " data-level="4.1" data-path="Introducing_the_Kubernetes_API_Objects.html">
+            
+                <a href="Introducing_the_Kubernetes_API_Objects.html">
+            
+                    
+                    4. Introducing the Kubernetes API Objects
+            
+                </a>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="4.1.1" data-path="Getting_familiar_with_the_Kubernetes_API.html">
+            
+                <a href="Getting_familiar_with_the_Kubernetes_API.html">
+            
+                    
+                    4.1 Getting familiar with the Kubernetes API
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="4.1.2" data-path="Examining_an_objects_individual_properties.html">
+            
+                <a href="Examining_an_objects_individual_properties.html">
+            
+                    
+                    4.2 Examining an object’s individual properties
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="4.1.3" data-path="Observing_cluster_events_via_Event_objects.html">
+            
+                <a href="Observing_cluster_events_via_Event_objects.html">
+            
+                    
+                    4.3 Observing cluster events via Event objects
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="4.1.4" data-path="Summary_4.html">
+            
+                <a href="Summary_4.html">
+            
+                    
+                    4.4 Summary
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+        <li class="chapter " data-level="4.2" data-path="Running_applications_in_Pods.html">
+            
+                <a href="Running_applications_in_Pods.html">
+            
+                    
+                    5. Running applications in Pods
+            
+                </a>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="4.2.1" data-path="Understanding_pods.html">
+            
+                <a href="Understanding_pods.html">
+            
+                    
+                    5.1  Understanding pods
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="4.2.2" data-path="Creating_pods_from_YAML_or_JSON_files.html">
+            
+                <a href="Creating_pods_from_YAML_or_JSON_files.html">
+            
+                    
+                    5.2 Creating pods from YAML or JSON files
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter active" data-level="4.2.3" data-path="Interacting_with_the_application_and_the_pod.html">
+            
+                <a href="Interacting_with_the_application_and_the_pod.html">
+            
+                    
+                    5.3 Interacting with the application and the pod
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="4.2.4" data-path="Running_multiple_containers_in_a_pod.html">
+            
+                <a href="Running_multiple_containers_in_a_pod.html">
+            
+                    
+                    5.4 Running multiple containers in a pod
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="4.2.5" data-path="Running_additional_containers_at_pod_startup.html">
+            
+                <a href="Running_additional_containers_at_pod_startup.html">
+            
+                    
+                    5.5 Running additional containers at pod startup
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="4.2.6" data-path="Deleting_pods_and_other_objects.html">
+            
+                <a href="Deleting_pods_and_other_objects.html">
+            
+                    
+                    5.6 Deleting pods and other objects
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="4.2.7" data-path="Summary_5.html">
+            
+                <a href="Summary_5.html">
+            
+                    
+                    5.7 Summary
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+
+    
+
+    <li class="divider"></li>
+
+    <li>
+        <a href="https://www.gitbook.com" target="blank" class="gitbook-link">
+            Published with GitBook
+        </a>
+    </li>
+</ul>
+
+
+                </nav>
+            
+        
+    </div>
+
+    <div class="book-body">
+        
+            <div class="body-inner">
+                
+                    
+
+<div class="book-header" role="navigation">
+    
+
+    <!-- Title -->
+    <h1>
+        <i class="fa fa-circle-o-notch fa-spin"></i>
+        <a href=".." >5.3 Interacting with the application and the pod</a>
+    </h1>
+</div>
+
+
+
+
+                    <div class="page-wrapper" tabindex="-1" role="main">
+                        <div class="page-inner">
+                            
+<div id="book-search-results">
+    <div class="search-noresults">
+    
+                                <section class="normal markdown-section">
+                                
+                                <h1 id="interacting-with-the-application-and-the-pod">Interacting with the application and the pod</h1>
+<p>Your container is now running. In this section, you&#x2019;ll learn how to communicate with the application, inspect its logs, and execute commands in the container to explore the application&#x2019;s environment. Let&#x2019;s confirm that the application running in the container responds to your requests.</p>
+<h2 id="sending-requests-to-the-application-in-the-pod">Sending requests to the application in the pod</h2>
+<p>In chapter 2, you used the <code>kubectl</code> <code>expose</code> command to create a service that provisioned a load balancer so you could talk to the application running in your pod(s). You&#x2019;ll now take a different approach. For development, testing and debugging purposes, you may want to communicate directly with a specific pod, rather than using a service that forwards connections to randomly selected pods.</p>
+<p>You&#x2019;ve learned that each pod is assigned its own IP address where it can be accessed by every other pod in the cluster. This IP address is typically internal to the cluster. You can&#x2019;t access it from your local computer, except when Kubernetes is deployed in a specific way &#x2013; for example, when using kind or Minikube without a VM to create the cluster.</p>
+<p>In general, to access pods, you must use one of the methods described in the following sections. First, let&#x2019;s determine the pod&#x2019;s IP address.</p>
+<h3 id="getting-the-pods-ip-address">Getting the pod&#x2019;s IP address</h3>
+<p>You can get the pod&#x2019;s IP address by retrieving the pod&#x2019;s full YAML and searching for the <code>podIP</code> field in the <code>status</code> section. Alternatively, you can display the IP with <code>kubectl describe</code>, but the easiest way is to use <code>kubectl get</code> with the <code>wide</code> output option:</p>
+<pre><code class="lang-shell">$ kubectl get pod kubia -o wide
+NAME    READY   STATUS    RESTARTS   AGE   IP           NODE     ...
+kubia   1/1     Running   0          35m   10.244.2.4   worker2  ...
+</code></pre>
+<p>As indicated in the IP column, my pod&#x2019;s IP is <code>10.244.2.4</code>. Now I need to determine the port number the application is listening on.</p>
+<h3 id="getting-the-port-the-application-is-bound-to">Getting the port the application is bound to</h3>
+<p>If I wasn&#x2019;t the author of the application, it would be difficult for me to find out which port the application listens on. I could inspect its source code or the Dockerfile of the container image, as the port is usually specified there, but I might not have access to either. If someone else had created the pod, how would I know which port it was listening on?</p>
+<p>Fortunately, you can specify a list of ports in the pod definition itself. It isn&#x2019;t necessary to specify any ports, but it is a good idea to always do so. See sidebar for details.</p>
+<h4 id="why-specify-container-ports-in-pod-definitions">Why specify container ports in pod definitions</h4>
+<p>Specifying ports in the pod definition is purely informative. Their omission has no effect on whether clients can connect to the pod&#x2019;s port. If the container accepts connections through a port bound to its IP address, anyone can connect to it, even if the port isn&#x2019;t explicitly specified in the pod spec or if you specify an incorrect port number.</p>
+<p>Despite this, it&#x2019;s a good idea to always specify the ports so that anyone who has access to your cluster can see which ports each pod exposes. By explicitly defining ports, you can also assign a name to each port, which is very useful when you expose pods via services.</p>
+<p>The pod manifest says that the container uses port 8080, so you now have everything you need to talk to the application.</p>
+<h3 id="connecting-to-the-pod-from-the-worker-nodes">Connecting to the pod from the worker nodes</h3>
+<p>The Kubernetes network model dictates that each pod is accessible from any other pod and that each node can reach any pod on any node in the cluster.</p>
+<p>Because of this, one way to communicate with your pod is to log into one of your worker nodes and talk to the pod from there. You&#x2019;ve already learned that the way you log on to a node depends on what you used to deploy your cluster. In Minikube, you can run <code>minikube ssh</code> to log in to your single node. On GKE use the <code>gcloud compute ssh</code> command. For other clusters refer to their documentation.</p>
+<p>Once you have logged into the node, use the <code>curl</code> command with the pod&#x2019;s IP and port to access your application. My pod&#x2019;s IP is 10.244.2.4 and the port is 8080, so I run the following command:</p>
+<pre><code class="lang-shell">$ curl 10.244.2.4:8080
+Hey there, this is kubia. Your IP is ::ffff:10.244.2.1.
+</code></pre>
+<p>Normally you don&#x2019;t use this method to talk to your pods, but you may need to use it if there are communication issues and you want to find the cause by first trying the shortest possible communication route. In this case, it&#x2019;s best to log into the node where the pod is located and run <code>curl</code> from there. The communication between it and the pod takes place locally, so this method always has the highest chances of success.</p>
+<h3 id="connecting-from-a-one-off-client-pod">Connecting from a one-off client pod</h3>
+<p>The second way to test the connectivity of your application is to run <code>curl</code> in another pod that you create specifically for this task. Use this method to test if other pods will be able to access your pod. Even if the network works perfectly, this may not be the case. In chapter 24, you&#x2019;ll learn how to lock down the network by isolating pods from each other. In such a system, a pod can only talk to the pods it&#x2019;s allowed to.</p>
+<p>To run <code>curl</code> in a one-off pod, use the following command:</p>
+<pre><code class="lang-shell">$ kubectl run --image=tutum/curl -it --restart=Never --rm client-pod curl 10.244.2.4:8080
+Hey there, this is kubia. Your IP is ::ffff:10.244.2.5.
+pod &quot;client-pod&quot; deleted
+</code></pre>
+<p>This command runs a pod with a single container created from the <code>tutum/curl</code> image. You can also use any other image that provides the <code>curl</code> binary executable. The <code>-it</code> option attaches your console to the container&#x2019;s standard input and output, the <code>--restart=Never</code> option ensures that the pod is considered Completed when the <code>curl</code> command and its container terminate, and the <code>--rm</code> options removes the pod at the end. The name of the pod is <code>client-pod</code> and the command executed in its container is <code>curl 10.244.2.4:8080</code>.</p>
+<p><div class="alert alert-info hints-alert"><div class="hints-container"><p>NOTE</p>
+<p>You can also modify the command to run the <code>bash</code> shell in the client pod and then run <code>curl</code> from the shell.</p>
+</div></div></p>
+<p>Creating a pod just to see if it can access another pod is useful when you&#x2019;re specifically testing pod-to-pod connectivity. If you only want to know if your pod is responding to requests, you can also use the method explained in the next section.</p>
+<h3 id="connecting-to-pods-via-kubectl-port-forwarding">Connecting to pods via kubectl port forwarding</h3>
+<p>During development, the easiest way to talk to applications running in your pods is to use the <code>kubectl port-forward</code> command, which allows you to communicate with a specific pod through a proxy bound to a network port on your local computer, as shown in the next figure.</p>
+<p>Figure 5.8 Connecting to a pod through the kubectl port-forward proxy</p>
+<p><img src="../images/5.8.png" alt=""></p>
+<p>To open a communication path with a pod, you don&#x2019;t even need to look up the pod&#x2019;s IP, as you only need to specify its name and the port. The following command starts a proxy that forwards your computer&#x2019;s local port <code>8080</code> to the <code>kubia</code> pod&#x2019;s port <code>8080</code>:</p>
+<pre><code class="lang-shell">$ kubectl port-forward kubia 8080
+... Forwarding from 127.0.0.1:8080 -&gt; 8080
+... Forwarding from [::1]:8080 -&gt; 8080
+</code></pre>
+<p>The proxy now waits for incoming connections. Run the following <code>curl</code> command in another terminal:</p>
+<pre><code class="lang-shell">$ curl localhost:8080
+Hey there, this is kubia. Your IP is ::ffff:127.0.0.1.
+</code></pre>
+<p>As you can see, <code>curl</code> has connected to the local proxy and received the response from the pod. While the <code>port-forward</code> command is the easiest method for communicating with a specific pod during development and troubleshooting, it&#x2019;s also the most complex method in terms of what happens underneath. Communication passes through several components, so if anything is broken in the communication path, you won&#x2019;t be able to talk to the pod, even if the pod itself is accessible via regular communication channels.</p>
+<p><div class="alert alert-info hints-alert"><div class="hints-container"><p>NOTE</p>
+<p>The <code>kubectl port-forward</code> command can also forward connections to services instead of pods and has several other useful features. Run <code>kubectl port-forward --help</code> to learn more.</p>
+</div></div></p>
+<p>Figure 5.9 shows how the network packets flow from the <code>curl</code> process to your application and back.</p>
+<p>Figure 5.9 The long communication path between curl and the container when using port forwarding</p>
+<p><img src="../images/5.9.png" alt=""></p>
+<p>As shown in the figure, the <code>curl</code> process connects to the proxy, which connects to the API server, which then connects to the Kubelet on the node that hosts the pod, and the Kubelet then connects to the container through the pod&#x2019;s loopback device (in other words, through the localhost address). I&#x2019;m sure you&#x2019;ll agree that the communication path is exceptionally long.</p>
+<p><div class="alert alert-info hints-alert"><div class="hints-container"><p>NOTE</p>
+<p>The application in the container must be bound to a port on the loopback device for the Kubelet to reach it. If it listens only on the pod&#x2019;s <code>eth0</code> network interface, you won&#x2019;t be able to reach it with the <code>kubectl port-forward</code> command.</p>
+</div></div></p>
+<h2 id="viewing-application-logs">Viewing application logs</h2>
+<p>Your Node.js application writes its log to the standard output stream. Instead of writing the log to a file, containerized applications usually log to the standard output (<em>stdout</em>) and standard error streams (<em>stderr</em>). This allows the container runtime to intercept the output, store it in a consistent location (usually <code>/var/log/containers</code>) and provide access to the log without having to know where each application stores its log files.</p>
+<p>When you run an application in a container using Docker, you can display its log with <code>docker logs &lt;container-id&gt;</code>. When you run your application in Kubernetes, you could log into the node that hosts the pod and display its log using <code>docker</code> <code>logs</code>, but Kubernetes provides an easier way to do this with the <code>kubectl logs</code> command.</p>
+<h3 id="retrieving-a-pods-log-with-kubectl-logs">Retrieving a pod&#x2019;s log with kubectl logs</h3>
+<p>To view the log of your pod (more specifically, the container&#x2019;s log), run the command shown in the following listing on your local computer:</p>
+<pre><code class="lang-shell">Listing 5.4 Displaying a pod&#x2019;s log
+$ kubectl logs kubia
+Kubia server starting...
+Local hostname is kubia
+Listening on port 8080
+Received request for / from ::ffff:10.244.2.1
+Received request for / from ::ffff:10.244.2.5
+Received request for / from ::ffff:127.0.0.1
+</code></pre>
+<h3 id="streaming-logs-using-kubectl-logs--f">Streaming logs using kubectl logs -f</h3>
+<p>If you want to stream the application log in real-time to see each request as it comes in, you can run the command with the <code>--follow</code> option (or the shorter version <code>-f</code>):</p>
+<pre><code class="lang-shell">$ kubectl logs kubia -f
+</code></pre>
+<p>Now send some additional requests to the application and have a look at the log. Press ctrl-C to stop streaming the log when you&#x2019;re done.</p>
+<h3 id="displaying-the-timestamp-of-each-logged-line">Displaying the timestamp of each logged line</h3>
+<p>You may have noticed that we forgot to include the timestamp in the log statement. Logs without timestamps have limited usability. Fortunately, the container runtime attaches the current timestamp to every line produced by the application. You can display these timestamps by using the <code>--timestamps=true</code> option, as shown in the next listing.</p>
+<pre><code class="lang-shell">Listing 5.5 Displaying the timestamp of each log line
+$ kubectl logs kubia &#x2013;-timestamps=true
+2020-02-01T09:44:40.954641934Z Kubia server starting...
+2020-02-01T09:44:40.955123432Z Local hostname is kubia
+2020-02-01T09:44:40.956435431Z Listening on port 8080
+2020-02-01T09:50:04.978043089Z Received request for / from ...
+2020-02-01T09:50:33.640897378Z Received request for / from ...
+2020-02-01T09:50:44.781473256Z Received request for / from ...
+</code></pre>
+<p><div class="alert alert-info hints-alert"><div class="hints-container"><p>TIP</p>
+<p>You can display timestamps by only typing <code>--timestamps</code> without the value. For boolean options, merely specifying the option name sets the option to <code>true</code>. This applies to all kubectl options that take a Boolean value and default to <code>false</code>.</p>
+</div></div></p>
+<h3 id="displaying-recent-logs">Displaying recent logs</h3>
+<p>The previous feature is great if you run third-party applications that don&#x2019;t include the timestamp in their log output, but the fact that each line is timestamped brings us another benefit: filtering log lines by time. Kubectl provides two ways of filtering the logs by time.</p>
+<p>The first option is when you want to only display logs from the past several seconds, minutes or hours. For example, to see the logs produced in the last two minutes, run:</p>
+<pre><code class="lang-shell">$ kubectl logs kubia --since=2m
+</code></pre>
+<p>The other option is to display logs produced after a specific date and time using the <code>--since-time</code> option. The time format to be used is RFC3339. For example, the following command is used to print logs produced after February 1st, 2020 at 9:50 a.m.:</p>
+<pre><code class="lang-shell">$ kubectl logs kubia &#x2013;-since-time=2020-02-01T09:50:00Z
+</code></pre>
+<h3 id="displaying-the-last-several-lines-of-the-log">Displaying the last several lines of the log</h3>
+<p>Instead of using time to constrain the output, you can also specify how many lines from the end of the log you want to display. To display the last ten lines, try:</p>
+<pre><code class="lang-shell">$ kubectl logs kubia &#x2013;-tail=10
+</code></pre>
+<p><div class="alert alert-info hints-alert"><div class="hints-container"><p>NOTE</p>
+<p>Kubectl options that take a value can be specified with an equal sign or with a space. Instead of <code>--tail=10</code>, you can also type <code>--tail 10</code>.</p>
+</div></div></p>
+<h3 id="understanding-the-availability-of-the-pods-logs">Understanding the availability of the pod&#x2019;s logs</h3>
+<p>Kubernetes keeps a separate log file for each container. They are usually stored in <code>/var/log/containers</code> on the node that runs the container. A separate file is created for each container. If the container is restarted, its logs are written to a new file. Because of this, if the container is restarted while you&#x2019;re following its log with <code>kubectl logs -f</code>, the command will terminate, and you&#x2019;ll need to run it again to stream the new container&#x2019;s logs.</p>
+<p>The <code>kubectl logs</code> command displays only the logs of the current container. To view the logs from the previous container, use the <code>--previous</code> (or <code>-p</code>) option.</p>
+<p><div class="alert alert-info hints-alert"><div class="hints-container"><p>NOTE</p>
+<p>Depending on your cluster configuration, the log files may also be rotated when they reach a certain size. In this case, <code>kubectl logs</code> will only display the new log file. When streaming the logs, you must restart the command to switch to the new file.</p>
+</div></div></p>
+<p>When you delete a pod, all its log files are also deleted. To make pods&#x2019; logs available permanently, you need to set up a central, cluster-wide logging system. Chapter 23 explains how.</p>
+<h3 id="what-about-applications-that-write-their-logs-to-files">What about applications that write their logs to files?</h3>
+<p>If your application writes its logs to a file instead of stdout, you may be wondering how to access that file. Ideally, you&#x2019;d configure the centralized logging system to collect the logs so you can view them in a central location, but sometimes you just want to keep things simple and don&#x2019;t mind accessing the logs manually. In the next two sections, you&#x2019;ll learn how to copy log and other files from the container to your computer and in the opposite direction, and how to run commands in running containers. You can use either method to display the log files or any other file inside the container.</p>
+<h2 id="copying-files-to-and-from-containers">Copying files to and from containers</h2>
+<p>Sometimes you may want to add a file to a running container or retrieve a file from it. Modifying files in running containers isn&#x2019;t something you normally do - at least not in production - but it can be useful during development.</p>
+<p>Kubectl offers the <code>cp</code> command to copy files or directories from your local computer to a container of any pod or from the container to your computer. For example, to copy the <code>/etc/hosts</code> file from the container of the <code>kubia</code> pod to the <code>/tmp</code> directory on your local file system, run the following command:</p>
+<pre><code class="lang-shell">$ kubectl cp kubia:/etc/hosts /tmp/kubia-hosts
+</code></pre>
+<p>To copy a file from your local file system to the container, run the following command:</p>
+<pre><code class="lang-shell">$ kubectl cp /path/to/local/file kubia:path/in/container
+</code></pre>
+<p><div class="alert alert-info hints-alert"><div class="hints-container"><p>NOTE</p>
+<p>///////TODO</p>
+</div></div></p>
+<p>5.3.4   Executing commands in running containers</p>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gitalk@1.6.2/dist/gitalk.css">
+
+<script src="https://cdn.jsdelivr.net/npm/gitalk@1.6.2/dist/gitalk.min.js"></script>
+
+<script src="https://wangwei1237.gitee.io/md5.min.js"></script>
+
+<div id="gitalk-container" class="page-footer"></div>
+
+<script src="https://wangwei1237.gitee.io/gittalk-config.js"></script> 
+
+<footer class="page-footer"><span class="copyright">Copyrights &#xA9; wangwei all right reserved</span></footer>
+                                
+                                </section>
+                            
+    </div>
+    <div class="search-results">
+        <div class="has-results">
+            
+            <h1 class="search-results-title"><span class='search-results-count'></span> results matching "<span class='search-query'></span>"</h1>
+            <ul class="search-results-list"></ul>
+            
+        </div>
+        <div class="no-results">
+            
+            <h1 class="search-results-title">No results matching "<span class='search-query'></span>"</h1>
+            
+        </div>
+    </div>
+</div>
+
+                        </div>
+                    </div>
+                
+            </div>
+
+            
+                
+                <a href="Creating_pods_from_YAML_or_JSON_files.html" class="navigation navigation-prev " aria-label="Previous page: 5.2 Creating pods from YAML or JSON files">
+                    <i class="fa fa-angle-left"></i>
+                </a>
+                
+                
+                <a href="Running_multiple_containers_in_a_pod.html" class="navigation navigation-next " aria-label="Next page: 5.4 Running multiple containers in a pod">
+                    <i class="fa fa-angle-right"></i>
+                </a>
+                
+            
+        
+    </div>
+
+    <script>
+        var gitbook = gitbook || [];
+        gitbook.push(function() {
+            gitbook.page.hasChanged({"page":{"title":"5.3 Interacting with the application and the pod","level":"4.2.3","depth":2,"next":{"title":"5.4 Running multiple containers in a pod","level":"4.2.4","depth":2,"path":"docs/Running_multiple_containers_in_a_pod.md","ref":"docs/Running_multiple_containers_in_a_pod.md","articles":[]},"previous":{"title":"5.2 Creating pods from YAML or JSON files","level":"4.2.2","depth":2,"path":"docs/Creating_pods_from_YAML_or_JSON_files.md","ref":"docs/Creating_pods_from_YAML_or_JSON_files.md","articles":[]},"dir":"ltr"},"config":{"plugins":["page-toc-button","tbfed-pagefooter","cnzz","hints","sitemap-general"],"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"pluginsConfig":{"tbfed-pagefooter":{"copyright":"Copyrights &copy wangwei"},"search":{},"cnzz":{"style":"1","visible":true,"siteid":"1278605528"},"hints":{"danger":"fa fa-bug","info":"fa fa-info-circle","tip":"fa fa-sticky-note","working":"fa fa-cog fa-spin"},"lunr":{"maxIndexSize":1000000,"ignoreSpecialCharacters":false},"sitemap-general":{"prefix":"https://wangwei1237.gitee.io/kubernetes-in-action-second-edition"},"fontsettings":{"theme":"white","family":"serif","size":2},"highlight":{},"page-toc-button":{"maxTocDepth":2,"minTocSize":2},"sharing":{"facebook":true,"twitter":true,"google":false,"weibo":false,"instapaper":false,"vk":false,"all":["facebook","google","twitter","weibo","instapaper"]},"theme-default":{"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"showLevel":false}},"theme":"default","author":"wangwei17","pdf":{"pageBreaksBefore":"/","headerTemplate":null,"paperSize":"a4","margin":{"right":62,"left":62,"top":36,"bottom":36},"fontSize":16,"fontFamily":"Arial","footerTemplate":null,"chapterMark":"pagebreak","pageNumbers":true},"structure":{"langs":"LANGS.md","readme":"README.md","glossary":"GLOSSARY.md","summary":"SUMMARY.md"},"isbn":"","variables":{},"title":"Kubernetes实战（第二版）","links":{"sharing":{"all":null,"facebook":null,"google":null,"twitter":null,"weibo":null},"sidebar":{"17哥的个人网站":"https://wangwei1237.gitee.io/"}},"gitbook":"*","description":"Kubernetes实战（第二版）","extension":null},"file":{"path":"docs/Interacting_with_the_application_and_the_pod.md","mtime":"2020-11-14T03:49:00.949Z","type":"markdown"},"gitbook":{"version":"3.2.3","time":"2020-11-14T03:55:29.201Z"},"basePath":"..","book":{"language":""}});
+        });
+    </script>
+</div>
+
+        
+    <script src="../gitbook/gitbook.js"></script>
+    <script src="../gitbook/theme.js"></script>
+    
+        
+        <script src="../gitbook/gitbook-plugin-page-toc-button/plugin.js"></script>
+        
+    
+        
+        <script src="../gitbook/gitbook-plugin-cnzz/plugin.js"></script>
+        
+    
+        
+        <script src="../gitbook/gitbook-plugin-search/search-engine.js"></script>
+        
+    
+        
+        <script src="../gitbook/gitbook-plugin-search/search.js"></script>
+        
+    
+        
+        <script src="../gitbook/gitbook-plugin-lunr/lunr.min.js"></script>
+        
+    
+        
+        <script src="../gitbook/gitbook-plugin-lunr/search-lunr.js"></script>
+        
+    
+        
+        <script src="../gitbook/gitbook-plugin-sharing/buttons.js"></script>
+        
+    
+        
+        <script src="../gitbook/gitbook-plugin-fontsettings/fontsettings.js"></script>
+        
+    
+
+    </body>
+</html>
+
