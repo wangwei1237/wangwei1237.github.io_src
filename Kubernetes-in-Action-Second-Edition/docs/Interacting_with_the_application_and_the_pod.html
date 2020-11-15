@@ -614,9 +614,103 @@ $ kubectl logs kubia &#x2013;-timestamps=true
 <pre><code class="lang-shell">$ kubectl cp /path/to/local/file kubia:path/in/container
 </code></pre>
 <p><div class="alert alert-info hints-alert"><div class="hints-container"><p>NOTE</p>
-<p>///////TODO</p>
+<p>The <code>kubectl cp</code> command requires the <code>tar</code> binary to be present in your container, but this requirement may change in the future.</p>
 </div></div></p>
-<p>5.3.4   Executing commands in running containers</p>
+<h2 id="executing-commands-in-running-containers">Executing commands in running containers</h2>
+<p>When debugging an application running in a container, it may be necessary to examine the container and its environment from the inside. Kubectl provides this functionality, too. You can execute any binary file present in the container&#x2019;s file system using the <code>kubectl exec</code> command.</p>
+<h3 id="invoking-a-single-command-in-the-container">Invoking a single command in the container</h3>
+<p>For example, you can list the processes running in the container in the <code>kubia</code> pod by running the following command:</p>
+<pre><code class="lang-shell">Listing 5.6 Processes running inside a pod container
+$ kubectl exec kubia -- ps aux
+USER  PID %CPU %MEM    VSZ   RSS TTY STAT START TIME COMMAND
+root    1  0.0  1.3 812860 27356 ?   Ssl  11:54 0:00 node app.js
+root  120  0.0  0.1  17500  2128 ?   Rs   12:22 0:00 ps aux
+</code></pre>
+<p>This is the Kubernetes equivalent of the Docker command you used to explore the processes in a running container in chapter 2. It allows you to remotely run a command in any pod without having to log in to the node that hosts the pod. If you&#x2019;ve used ssh to execute commands on a remote system, you&#x2019;ll see that <code>kubectl</code> <code>exec</code> is not much different.</p>
+<p>In section 5.3.1 you executed the <code>curl</code> command in a one-off client pod to send a request to your application, but you can also run the command inside the <code>kubia</code> pod itself:</p>
+<pre><code class="lang-shell">$ kubectl exec kubia -- curl -s localhost:8080
+Hey there, this is kubia. Your IP is ::1.
+</code></pre>
+<h4 id="why-use-a-double-dash-in-the-kubectl-exec-command">Why use a double dash in the kubectl exec command?</h4>
+<p>The double dash (<code>--</code>) in the command delimits kubectl arguments from the command to be executed in the container. The use of the double dash isn&#x2019;t necessary if the command has no arguments that begin with a dash. If you omit the double dash in the previous example, the <code>-s</code> option is interpreted as an option for <code>kubectl</code> <code>exec</code> and results in the following misleading error:</p>
+<pre><code class="lang-shell">$ kubectl exec kubia curl -s localhost:8080
+</code></pre>
+<p>The connection to the server localhost:8080 was refused &#x2013; did you specify the right host or port?</p>
+<p>This may look like the Node.js server is refusing to accept the connection, but the issue lies elsewhere. The curl command is never executed. The error is reported by <code>kubectl</code> itself when it tries to talk to the Kubernetes API server at <code>localhost:8080</code>, which isn&#x2019;t where the server is. If you run the <code>kubectl options</code> command, you&#x2019;ll see that the <code>-s</code> option can be used to specify the address and port of the Kubernetes API server. Instead of passing that option to curl, kubectl adopted it as its own. Adding the double dash prevents this.</p>
+<p>Fortunately, to prevent scenarios like this, newer versions of kubectl are set to return an error if you forget the double dash.</p>
+<h3 id="running-an-interactive-shell-in-the-container">Running an interactive shell in the container</h3>
+<p>The two previous examples showed how a single command can be executed in the container. When the command completes, you are returned to your shell. If you want to run several commands in the container, you can run a shell in the container as follows:</p>
+<pre><code class="lang-shell">$ kubectl exec -it kubia -- bash
+root@kubia:/#
+</code></pre>
+<p>The <code>-it</code> is short for two options: <code>-i</code> and <code>-t</code>, which indicate that you want to execute the <code>bash</code> command interactively by passing the standard input to the container and marking it as a terminal (TTY).</p>
+<p>You can now explore the inside of the container by executing commands in the shell. For example, you can view the files in the container by running <code>ls -la</code>, view its network interfaces with <code>ip link</code>, or test its connectivity with <code>ping</code>. You can run any tool available in the container.</p>
+<h3 id="not-all-containers-allow-you-to-run-shells">Not all containers allow you to run shells</h3>
+<p>The container image of your application contains many important debugging tools, but this isn&#x2019;t the case with every container image. To keep images small and improve security in the container, most containers used in production don&#x2019;t contain any binary files other than those required for the container&#x2019;s primary process. This significantly reduces the attack surface, but also means that you can&#x2019;t run shells or other tools in production containers. Fortunately, a new Kubernetes feature called ephemeral containers allows you to debug running containers by attaching a debug container to them.</p>
+<p><div class="alert alert-info hints-alert"><div class="hints-container"><p>NOTE TO MEAP READERS</p>
+<p>Ephemeral containers are currently an alpha feature, which means they may change or even be removed at any time. This is also why they are currently not explained in this book. If they graduate to beta before the book goes into production, a section explaining them will be added.</p>
+</div></div></p>
+<h2 id="attaching-to-a-running-container">Attaching to a running container</h2>
+<p>The <code>kubectl attach</code> command is another way to interact with a running container. It attaches itself to the standard input, output and error streams of the main process running in the container. Normally, you only use it to interact with applications that read from the standard input.</p>
+<h3 id="using-kubectl-attach-to-see-what-the-application-prints-to-standard-output">Using kubectl attach to see what the application prints to standard output</h3>
+<p>If the application doesn&#x2019;t read from standard input, the <code>kubectl attach</code> command is only an alternative way to stream the application logs, as these are typically written to the standard output and error streams, and the <code>attach</code> command streams them just like the <code>kubectl logs -f</code> command does.</p>
+<p>Attach to your <code>kubia</code> pod by running the following command:</p>
+<pre><code class="lang-shell">$ kubectl attach kubia
+Defaulting container name to kubia.
+Use &apos;kubectl describe pod/kubia -n default&apos; to see all of the containers in this pod.
+If you don&apos;t see a command prompt, try pressing enter.
+</code></pre>
+<p>Now, when you send new HTTP requests to the application using <code>curl</code> in another terminal, you&#x2019;ll see the lines that the application logs to standard output also printed in the terminal where the <code>kubectl</code> <code>attach</code> command is executed.</p>
+<h3 id="using-kubectl-attach-to-write-to-the-applications-standard-input">Using kubectl attach to write to the application&#x2019;s standard input</h3>
+<p>The kubia application doesn&#x2019;t read from the standard input stream, but you&#x2019;ll find another version of the application that does this in the book&#x2019;s code archive. You can change the greeting with which the application responds to HTTP requests by writing it to the standard input stream of the application. Let&#x2019;s deploy this version of the application in a new pod and use the <code>kubectl</code> <code>attach</code> command to change the greeting.</p>
+<p>You can find the artifacts required to build the image in the <code>kubia-stdin-image/</code> directory, or you can use the pre-built image <code>docker.io/luksa/kubia:1.0-stdin</code>. The pod manifest is in the file <code>kubia-stdin.yaml</code>. It is only slightly different from the pod manifest in <code>kubia.yaml</code> that you deployed previously. The differences are highlighted in the following listing.</p>
+<pre><code class="lang-YAML">Listing <span class="hljs-number">5.7</span> Enabling standard input for a container
+<span class="hljs-attr">apiVersion:</span> v1
+<span class="hljs-attr">kind:</span> Pod
+<span class="hljs-attr">metadata:</span>
+<span class="hljs-attr">  name:</span> kubia-stdin
+<span class="hljs-attr">spec:</span>
+<span class="hljs-attr">  containers:</span>
+<span class="hljs-attr">  - name:</span> kubia
+<span class="hljs-attr">    image:</span> luksa/kubia:<span class="hljs-number">1.0</span>-stdin
+<span class="hljs-attr">    stdin:</span> <span class="hljs-literal">true</span>
+<span class="hljs-attr">    ports:</span>
+<span class="hljs-attr">    - containerPort:</span> <span class="hljs-number">8080</span>
+</code></pre>
+<p>As you can see in the listing, if the application running in a pod wants to read from standard input, you must indicate this in the pod manifest by setting the <code>stdin</code> field in the container definition to <code>true</code>. This tells Kubernetes to allocate a buffer for the standard input stream, otherwise the application will always receive an <code>EOF</code> when it tries to read from it.</p>
+<p>Create the pod from this manifest file with the <code>kubectl apply</code> command:</p>
+<pre><code class="lang-shell">$ kubectl apply -f kubia-stdin.yaml
+pod/kubia-stdin created
+</code></pre>
+<p>To enable communication with the application, use the <code>kubectl port-forward</code> command again, but because the local port <code>8080</code> is still being used by the previously executed <code>port-forward</code> command, you must either terminate it or choose a different local port to forward to the new pod. You can do this as follows:</p>
+<pre><code class="lang-shell">$ kubectl port-forward kubia-stdin 8888:8080
+Forwarding from 127.0.0.1:8888 -&gt; 8080
+Forwarding from [::1]:8888 -&gt; 8080
+</code></pre>
+<p>The command-line argument <code>8888:8080</code> instructs the command to forward local port <code>8888</code> to the pod&#x2019;s port <code>8080</code>.</p>
+<p>You can now reach the application at <a href="http://localhost:8888" target="_blank">http://localhost:8888</a>:</p>
+<pre><code class="lang-shell">$ curl localhost:8888
+Hey there, this is kubia-stdin. Your IP is ::ffff:127.0.0.1.
+</code></pre>
+<p>Let&#x2019;s change the greeting from &#x201C;Hey there&#x201D; to &#x201C;Howdy&#x201D; by using <code>kubectl attach</code> to write to the standard input stream of the application. Run the following command:</p>
+<pre><code class="lang-shell">$ kubectl attach -i kubia-stdin
+</code></pre>
+<p>Note the use of the additional option <code>-i</code> in the command. It instructs <code>kubectl</code> to pass its standard input to the container.</p>
+<p><div class="alert alert-info hints-alert"><div class="hints-container"><p>NOTE</p>
+<p>Like the <code>kubectl</code> <code>exec</code> command, <code>kubectl</code> <code>attach</code> also supports the <code>--tty</code> or <code>-t</code> option, which indicates that the standard input is a terminal (TTY), but the container must be configured to allocate a terminal through the <code>tty</code> field in the container definition.</p>
+</div></div></p>
+<p>You can now enter the new greeting into the terminal and press the ENTER key. The application should then respond with the new greeting:</p>
+<pre><code class="lang-shell">Howdy
+Greeting set to: Howdy
+</code></pre>
+<p>To see if the application now responds to HTTP requests with the new greeting, re-execute the <code>curl</code> command or refresh the page in your web browser:</p>
+<pre><code class="lang-shell">$ curl localhost:8888
+Howdy, this is kubia-stdin. Your IP is ::ffff:127.0.0.1.
+</code></pre>
+<p>There&#x2019;s the new greeting. You can change it again by typing another line in the terminal with the <code>kubectl attach</code> command. To exit the <code>attach</code> command, press Control-C or the equivalent key.</p>
+<p><div class="alert alert-info hints-alert"><div class="hints-container"><p>NOTE</p>
+<p>An additional field in the container definition, <code>stdinOnce</code>, determines whether the standard input channel is closed when the attach session ends. It&#x2019;s set to <code>false</code> by default, which allows you to use the standard input in every <code>kubectl attach</code> session. If you set it to <code>true</code>, standard input remains open only during the first session.</p>
+</div></div></p>
 
                                 
                                 </section>
@@ -660,7 +754,7 @@ $ kubectl logs kubia &#x2013;-timestamps=true
     <script>
         var gitbook = gitbook || [];
         gitbook.push(function() {
-            gitbook.page.hasChanged({"page":{"title":"5.3 Interacting with the application and the pod","level":"4.2.3","depth":2,"next":{"title":"5.4 Running multiple containers in a pod","level":"4.2.4","depth":2,"path":"docs/Running_multiple_containers_in_a_pod.md","ref":"docs/Running_multiple_containers_in_a_pod.md","articles":[]},"previous":{"title":"5.2 Creating pods from YAML or JSON files","level":"4.2.2","depth":2,"path":"docs/Creating_pods_from_YAML_or_JSON_files.md","ref":"docs/Creating_pods_from_YAML_or_JSON_files.md","articles":[]},"dir":"ltr"},"config":{"plugins":["page-toc-button","cnzz","hints","sitemap-general"],"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"pluginsConfig":{"search":{},"cnzz":{"style":"1","visible":true,"siteid":"1278605528"},"hints":{"danger":"fa fa-bug","info":"fa fa-info-circle","tip":"fa fa-sticky-note","working":"fa fa-cog fa-spin"},"lunr":{"maxIndexSize":1000000,"ignoreSpecialCharacters":false},"sitemap-general":{"prefix":"https://wangwei1237.gitee.io/kubernetes-in-action-second-edition"},"fontsettings":{"theme":"white","family":"serif","size":2},"highlight":{},"page-toc-button":{"maxTocDepth":2,"minTocSize":2},"sharing":{"facebook":true,"twitter":true,"google":false,"weibo":false,"instapaper":false,"vk":false,"all":["facebook","google","twitter","weibo","instapaper"]},"theme-default":{"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"showLevel":false}},"theme":"default","author":"wangwei17","pdf":{"pageBreaksBefore":"/","headerTemplate":null,"paperSize":"a4","margin":{"right":62,"left":62,"top":36,"bottom":36},"fontSize":16,"fontFamily":"Arial","footerTemplate":null,"chapterMark":"pagebreak","pageNumbers":true},"structure":{"langs":"LANGS.md","readme":"README.md","glossary":"GLOSSARY.md","summary":"SUMMARY.md"},"isbn":"","variables":{},"title":"Kubernetes实战（第二版）","links":{"sharing":{"all":null,"facebook":null,"google":null,"twitter":null,"weibo":null},"sidebar":{"17哥的个人网站":"https://wangwei1237.gitee.io/"}},"gitbook":"*","description":"Kubernetes实战（第二版）","extension":null},"file":{"path":"docs/Interacting_with_the_application_and_the_pod.md","mtime":"2020-11-14T03:49:00.949Z","type":"markdown"},"gitbook":{"version":"3.2.3","time":"2020-11-14T08:54:39.914Z"},"basePath":"..","book":{"language":""}});
+            gitbook.page.hasChanged({"page":{"title":"5.3 Interacting with the application and the pod","level":"4.2.3","depth":2,"next":{"title":"5.4 Running multiple containers in a pod","level":"4.2.4","depth":2,"path":"docs/Running_multiple_containers_in_a_pod.md","ref":"docs/Running_multiple_containers_in_a_pod.md","articles":[]},"previous":{"title":"5.2 Creating pods from YAML or JSON files","level":"4.2.2","depth":2,"path":"docs/Creating_pods_from_YAML_or_JSON_files.md","ref":"docs/Creating_pods_from_YAML_or_JSON_files.md","articles":[]},"dir":"ltr"},"config":{"plugins":["page-toc-button","cnzz","hints","sitemap-general"],"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"pluginsConfig":{"search":{},"cnzz":{"style":"1","visible":true,"siteid":"1278605528"},"hints":{"danger":"fa fa-bug","info":"fa fa-info-circle","tip":"fa fa-sticky-note","working":"fa fa-cog fa-spin"},"lunr":{"maxIndexSize":1000000,"ignoreSpecialCharacters":false},"sitemap-general":{"prefix":"https://wangwei1237.gitee.io/kubernetes-in-action-second-edition"},"fontsettings":{"theme":"white","family":"serif","size":2},"highlight":{},"page-toc-button":{"maxTocDepth":2,"minTocSize":2},"sharing":{"facebook":true,"twitter":true,"google":false,"weibo":false,"instapaper":false,"vk":false,"all":["facebook","google","twitter","weibo","instapaper"]},"theme-default":{"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"showLevel":false}},"theme":"default","author":"wangwei17","pdf":{"pageBreaksBefore":"/","headerTemplate":null,"paperSize":"a4","margin":{"right":62,"left":62,"top":36,"bottom":36},"fontSize":16,"fontFamily":"Arial","footerTemplate":null,"chapterMark":"pagebreak","pageNumbers":true},"structure":{"langs":"LANGS.md","readme":"README.md","glossary":"GLOSSARY.md","summary":"SUMMARY.md"},"isbn":"","variables":{},"title":"Kubernetes实战（第二版）","links":{"sharing":{"all":null,"facebook":null,"google":null,"twitter":null,"weibo":null},"sidebar":{"17哥的个人网站":"https://wangwei1237.gitee.io/"}},"gitbook":"*","description":"Kubernetes实战（第二版）","extension":null},"file":{"path":"docs/Interacting_with_the_application_and_the_pod.md","mtime":"2020-11-15T12:16:17.684Z","type":"markdown"},"gitbook":{"version":"3.2.3","time":"2020-11-15T13:05:47.668Z"},"basePath":"..","book":{"language":""}});
         });
     </script>
 </div>

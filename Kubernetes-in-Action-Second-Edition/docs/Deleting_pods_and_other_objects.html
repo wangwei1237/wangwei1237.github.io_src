@@ -484,7 +484,100 @@
     
                                 <section class="normal markdown-section">
                                 
-                                
+                                <h1 id="deleting-pods-and-other-objects">Deleting pods and other objects</h1>
+<p>If you&#x2019;ve tried the exercises in this chapter and in chapter 2, several pods and other objects now exist in your cluster. To close this chapter, you&#x2019;ll learn various ways to delete them. Deleting a pod will terminate its containers and remove them from the node. Deleting a Deployment object causes the deletion of its pods, whereas deleting a LoadBalancer-typed Service deprovisions the load balancer if one was provisioned.</p>
+<h2 id="deleting-a-pod-by-name">Deleting a pod by name</h2>
+<p>The easiest way to delete an object is to delete it by name.</p>
+<h3 id="deleting-a-single-pod">Deleting a single pod</h3>
+<p>Use the following command to remove the <code>kubia</code> pod from your cluster:</p>
+<pre><code class="lang-shell">$ kubectl delete po kubia
+pod &quot;kubia&quot; deleted
+</code></pre>
+<p>By deleting a pod, you state that you no longer want the pod or its containers to exist. The Kubelet shuts down the pod&#x2019;s containers, removes all associated resources, such as log files, and notifies the API server after this process is complete. The Pod object is then removed.</p>
+<p><div class="alert alert-info hints-alert"><div class="hints-container"><p>TIP</p>
+<p>By default, the <code>kubectl delete</code> command waits until the object no longer exists. To skip the wait, run the command with the <code>--wait=false</code> option.</p>
+</div></div></p>
+<p>While the pod is in the process of shutting down, its status changes to <code>Terminating</code>:</p>
+<pre><code class="lang-shell">$ kubectl get po kubia
+NAME    READY   STATUS        RESTARTS   AGE
+kubia   1/1     Terminating   0          35m
+</code></pre>
+<p>Knowing exactly how containers are shut down is important if you want your application to provide a good experience for its clients. This is explained in the next chapter, where we dive deeper into the life cycle of the pod and its containers.</p>
+<p><div class="alert alert-info hints-alert"><div class="hints-container"><p>NOTE</p>
+<p>If you&#x2019;re familiar with Docker, you may wonder if you can stop a pod and start it again later, as you can with Docker containers. The answer is no. With Kubernetes, you can only remove a pod completely and create it again later.</p>
+</div></div></p>
+<h3 id="deleting-multiple-pods-with-a-single-command">Deleting multiple pods with a single command</h3>
+<p>You can also delete multiple pods with a single command. If you ran the <code>kubia-init</code> and the <code>kubia-init-slow</code> pods, you can delete them both by specifying their names separated by a space, as follows:</p>
+<pre><code class="lang-shell">$ kubectl delete po kubia-init kubia-init-slow
+pod &quot;kubia-init&quot; deleted
+pod &quot;kubia-init-slow&quot; deleted
+</code></pre>
+<h2 id="deleting-objects-defined-in-manifest-files">Deleting objects defined in manifest files</h2>
+<p>Whenever you create objects from a file, you can also delete them by passing the file to the <code>delete</code> command instead of specifying the name of the pod.</p>
+<h3 id="deleting-objects-by-specifying-the-manifest-file">Deleting objects by specifying the manifest file</h3>
+<p>You can delete the <code>kubia-ssl</code> pod, which you created from the <code>kubia-ssl.yaml</code> file, with the following command:</p>
+<pre><code class="lang-shell">$ kubectl delete -f kubia-ssl.yaml
+pod &quot;kubia-ssl&quot; deleted
+</code></pre>
+<p>In your case, the file contains only a single pod object, but you&#x2019;ll typically come across files that contain several objects of different types that represent a complete application. This makes deploying and removing the application as easy as executing <code>kubectl apply -f app.yaml</code> and <code>kubectl delete -f app.yaml</code>, respectively.</p>
+<h3 id="deleting-objects-from-multiple-manifest-files">Deleting objects from multiple manifest files</h3>
+<p>Sometimes, an application is defined in several manifest files. You can specify multiple files by separating them with a comma. For example:</p>
+<pre><code class="lang-shell">$ kubectl delete -f kubia.yaml,kubia-ssl.yaml
+</code></pre>
+<p><div class="alert alert-info hints-alert"><div class="hints-container"><p>NOTE</p>
+<p>You can also apply several files at the same time using this syntax (for example: <code>kubectl apply -f kubia.yaml,kubia-ssl.yaml</code>).</p>
+</div></div></p>
+<p>I&#x2019;ve never actually used this approach in the many years I&#x2019;ve been using Kubernetes, but I often deploy all the manifest files from a file directory by specifying the directory name instead of the names of individual files. For example, you can deploy all the pods you created in this chapter again by running the following command in the base directory of this book&#x2019;s code archive:</p>
+<pre><code class="lang-shell">$ kubectl apply -f Chapter05/
+</code></pre>
+<p>This applies all files in the directory that have the correct file extension (<code>.yaml</code>, <code>.json</code>, and others). You can then delete the pods using the same method:</p>
+<pre><code class="lang-shell">$ kubectl delete -f Chapter05/
+</code></pre>
+<p><div class="alert alert-info hints-alert"><div class="hints-container"><p>NOTE</p>
+<p>Use the <code>--recursive</code> flag to also scan subdirectories.</p>
+</div></div></p>
+<h2 id="deleting-all-pods">Deleting all pods</h2>
+<p>You&#x2019;ve now removed all pods except <code>kubia-stdin</code> and the pods you created in chapter 3 using the <code>kubectl</code> <code>create deployment</code> command. Depending on how you&#x2019;ve scaled the deployment, some of these pods should still be running:</p>
+<pre><code class="lang-shell">$ kubectl get pods
+NAME                    READY   STATUS    RESTARTS   AGE
+kubia-stdin             1/1     Running   0          10m
+kubia-9d785b578-58vhc   1/1     Running   0          1d
+kubia-9d785b578-jmnj8   1/1     Running   0          1d
+</code></pre>
+<p>Instead of deleting these pods by name, we can delete them all using the <code>--all</code> option:</p>
+<pre><code class="lang-shell">$ kubectl delete po --all
+pod &quot;kubia-stdin&quot; deleted
+pod &quot;kubia-9d785b578-58vhc&quot; deleted
+pod &quot;kubia-9d785b578-jmnj8&quot; deleted
+</code></pre>
+<p>Now confirm that no pods exist by executing the <code>kubectl get pods</code> command again:</p>
+<pre><code class="lang-shell">$ kubectl get po
+NAME                    READY   STATUS    RESTARTS   AGE
+kubia-9d785b578-cc6tk   1/1     Running   0          13s
+kubia-9d785b578-h4gml   1/1     Running   0          13s
+</code></pre>
+<p>That was unexpected! Two pods are still running. If you look closely at their names, you&#x2019;ll see that these aren&#x2019;t the two you&#x2019;ve just deleted. The <code>AGE</code> column also indicates that these are new pods. You can try to delete them as well, but you&#x2019;ll see that no matter how often you delete them, new pods are created to replace them.</p>
+<p>The reason why these pods keep popping up is because of the Deployment object. The controller responsible for bringing Deployment objects to life must ensure that the number of pods always matches the desired number of replicas specified in the object. When you delete a pod associated with the Deployment, the controller immediately creates a replacement pod.</p>
+<p>To delete these pods, you must either scale the Deployment to zero or delete the object altogether. This would indicate that you no longer want this deployment or its pods to exist in your cluster.</p>
+<h2 id="deleting-objects-of-most-kinds">Deleting objects of most kinds</h2>
+<p>You can delete everything you&#x2019;ve created so far - including the deployment, its pods, and the service - with the command shown in the next listing.</p>
+<pre><code class="lang-shell">Listing 5.13 Deleting most objects regardless of type
+$ kubectl delete all --all
+pod &quot;kubia-9d785b578-cc6tk&quot; deleted
+pod &quot;kubia-9d785b578-h4gml&quot; deleted
+service &quot;kubernetes&quot; deleted
+service &quot;kubia&quot; deleted
+deployment.apps &quot;kubia&quot; deleted
+replicaset.apps &quot;kubia-9d785b578&quot; deleted
+</code></pre>
+<p>The first <code>all</code> in the command indicates that you want to delete objects of all types. The <code>--all</code> option indicates that you want to delete all instances of each object type. You used this option in the previous section when you tried to delete all pods.</p>
+<p>When deleting objects, <code>kubectl</code> prints the type and name of each deleted object. In the previous listing, you should see that it deleted the pods, the deployment, and the service, but also a so-called replica set object. You&#x2019;ll learn what this is in chapter 11, where we take a closer look at deployments.</p>
+<p>You&#x2019;ll notice that the delete command also deletes the built-in <code>kubernetes</code> service. Don&#x2019;t worry about this, as the service is automatically recreated after a few moments.</p>
+<p>Certain objects aren&#x2019;t deleted when using this method, because the keyword <code>all</code> does not include all object kinds. This is a precaution to prevent you from accidentally deleting objects that contain important information. The Event object kind is one example of this.</p>
+<p><div class="alert alert-info hints-alert"><div class="hints-container"><p>NOTE</p>
+<p>You can specify multiple object types in the <code>delete</code> command. For example, you can use <code>kubectl delete events,all --all</code> to delete events along with all object kinds included in <code>all</code>.</p>
+</div></div></p>
+
                                 
                                 </section>
                             
@@ -527,7 +620,7 @@
     <script>
         var gitbook = gitbook || [];
         gitbook.push(function() {
-            gitbook.page.hasChanged({"page":{"title":"5.6 Deleting pods and other objects","level":"4.2.6","depth":2,"next":{"title":"5.7 Summary","level":"4.2.7","depth":2,"path":"docs/Summary_5.md","ref":"docs/Summary_5.md","articles":[]},"previous":{"title":"5.5 Running additional containers at pod startup","level":"4.2.5","depth":2,"path":"docs/Running_additional_containers_at_pod_startup.md","ref":"docs/Running_additional_containers_at_pod_startup.md","articles":[]},"dir":"neutral"},"config":{"plugins":["page-toc-button","cnzz","hints","sitemap-general"],"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"pluginsConfig":{"search":{},"cnzz":{"style":"1","visible":true,"siteid":"1278605528"},"hints":{"danger":"fa fa-bug","info":"fa fa-info-circle","tip":"fa fa-sticky-note","working":"fa fa-cog fa-spin"},"lunr":{"maxIndexSize":1000000,"ignoreSpecialCharacters":false},"sitemap-general":{"prefix":"https://wangwei1237.gitee.io/kubernetes-in-action-second-edition"},"fontsettings":{"theme":"white","family":"serif","size":2},"highlight":{},"page-toc-button":{"maxTocDepth":2,"minTocSize":2},"sharing":{"facebook":true,"twitter":true,"google":false,"weibo":false,"instapaper":false,"vk":false,"all":["facebook","google","twitter","weibo","instapaper"]},"theme-default":{"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"showLevel":false}},"theme":"default","author":"wangwei17","pdf":{"pageBreaksBefore":"/","headerTemplate":null,"paperSize":"a4","margin":{"right":62,"left":62,"top":36,"bottom":36},"fontSize":16,"fontFamily":"Arial","footerTemplate":null,"chapterMark":"pagebreak","pageNumbers":true},"structure":{"langs":"LANGS.md","readme":"README.md","glossary":"GLOSSARY.md","summary":"SUMMARY.md"},"isbn":"","variables":{},"title":"Kubernetes实战（第二版）","links":{"sharing":{"all":null,"facebook":null,"google":null,"twitter":null,"weibo":null},"sidebar":{"17哥的个人网站":"https://wangwei1237.gitee.io/"}},"gitbook":"*","description":"Kubernetes实战（第二版）","extension":null},"file":{"path":"docs/Deleting_pods_and_other_objects.md","mtime":"2020-11-14T03:51:44.301Z","type":"markdown"},"gitbook":{"version":"3.2.3","time":"2020-11-14T08:54:39.914Z"},"basePath":"..","book":{"language":""}});
+            gitbook.page.hasChanged({"page":{"title":"5.6 Deleting pods and other objects","level":"4.2.6","depth":2,"next":{"title":"5.7 Summary","level":"4.2.7","depth":2,"path":"docs/Summary_5.md","ref":"docs/Summary_5.md","articles":[]},"previous":{"title":"5.5 Running additional containers at pod startup","level":"4.2.5","depth":2,"path":"docs/Running_additional_containers_at_pod_startup.md","ref":"docs/Running_additional_containers_at_pod_startup.md","articles":[]},"dir":"ltr"},"config":{"plugins":["page-toc-button","cnzz","hints","sitemap-general"],"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"pluginsConfig":{"search":{},"cnzz":{"style":"1","visible":true,"siteid":"1278605528"},"hints":{"danger":"fa fa-bug","info":"fa fa-info-circle","tip":"fa fa-sticky-note","working":"fa fa-cog fa-spin"},"lunr":{"maxIndexSize":1000000,"ignoreSpecialCharacters":false},"sitemap-general":{"prefix":"https://wangwei1237.gitee.io/kubernetes-in-action-second-edition"},"fontsettings":{"theme":"white","family":"serif","size":2},"highlight":{},"page-toc-button":{"maxTocDepth":2,"minTocSize":2},"sharing":{"facebook":true,"twitter":true,"google":false,"weibo":false,"instapaper":false,"vk":false,"all":["facebook","google","twitter","weibo","instapaper"]},"theme-default":{"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"showLevel":false}},"theme":"default","author":"wangwei17","pdf":{"pageBreaksBefore":"/","headerTemplate":null,"paperSize":"a4","margin":{"right":62,"left":62,"top":36,"bottom":36},"fontSize":16,"fontFamily":"Arial","footerTemplate":null,"chapterMark":"pagebreak","pageNumbers":true},"structure":{"langs":"LANGS.md","readme":"README.md","glossary":"GLOSSARY.md","summary":"SUMMARY.md"},"isbn":"","variables":{},"title":"Kubernetes实战（第二版）","links":{"sharing":{"all":null,"facebook":null,"google":null,"twitter":null,"weibo":null},"sidebar":{"17哥的个人网站":"https://wangwei1237.gitee.io/"}},"gitbook":"*","description":"Kubernetes实战（第二版）","extension":null},"file":{"path":"docs/Deleting_pods_and_other_objects.md","mtime":"2020-11-15T13:05:13.442Z","type":"markdown"},"gitbook":{"version":"3.2.3","time":"2020-11-15T13:05:47.668Z"},"basePath":"..","book":{"language":""}});
         });
     </script>
 </div>
