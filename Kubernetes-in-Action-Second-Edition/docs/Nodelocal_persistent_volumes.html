@@ -315,12 +315,12 @@
             
         </li>
     
-        <li class="chapter " data-level="3.3.2" data-path="Using_the_built-in_Kubernetes_cluster_in_Docker_Desktop.html">
+        <li class="chapter " data-level="3.3.2" data-path="Interacting_with_Kubernetes.html">
             
-                <a href="Using_the_built-in_Kubernetes_cluster_in_Docker_Desktop.html">
+                <a href="Interacting_with_Kubernetes.html">
             
                     
-                    3.1.1 Using the built-in Kubernetes cluster in Docker Desktop
+                    3.2 Interacting with Kubernetes
             
                 </a>
             
@@ -328,12 +328,12 @@
             
         </li>
     
-        <li class="chapter " data-level="3.3.3" data-path="Running_a_local_cluster_using_Minikube.html">
+        <li class="chapter " data-level="3.3.3" data-path="Running_your_first_application_on_Kubernetes.html">
             
-                <a href="Running_a_local_cluster_using_Minikube.html">
+                <a href="Running_your_first_application_on_Kubernetes.html">
             
                     
-                    3.1.2   Running a local cluster using Minikube
+                    3.3  Running your first application on Kubernetes
             
                 </a>
             
@@ -341,51 +341,12 @@
             
         </li>
     
-        <li class="chapter " data-level="3.3.4" data-path="Running_a_local_cluster_using_kind.html">
+        <li class="chapter " data-level="3.3.4" data-path="Summary_3.html">
             
-                <a href="Running_a_local_cluster_using_kind.html">
-            
-                    
-                    3.1.3 Running a local cluster using kind (Kubernetes in Docker)
-            
-                </a>
-            
-
-            
-        </li>
-    
-        <li class="chapter " data-level="3.3.5" data-path="Creating_a_managed_cluster_with_Google_Kubernetes_Engine.html">
-            
-                <a href="Creating_a_managed_cluster_with_Google_Kubernetes_Engine.html">
+                <a href="Summary_3.html">
             
                     
-                    3.1.4 Creating a managed cluster with Google Kubernetes Engine
-            
-                </a>
-            
-
-            
-        </li>
-    
-        <li class="chapter " data-level="3.3.6" data-path="Creating_a_cluster_using_Amazon_Elastic_Kubernetes_Service.html">
-            
-                <a href="Creating_a_cluster_using_Amazon_Elastic_Kubernetes_Service.html">
-            
-                    
-                    3.1.5 Creating a cluster using Amazon Elastic Kubernetes Service
-            
-                </a>
-            
-
-            
-        </li>
-    
-        <li class="chapter " data-level="3.3.7" data-path="Deploying_a_multi-node_cluster_from_scratch.html">
-            
-                <a href="Deploying_a_multi-node_cluster_from_scratch.html">
-            
-                    
-                    3.1.6 Deploying a multi-node cluster from scratch
+                    3.4 Summary
             
                 </a>
             
@@ -883,7 +844,7 @@
     
                                 <section class="normal markdown-section">
                                 
-                                <h1 id="node-local-persistent-volumes">Node-local persistent volumes</h1>
+                                <h1 id="84-node-local-persistent-volumes">8.4 Node-local persistent volumes</h1>
 <p>In the previous sections of this chapter, you&#x2019;ve used persistent volumes and claims to provide network-attached storage volumes to your pods, but this type of storage is too slow for some applications. To run a production-grade database, you should probably use an SSD connected directly to the node where the database is running.</p>
 <p>In the previous chapter, you learned that you can use a <code>hostPath</code> volume in a pod if you want the pod to access part of the host&#x2019;s filesystem. Now you&#x2019;ll learn how to do the same with persistent volumes. You might wonder why I need to teach you another way to do the same thing, but it&#x2019;s really not the same.</p>
 <p>You might remember that when you add a <code>hostPath</code> volume to a pod, the data that the pod sees depends on which node the pod is scheduled to. In other words, if the pod is deleted and recreated, it might end up on another node and no longer have access to the same data.</p>
@@ -1039,7 +1000,7 @@
     <script>
         var gitbook = gitbook || [];
         gitbook.push(function() {
-            gitbook.page.hasChanged({"page":{"title":"8.4 Node-local persistent volumes","level":"4.5.4","depth":2,"next":{"title":"8.5 Summary","level":"4.5.5","depth":2,"path":"docs/Summary_8.md","ref":"docs/Summary_8.md","articles":[]},"previous":{"title":"8.3 Dynamic provisioning of persistent volumes","level":"4.5.3","depth":2,"path":"docs/Dynamic_provisioning_of_persistent_volumes.md","ref":"docs/Dynamic_provisioning_of_persistent_volumes.md","articles":[]},"dir":"ltr"},"config":{"plugins":["page-toc-button","cnzz","hints","sitemap-general"],"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"pluginsConfig":{"search":{},"cnzz":{"style":"1","visible":true,"siteid":"1278605528"},"hints":{"danger":"fa fa-bug","info":"fa fa-info-circle","tip":"fa fa-sticky-note","working":"fa fa-cog fa-spin"},"lunr":{"maxIndexSize":1000000,"ignoreSpecialCharacters":false},"sitemap-general":{"prefix":"https://wangwei1237.gitee.io/kubernetes-in-action-second-edition"},"fontsettings":{"theme":"white","family":"serif","size":2},"highlight":{},"page-toc-button":{"maxTocDepth":2,"minTocSize":2},"sharing":{"facebook":true,"twitter":true,"google":false,"weibo":false,"instapaper":false,"vk":false,"all":["facebook","google","twitter","weibo","instapaper"]},"theme-default":{"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"showLevel":false}},"theme":"default","author":"wangwei17","pdf":{"pageBreaksBefore":"/","headerTemplate":null,"paperSize":"a4","margin":{"right":62,"left":62,"top":36,"bottom":36},"fontSize":16,"fontFamily":"Arial","footerTemplate":null,"chapterMark":"pagebreak","pageNumbers":true},"structure":{"langs":"LANGS.md","readme":"README.md","glossary":"GLOSSARY.md","summary":"SUMMARY.md"},"isbn":"","variables":{},"title":"Kubernetes实战（第二版）","links":{"sharing":{"all":null,"facebook":null,"google":null,"twitter":null,"weibo":null},"sidebar":{"17哥的个人网站":"https://wangwei1237.gitee.io/"}},"gitbook":"*","description":"Kubernetes实战（第二版）","extension":null},"file":{"path":"docs/Nodelocal_persistent_volumes.md","mtime":"2020-11-19T02:33:00.009Z","type":"markdown"},"gitbook":{"version":"3.2.3","time":"2020-11-20T03:33:59.891Z"},"basePath":"..","book":{"language":""}});
+            gitbook.page.hasChanged({"page":{"title":"8.4 Node-local persistent volumes","level":"4.5.4","depth":2,"next":{"title":"8.5 Summary","level":"4.5.5","depth":2,"path":"docs/Summary_8.md","ref":"docs/Summary_8.md","articles":[]},"previous":{"title":"8.3 Dynamic provisioning of persistent volumes","level":"4.5.3","depth":2,"path":"docs/Dynamic_provisioning_of_persistent_volumes.md","ref":"docs/Dynamic_provisioning_of_persistent_volumes.md","articles":[]},"dir":"ltr"},"config":{"plugins":["page-toc-button","cnzz","hints","sitemap-general"],"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"pluginsConfig":{"search":{},"cnzz":{"style":"1","visible":true,"siteid":"1278605528"},"hints":{"danger":"fa fa-bug","info":"fa fa-info-circle","tip":"fa fa-sticky-note","working":"fa fa-cog fa-spin"},"lunr":{"maxIndexSize":1000000,"ignoreSpecialCharacters":false},"sitemap-general":{"prefix":"https://wangwei1237.gitee.io/kubernetes-in-action-second-edition"},"fontsettings":{"theme":"white","family":"serif","size":2},"highlight":{},"page-toc-button":{"maxTocDepth":2,"minTocSize":2},"sharing":{"facebook":true,"twitter":true,"google":false,"weibo":false,"instapaper":false,"vk":false,"all":["facebook","google","twitter","weibo","instapaper"]},"theme-default":{"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"showLevel":false}},"theme":"default","author":"wangwei17","pdf":{"pageBreaksBefore":"/","headerTemplate":null,"paperSize":"a4","margin":{"right":62,"left":62,"top":36,"bottom":36},"fontSize":16,"fontFamily":"Arial","footerTemplate":null,"chapterMark":"pagebreak","pageNumbers":true},"structure":{"langs":"LANGS.md","readme":"README.md","glossary":"GLOSSARY.md","summary":"SUMMARY.md"},"isbn":"","variables":{},"title":"Kubernetes实战（第二版）","links":{"sharing":{"all":null,"facebook":null,"google":null,"twitter":null,"weibo":null},"sidebar":{"17哥的个人网站":"https://wangwei1237.gitee.io/"}},"gitbook":"*","description":"Kubernetes实战（第二版）","extension":null},"file":{"path":"docs/Nodelocal_persistent_volumes.md","mtime":"2020-11-22T04:08:03.124Z","type":"markdown"},"gitbook":{"version":"3.2.3","time":"2020-11-22T04:54:22.650Z"},"basePath":"..","book":{"language":""}});
         });
     </script>
 </div>

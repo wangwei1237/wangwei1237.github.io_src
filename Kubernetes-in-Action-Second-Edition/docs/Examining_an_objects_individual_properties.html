@@ -315,12 +315,12 @@
             
         </li>
     
-        <li class="chapter " data-level="3.3.2" data-path="Using_the_built-in_Kubernetes_cluster_in_Docker_Desktop.html">
+        <li class="chapter " data-level="3.3.2" data-path="Interacting_with_Kubernetes.html">
             
-                <a href="Using_the_built-in_Kubernetes_cluster_in_Docker_Desktop.html">
+                <a href="Interacting_with_Kubernetes.html">
             
                     
-                    3.1.1 Using the built-in Kubernetes cluster in Docker Desktop
+                    3.2 Interacting with Kubernetes
             
                 </a>
             
@@ -328,12 +328,12 @@
             
         </li>
     
-        <li class="chapter " data-level="3.3.3" data-path="Running_a_local_cluster_using_Minikube.html">
+        <li class="chapter " data-level="3.3.3" data-path="Running_your_first_application_on_Kubernetes.html">
             
-                <a href="Running_a_local_cluster_using_Minikube.html">
+                <a href="Running_your_first_application_on_Kubernetes.html">
             
                     
-                    3.1.2   Running a local cluster using Minikube
+                    3.3  Running your first application on Kubernetes
             
                 </a>
             
@@ -341,51 +341,12 @@
             
         </li>
     
-        <li class="chapter " data-level="3.3.4" data-path="Running_a_local_cluster_using_kind.html">
+        <li class="chapter " data-level="3.3.4" data-path="Summary_3.html">
             
-                <a href="Running_a_local_cluster_using_kind.html">
-            
-                    
-                    3.1.3 Running a local cluster using kind (Kubernetes in Docker)
-            
-                </a>
-            
-
-            
-        </li>
-    
-        <li class="chapter " data-level="3.3.5" data-path="Creating_a_managed_cluster_with_Google_Kubernetes_Engine.html">
-            
-                <a href="Creating_a_managed_cluster_with_Google_Kubernetes_Engine.html">
+                <a href="Summary_3.html">
             
                     
-                    3.1.4 Creating a managed cluster with Google Kubernetes Engine
-            
-                </a>
-            
-
-            
-        </li>
-    
-        <li class="chapter " data-level="3.3.6" data-path="Creating_a_cluster_using_Amazon_Elastic_Kubernetes_Service.html">
-            
-                <a href="Creating_a_cluster_using_Amazon_Elastic_Kubernetes_Service.html">
-            
-                    
-                    3.1.5 Creating a cluster using Amazon Elastic Kubernetes Service
-            
-                </a>
-            
-
-            
-        </li>
-    
-        <li class="chapter " data-level="3.3.7" data-path="Deploying_a_multi-node_cluster_from_scratch.html">
-            
-                <a href="Deploying_a_multi-node_cluster_from_scratch.html">
-            
-                    
-                    3.1.6 Deploying a multi-node cluster from scratch
+                    3.4 Summary
             
                 </a>
             
@@ -883,7 +844,7 @@
     
                                 <section class="normal markdown-section">
                                 
-                                <h1 id="examining-an-objects-individual-properties">Examining an object&#x2019;s individual properties</h1>
+                                <h1 id="42-examining-an-objects-individual-properties">4.2 Examining an object&#x2019;s individual properties</h1>
 <p>To examine Kubernetes API objects up close, we&#x2019;ll need a concrete example. Let&#x2019;s take the Node object, which should be easy to understand because it represents something you might be relatively familiar with - a computer in the cluster.</p>
 <p>My Kubernetes cluster provisioned by the kind tool has three nodes - one master and two workers. They are represented by three Node objects in the API. I can query the API and list these objects using <code>kubectl get nodes</code>, as shown in the next listing.</p>
 <pre><code class="lang-shell">Listing 4.1 Listing Node objects
@@ -1221,7 +1182,7 @@ Events:
     <script>
         var gitbook = gitbook || [];
         gitbook.push(function() {
-            gitbook.page.hasChanged({"page":{"title":"4.2 Examining an object’s individual properties","level":"4.1.2","depth":2,"next":{"title":"4.3 Observing cluster events via Event objects","level":"4.1.3","depth":2,"path":"docs/Observing_cluster_events_via_Event_objects.md","ref":"docs/Observing_cluster_events_via_Event_objects.md","articles":[]},"previous":{"title":"4.1 Getting familiar with the Kubernetes API","level":"4.1.1","depth":2,"path":"docs/Getting_familiar_with_the_Kubernetes_API.md","ref":"docs/Getting_familiar_with_the_Kubernetes_API.md","articles":[]},"dir":"ltr"},"config":{"plugins":["page-toc-button","cnzz","hints","sitemap-general"],"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"pluginsConfig":{"search":{},"cnzz":{"style":"1","visible":true,"siteid":"1278605528"},"hints":{"danger":"fa fa-bug","info":"fa fa-info-circle","tip":"fa fa-sticky-note","working":"fa fa-cog fa-spin"},"lunr":{"maxIndexSize":1000000,"ignoreSpecialCharacters":false},"sitemap-general":{"prefix":"https://wangwei1237.gitee.io/kubernetes-in-action-second-edition"},"fontsettings":{"theme":"white","family":"serif","size":2},"highlight":{},"page-toc-button":{"maxTocDepth":2,"minTocSize":2},"sharing":{"facebook":true,"twitter":true,"google":false,"weibo":false,"instapaper":false,"vk":false,"all":["facebook","google","twitter","weibo","instapaper"]},"theme-default":{"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"showLevel":false}},"theme":"default","author":"wangwei17","pdf":{"pageBreaksBefore":"/","headerTemplate":null,"paperSize":"a4","margin":{"right":62,"left":62,"top":36,"bottom":36},"fontSize":16,"fontFamily":"Arial","footerTemplate":null,"chapterMark":"pagebreak","pageNumbers":true},"structure":{"langs":"LANGS.md","readme":"README.md","glossary":"GLOSSARY.md","summary":"SUMMARY.md"},"isbn":"","variables":{},"title":"Kubernetes实战（第二版）","links":{"sharing":{"all":null,"facebook":null,"google":null,"twitter":null,"weibo":null},"sidebar":{"17哥的个人网站":"https://wangwei1237.gitee.io/"}},"gitbook":"*","description":"Kubernetes实战（第二版）","extension":null},"file":{"path":"docs/Examining_an_objects_individual_properties.md","mtime":"2020-11-13T06:41:17.887Z","type":"markdown"},"gitbook":{"version":"3.2.3","time":"2020-11-20T03:33:59.891Z"},"basePath":"..","book":{"language":""}});
+            gitbook.page.hasChanged({"page":{"title":"4.2 Examining an object’s individual properties","level":"4.1.2","depth":2,"next":{"title":"4.3 Observing cluster events via Event objects","level":"4.1.3","depth":2,"path":"docs/Observing_cluster_events_via_Event_objects.md","ref":"docs/Observing_cluster_events_via_Event_objects.md","articles":[]},"previous":{"title":"4.1 Getting familiar with the Kubernetes API","level":"4.1.1","depth":2,"path":"docs/Getting_familiar_with_the_Kubernetes_API.md","ref":"docs/Getting_familiar_with_the_Kubernetes_API.md","articles":[]},"dir":"ltr"},"config":{"plugins":["page-toc-button","cnzz","hints","sitemap-general"],"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"pluginsConfig":{"search":{},"cnzz":{"style":"1","visible":true,"siteid":"1278605528"},"hints":{"danger":"fa fa-bug","info":"fa fa-info-circle","tip":"fa fa-sticky-note","working":"fa fa-cog fa-spin"},"lunr":{"maxIndexSize":1000000,"ignoreSpecialCharacters":false},"sitemap-general":{"prefix":"https://wangwei1237.gitee.io/kubernetes-in-action-second-edition"},"fontsettings":{"theme":"white","family":"serif","size":2},"highlight":{},"page-toc-button":{"maxTocDepth":2,"minTocSize":2},"sharing":{"facebook":true,"twitter":true,"google":false,"weibo":false,"instapaper":false,"vk":false,"all":["facebook","google","twitter","weibo","instapaper"]},"theme-default":{"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"showLevel":false}},"theme":"default","author":"wangwei17","pdf":{"pageBreaksBefore":"/","headerTemplate":null,"paperSize":"a4","margin":{"right":62,"left":62,"top":36,"bottom":36},"fontSize":16,"fontFamily":"Arial","footerTemplate":null,"chapterMark":"pagebreak","pageNumbers":true},"structure":{"langs":"LANGS.md","readme":"README.md","glossary":"GLOSSARY.md","summary":"SUMMARY.md"},"isbn":"","variables":{},"title":"Kubernetes实战（第二版）","links":{"sharing":{"all":null,"facebook":null,"google":null,"twitter":null,"weibo":null},"sidebar":{"17哥的个人网站":"https://wangwei1237.gitee.io/"}},"gitbook":"*","description":"Kubernetes实战（第二版）","extension":null},"file":{"path":"docs/Examining_an_objects_individual_properties.md","mtime":"2020-11-22T04:04:26.006Z","type":"markdown"},"gitbook":{"version":"3.2.3","time":"2020-11-22T04:54:22.650Z"},"basePath":"..","book":{"language":""}});
         });
     </script>
 </div>
