@@ -4,7 +4,7 @@
     <head>
         <meta charset="UTF-8">
         <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
-        <title>3.1.6 Deploying a multi-node cluster from scratch · Kubernetes实战（第二版）</title>
+        <title>2.4 Summary · Kubernetes实战（第二版）</title>
         <meta http-equiv="X-UA-Compatible" content="IE=edge" />
         <meta name="description" content="">
         <meta name="generator" content="GitBook 3.2.3">
@@ -65,10 +65,10 @@
     <link rel="shortcut icon" href="../gitbook/images/favicon.ico" type="image/x-icon">
 
     
-    <link rel="next" href="Introducing_the_Kubernetes_API_Objects.html" />
+    <link rel="next" href="Deploying_your_first_application.html" />
     
     
-    <link rel="prev" href="Creating_a_cluster_using_Amazon_Elastic_Kubernetes_Service.html" />
+    <link rel="prev" href="Understanding_what_makes_containers_possible.html" />
     
 
     </head>
@@ -244,9 +244,9 @@
             
         </li>
     
-        <li class="chapter " data-level="3.2.2" data-path="../Exploring_containers_hands-on.md">
+        <li class="chapter " data-level="3.2.2" data-path="Exploring_containers_hands-on.html">
             
-                <span>
+                <a href="Exploring_containers_hands-on.html">
             
                     
                     2.2 Exploring containers hands-on
@@ -257,9 +257,9 @@
             
         </li>
     
-        <li class="chapter " data-level="3.2.3" data-path="../Understanding_what_makes_containers_possible.md">
+        <li class="chapter " data-level="3.2.3" data-path="Understanding_what_makes_containers_possible.html">
             
-                <span>
+                <a href="Understanding_what_makes_containers_possible.html">
             
                     
                     2.3 Understanding what makes containers possible
@@ -270,9 +270,9 @@
             
         </li>
     
-        <li class="chapter " data-level="3.2.4" data-path="../Summary_2.md">
+        <li class="chapter active" data-level="3.2.4" data-path="Summary_2.html">
             
-                <span>
+                <a href="Summary_2.html">
             
                     
                     2.4 Summary
@@ -315,12 +315,12 @@
             
         </li>
     
-        <li class="chapter " data-level="3.3.2" data-path="Using_the_built-in_Kubernetes_cluster_in_Docker_Desktop.html">
+        <li class="chapter " data-level="3.3.2" data-path="Interacting_with_Kubernetes.html">
             
-                <a href="Using_the_built-in_Kubernetes_cluster_in_Docker_Desktop.html">
+                <a href="Interacting_with_Kubernetes.html">
             
                     
-                    3.1.1 Using the built-in Kubernetes cluster in Docker Desktop
+                    3.2 Interacting with Kubernetes
             
                 </a>
             
@@ -328,12 +328,12 @@
             
         </li>
     
-        <li class="chapter " data-level="3.3.3" data-path="Running_a_local_cluster_using_Minikube.html">
+        <li class="chapter " data-level="3.3.3" data-path="Running_your_first_application_on_Kubernetes.html">
             
-                <a href="Running_a_local_cluster_using_Minikube.html">
+                <a href="Running_your_first_application_on_Kubernetes.html">
             
                     
-                    3.1.2   Running a local cluster using Minikube
+                    3.3  Running your first application on Kubernetes
             
                 </a>
             
@@ -341,51 +341,12 @@
             
         </li>
     
-        <li class="chapter " data-level="3.3.4" data-path="Running_a_local_cluster_using_kind.html">
+        <li class="chapter " data-level="3.3.4" data-path="Summary_3.html">
             
-                <a href="Running_a_local_cluster_using_kind.html">
-            
-                    
-                    3.1.3 Running a local cluster using kind (Kubernetes in Docker)
-            
-                </a>
-            
-
-            
-        </li>
-    
-        <li class="chapter " data-level="3.3.5" data-path="Creating_a_managed_cluster_with_Google_Kubernetes_Engine.html">
-            
-                <a href="Creating_a_managed_cluster_with_Google_Kubernetes_Engine.html">
+                <a href="Summary_3.html">
             
                     
-                    3.1.4 Creating a managed cluster with Google Kubernetes Engine
-            
-                </a>
-            
-
-            
-        </li>
-    
-        <li class="chapter " data-level="3.3.6" data-path="Creating_a_cluster_using_Amazon_Elastic_Kubernetes_Service.html">
-            
-                <a href="Creating_a_cluster_using_Amazon_Elastic_Kubernetes_Service.html">
-            
-                    
-                    3.1.5 Creating a cluster using Amazon Elastic Kubernetes Service
-            
-                </a>
-            
-
-            
-        </li>
-    
-        <li class="chapter active" data-level="3.3.7" data-path="Deploying_a_multi-node_cluster_from_scratch.html">
-            
-                <a href="Deploying_a_multi-node_cluster_from_scratch.html">
-            
-                    
-                    3.1.6 Deploying a multi-node cluster from scratch
+                    3.4 Summary
             
                 </a>
             
@@ -868,7 +829,7 @@
     <!-- Title -->
     <h1>
         <i class="fa fa-circle-o-notch fa-spin"></i>
-        <a href=".." >3.1.6 Deploying a multi-node cluster from scratch</a>
+        <a href=".." >2.4 Summary</a>
     </h1>
 </div>
 
@@ -883,10 +844,19 @@
     
                                 <section class="normal markdown-section">
                                 
-                                <h1 id="316---deploying-a-multi-node-cluster-from-scratch">3.1.6   Deploying a multi-node cluster from scratch</h1>
-<p>Until you get a deeper understanding of Kubernetes, I strongly recommend that you don&#x2019;t try to install a multi-node cluster from scratch. If you are an experienced systems administrator, you may be able to do it without much pain and suffering, but most people may want to try one of the methods described in the previous sections first. Proper management of Kubernetes clusters is incredibly difficult. The installation alone is a task not to be underestimated.</p>
-<p>If you still feel adventurous, you can start with the instructions in Appendix B, which explain how to create VMs with VirtualBox and install Kubernetes using the kubeadm tool. You can also use those instructions to install Kubernetes on your bare-metal machines or in VMs running in the cloud.</p>
-<p>Once you&#x2019;ve successfully deployed one or two clusters using kubeadm, you can then try to deploy it completely manually, by following Kelsey Hightower&#x2019;s Kubernetes the Hard Way tutorial at github.com/kelseyhightower/Kubernetes-the-hard-way. Though you may run into several problems, figuring out how to solve them can be a great learning experience.</p>
+                                <h1 id="24-summary">2.4 Summary</h1>
+<p>If you were new to containers before reading this chapter, you should now understand what they are, why we use them, and what features of the Linux kernel make them possible. If you have previously used containers, I hope this chapter has helped to clarify your uncertainties about how containers work, and you now understand that they&#x2019;re nothing more than regular OS processes that the Linux kernel isolates from other processes.</p>
+<p>After reading this chapter, you should know that:</p>
+<ul>
+<li>Containers are regular processes, but isolated from each other and the other processes running in the host OS.</li>
+<li>Containers are much lighter than virtual machines, but because they use the same Linux kernel, they aren&#x2019;t as isolated as VMs.</li>
+<li>Docker was the first container platform to make containers popular and the first container runtime supported by Kubernetes. Now, others are supported through the Container Runtime Interface (CRI).</li>
+<li>A container image contains the user application and all its dependencies. It is distributed through a container registry and used to create running containers.</li>
+<li>Containers can be downloaded and executed with a single docker run command.</li>
+<li>Docker builds an image from a Dockerfile that contains commands that Docker should execute during the build process. Images consist of layers that can be shared between multiple images. Each layer only needs to be transmitted and stored once.</li>
+<li>Containers are isolated by Linux kernel features called Namespaces, Control groups, Capabilities, seccomp, AppArmor and/or SELinux. Namespaces ensure that a container sees only a part of the resources available on the host, Control groups limit the amount of a resource it can use, while other features strengthen the isolation between containers.</li>
+</ul>
+<p>After inspecting the containers on this ship, you&#x2019;re now ready to raise the anchor and sail into the next chapter, where you&#x2019;ll learn about running containers with Kubernetes.</p>
 
                                 
                                 </section>
@@ -914,12 +884,12 @@
 
             
                 
-                <a href="Creating_a_cluster_using_Amazon_Elastic_Kubernetes_Service.html" class="navigation navigation-prev " aria-label="Previous page: 3.1.5 Creating a cluster using Amazon Elastic Kubernetes Service">
+                <a href="Understanding_what_makes_containers_possible.html" class="navigation navigation-prev " aria-label="Previous page: 2.3 Understanding what makes containers possible">
                     <i class="fa fa-angle-left"></i>
                 </a>
                 
                 
-                <a href="Introducing_the_Kubernetes_API_Objects.html" class="navigation navigation-next " aria-label="Next page: 4. Introducing the Kubernetes API Objects">
+                <a href="Deploying_your_first_application.html" class="navigation navigation-next " aria-label="Next page: 3 DEPLOYING YOUR FIRST APPLICATION">
                     <i class="fa fa-angle-right"></i>
                 </a>
                 
@@ -930,7 +900,7 @@
     <script>
         var gitbook = gitbook || [];
         gitbook.push(function() {
-            gitbook.page.hasChanged({"page":{"title":"3.1.6 Deploying a multi-node cluster from scratch","level":"3.3.7","depth":2,"next":{"title":"4. Introducing the Kubernetes API Objects","level":"4.1","depth":1,"path":"docs/Introducing_the_Kubernetes_API_Objects.md","ref":"docs/Introducing_the_Kubernetes_API_Objects.md","articles":[{"title":"4.1 Getting familiar with the Kubernetes API","level":"4.1.1","depth":2,"path":"docs/Getting_familiar_with_the_Kubernetes_API.md","ref":"docs/Getting_familiar_with_the_Kubernetes_API.md","articles":[]},{"title":"4.2 Examining an object’s individual properties","level":"4.1.2","depth":2,"path":"docs/Examining_an_objects_individual_properties.md","ref":"docs/Examining_an_objects_individual_properties.md","articles":[]},{"title":"4.3 Observing cluster events via Event objects","level":"4.1.3","depth":2,"path":"docs/Observing_cluster_events_via_Event_objects.md","ref":"docs/Observing_cluster_events_via_Event_objects.md","articles":[]},{"title":"4.4 Summary","level":"4.1.4","depth":2,"path":"docs/Summary_4.md","ref":"docs/Summary_4.md","articles":[]}]},"previous":{"title":"3.1.5 Creating a cluster using Amazon Elastic Kubernetes Service","level":"3.3.6","depth":2,"path":"docs/Creating_a_cluster_using_Amazon_Elastic_Kubernetes_Service.md","ref":"docs/Creating_a_cluster_using_Amazon_Elastic_Kubernetes_Service.md","articles":[]},"dir":"ltr"},"config":{"plugins":["page-toc-button","cnzz","hints","sitemap-general"],"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"pluginsConfig":{"search":{},"cnzz":{"style":"1","visible":true,"siteid":"1278605528"},"hints":{"danger":"fa fa-bug","info":"fa fa-info-circle","tip":"fa fa-sticky-note","working":"fa fa-cog fa-spin"},"lunr":{"maxIndexSize":1000000,"ignoreSpecialCharacters":false},"sitemap-general":{"prefix":"https://wangwei1237.gitee.io/kubernetes-in-action-second-edition"},"fontsettings":{"theme":"white","family":"serif","size":2},"highlight":{},"page-toc-button":{"maxTocDepth":2,"minTocSize":2},"sharing":{"facebook":true,"twitter":true,"google":false,"weibo":false,"instapaper":false,"vk":false,"all":["facebook","google","twitter","weibo","instapaper"]},"theme-default":{"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"showLevel":false}},"theme":"default","author":"wangwei17","pdf":{"pageBreaksBefore":"/","headerTemplate":null,"paperSize":"a4","margin":{"right":62,"left":62,"top":36,"bottom":36},"fontSize":16,"fontFamily":"Arial","footerTemplate":null,"chapterMark":"pagebreak","pageNumbers":true},"structure":{"langs":"LANGS.md","readme":"README.md","glossary":"GLOSSARY.md","summary":"SUMMARY.md"},"isbn":"","variables":{},"title":"Kubernetes实战（第二版）","links":{"sharing":{"all":null,"facebook":null,"google":null,"twitter":null,"weibo":null},"sidebar":{"17哥的个人网站":"https://wangwei1237.gitee.io/"}},"gitbook":"*","description":"Kubernetes实战（第二版）","extension":null},"file":{"path":"docs/Deploying_a_multi-node_cluster_from_scratch.md","mtime":"2020-11-17T08:34:04.350Z","type":"markdown"},"gitbook":{"version":"3.2.3","time":"2020-11-20T03:33:59.891Z"},"basePath":"..","book":{"language":""}});
+            gitbook.page.hasChanged({"page":{"title":"2.4 Summary","level":"3.2.4","depth":2,"next":{"title":"3 DEPLOYING YOUR FIRST APPLICATION","level":"3.3","depth":1,"path":"docs/Deploying_your_first_application.md","ref":"docs/Deploying_your_first_application.md","articles":[{"title":"3.1 Deploying a Kubernetes cluster","level":"3.3.1","depth":2,"path":"docs/Deploying_a_Kubernetes_cluster.md","ref":"docs/Deploying_a_Kubernetes_cluster.md","articles":[]},{"title":"3.2 Interacting with Kubernetes","level":"3.3.2","depth":2,"path":"docs/Interacting_with_Kubernetes.md","ref":"docs/Interacting_with_Kubernetes.md","articles":[]},{"title":"3.3  Running your first application on Kubernetes","level":"3.3.3","depth":2,"path":"docs/Running_your_first_application_on_Kubernetes.md","ref":"docs/Running_your_first_application_on_Kubernetes.md","articles":[]},{"title":"3.4 Summary","level":"3.3.4","depth":2,"path":"docs/Summary_3.md","ref":"docs/Summary_3.md","articles":[]}]},"previous":{"title":"2.3 Understanding what makes containers possible","level":"3.2.3","depth":2,"path":"docs/Understanding_what_makes_containers_possible.md","ref":"docs/Understanding_what_makes_containers_possible.md","articles":[]},"dir":"ltr"},"config":{"plugins":["page-toc-button","cnzz","hints","sitemap-general"],"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"pluginsConfig":{"search":{},"cnzz":{"style":"1","visible":true,"siteid":"1278605528"},"hints":{"danger":"fa fa-bug","info":"fa fa-info-circle","tip":"fa fa-sticky-note","working":"fa fa-cog fa-spin"},"lunr":{"maxIndexSize":1000000,"ignoreSpecialCharacters":false},"sitemap-general":{"prefix":"https://wangwei1237.gitee.io/kubernetes-in-action-second-edition"},"fontsettings":{"theme":"white","family":"serif","size":2},"highlight":{},"page-toc-button":{"maxTocDepth":2,"minTocSize":2},"sharing":{"facebook":true,"twitter":true,"google":false,"weibo":false,"instapaper":false,"vk":false,"all":["facebook","google","twitter","weibo","instapaper"]},"theme-default":{"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"showLevel":false}},"theme":"default","author":"wangwei17","pdf":{"pageBreaksBefore":"/","headerTemplate":null,"paperSize":"a4","margin":{"right":62,"left":62,"top":36,"bottom":36},"fontSize":16,"fontFamily":"Arial","footerTemplate":null,"chapterMark":"pagebreak","pageNumbers":true},"structure":{"langs":"LANGS.md","readme":"README.md","glossary":"GLOSSARY.md","summary":"SUMMARY.md"},"isbn":"","variables":{},"title":"Kubernetes实战（第二版）","links":{"sharing":{"all":null,"facebook":null,"google":null,"twitter":null,"weibo":null},"sidebar":{"17哥的个人网站":"https://wangwei1237.gitee.io/"}},"gitbook":"*","description":"Kubernetes实战（第二版）","extension":null},"file":{"path":"docs/Summary_2.md","mtime":"2020-11-22T12:01:47.888Z","type":"markdown"},"gitbook":{"version":"3.2.3","time":"2020-11-22T12:02:46.203Z"},"basePath":"..","book":{"language":""}});
         });
     </script>
 </div>
