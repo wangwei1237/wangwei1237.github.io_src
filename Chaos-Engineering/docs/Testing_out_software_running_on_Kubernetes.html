@@ -650,7 +650,222 @@ goldpinger-c86c78448-shtdq   0/1     Terminating         0          43s
 <p>Let&#x2019;s say that we want to see what happens when one instance of Goldpinger is slow to respond to queries of its peers. After all, this is what this piece of software was designed to help with, so before we rely on it, we should test that it works as expected.</p>
 <p>A convenient way of doing that is to deploy a copy of Goldpinger that we can modify to add a delay. Once again, we could do it with <code>tc</code>, but to show you some new tools, let&#x2019;s use a standalone network proxy instead. That proxy will sit in front of that new Goldpinger instance, receive the calls from its peers, add the delay, and relay the calls to Goldpinger. Thanks to Kubernetes, setting it all up is pretty straightforward.</p>
 <p>Let&#x2019;s iron out some details. Goldpinger&#x2019;s default timeout for all calls is 300ms, so let&#x2019;s pick an arbitrary value of 250ms for our delay: enough to be clearly seen, but not enough to cause a timeout. And thanks to the built-in heatmap, we will be able to visually show the connections that take longer than others, so the observability aspect is taken care of. The plan of the experiment figuratively writes itself:</p>
-<h1 id="todo">TODO</h1>
+<ol>
+<li>Observability: use Goldpinger UI to read delays using the graph UI and the heatmap</li>
+<li>Steady state: all existing Goldpinger instantes report healthy</li>
+<li>Hypothesis: if we add a new instance that has a 250ms delay, the connectivity graph will show all four instances healthy, and the 250ms delay will be visible in the heatmap</li>
+<li>Run the experiment!</li>
+</ol>
+<p>Sounds good? Let&#x2019;s see how to implement it.</p>
+<h3 id="experiment-2-implementation">Experiment 2: implementation</h3>
+<p>Time to dig into what the implementation will look like. Do you remember figure 10.4 that showed how Goldpinger worked? Let me copy it for your convenience in figure 10.12. Every instance asks Kubernetes for all its peers, and then periodically makes calls to them to measure latency and detect problems.</p>
+<p>Figure 10.12 Overview of how Goldpinger works (again)</p>
+<p><img src="../images/10.12.jpg" alt=""></p>
+<p>Now, what we want to do is add a copy of the Goldpinger pod that has the extra proxy we just discussed in front of it. A pod in Kubernetes can have multiple containers running alongside each other and able to communicate via localhost. If we use the same label <code>app=goldpinger</code>, the other instances will detect the new pod and start calling. But we will configure the ports in a way that instead of directly reaching the new instance, the peers will first reach the proxy (in port 8080). And the proxy will add the desired latency. The extra Goldpinger instance will be able to ping the other hosts freely, like a regular instance. This is summarized in figure 10.13.</p>
+<p>Figure 10.13 A modified copy of Goldpinger with an extra proxy in front of it</p>
+<p><img src="../images/10.13.jpg" alt=""></p>
+<p>We&#x2019;ve got the idea of what the setup will look like, now we need the actual networking proxy. Goldpinger communicates via HTTP/1.1, so we&#x2019;re in luck. It&#x2019;s a text-based, reasonably simple protocol running on top of TCP. All we need is the protocol specification (RFC 7230<sup><a href="#fn_1" id="reffn_1">1</a></sup>, RFC 7231<sup><a href="#fn_2" id="reffn_2">2</a></sup>, RFC 7232<sup><a href="#fn_3" id="reffn_3">3</a></sup>, RFC 7233<sup><a href="#fn_4" id="reffn_4">4</a></sup> and RFC 7234<sup><a href="#fn_5" id="reffn_5">5</a></sup>) and we should be able to implement a quick proxy in no time. Dust off your C compiler, stretch your arms, and let&#x2019;s do it!</p>
+<h3 id="experiment-2-toxiproxy">Experiment 2: Toxiproxy</h3>
+<p>Just kidding! We&#x2019;ll use an existing, open-source project designed for this kind of thing, called Toxiproxy (<a href="https://github.com/shopify/toxiproxy" target="_blank">https://github.com/shopify/toxiproxy</a>). It works as a proxy on TCP level (L4 OSI model), which is fine for us, because we don&#x2019;t actually need to understand anything about what&#x2019;s going on on the HTTP level (L7) to introduce a simple latency. The added benefit is that you can use the same tool for any other TCP-based protocol in the exact same way, so what we&#x2019;re about to do will be equally applicable to a lot of other popular software, like Redis, MySQL, PostgreSQL and many more.</p>
+<p>ToxiProxy consists of two pieces:</p>
+<ul>
+<li>the actual proxy server, which exposes an API you can use to configure what should be proxied where and the kind of failure that you expect</li>
+<li>and a CLI client, that connects to that API and can change the configuration live</li>
+</ul>
+<p><div class="alert alert-info hints-alert"><div class="hints-icon"><i class="fa fa-info-circle"></i></div><div class="hints-container"><p><strong>NOTE CLI AND API</strong></p>
+<p>Instead of using the CLI, you can also talk to the API directly, and ToxiProxy offers ready-to-use clients in a variety of languages.</p>
+</div></div></p>
+<p>The dynamic nature of ToxiProxy makes it really useful when used in unit and integration testing. For example, your integration test could start by configuring the proxy to add latency when connecting to a database, and then your test could verify that timeouts are triggered accordingly. It&#x2019;s also going to be handy for us in implementing our experiment.</p>
+<p>The version we&#x2019;ll use, 2.1.4 (<a href="https://github.com/Shopify/toxiproxy/releases/tag/v2.1.4" target="_blank">https://github.com/Shopify/toxiproxy/releases/tag/v2.1.4</a>), is the latest available release at the time of writing. We&#x2019;re going to run the proxy server as part of the extra Goldpinger pod using a prebuilt, publicly available image from Docker Hub. We&#x2019;ll also need to use the CLI locally on your machine. To install it, download the CLI executable for your system (Ubuntu/Debian, Windows, MacOS) from <a href="https://github.com/Shopify/toxiproxy/releases/tag/v2.1.4" target="_blank">https://github.com/Shopify/toxiproxy/releases/tag/v2.1.4</a> and add it to your PATH. To confirm it works, run the following command:</p>
+<pre><code>toxiproxy-cli &#x2013;version
+</code></pre><p>You should see the version 2.1.4 displayed, like in the following output:</p>
+<pre><code>toxiproxy-cli version 2.1.4
+</code></pre><p>When a ToxiProxy server starts, by default it doesn&#x2019;t do anything apart from running its HTTP API. By calling the API, you can configure and dynamically change the behavior of the proxy server. You can define arbitrary configurations defined by:</p>
+<ol>
+<li>a unique name</li>
+<li>a host and port to bind to and listen for connections</li>
+<li>a destination server to proxy to</li>
+</ol>
+<p>For every configuration like this, you can attach failures. In ToxiProxy lingo, these failures are called &#x201C;toxics&#x201D;. Currently, the following toxics are available:</p>
+<ol>
+<li>latency - add arbitrary latency to the connection (in either direction)</li>
+<li>down - take the connection down</li>
+<li>bandwidth - throttle the connection to the desired speed</li>
+<li>slow close - delay the TCP socket from closing for an arbitrary time</li>
+<li>timeout - wait for an arbitrary time and then close the connection</li>
+<li>slicer - slices the received data into smaller bits before sending it to the destination</li>
+</ol>
+<p>You can attach an arbitrary combination of failures to every proxy configuration you define. For our needs, the latency toxic will do exactly what we want it to. Let&#x2019;s see how all of this fits together.</p>
+<p><div class="alert alert-info hints-alert"><div class="hints-icon"><i class="fa fa-info-circle"></i></div><div class="hints-container"><p><strong>NOTE POP QUIZ: WHAT&#x2019;S TOXIPROXY?</strong></p>
+<p>Pick one:</p>
+<ol>
+<li>A configurable TCP proxy, that can simulate various problems, like dropped packets or network slowness</li>
+<li>A K-pop band singing about the environmental consequences of dumping large amounts of toxic waste sent to third world countries through the use of proxy and shell companies</li>
+</ol>
+<p>See appendix B for answers.</p>
+</div></div></p>
+<h3 id="experiment-2-implementation-continued">Experiment 2: implementation continued</h3>
+<p>To sum it all up, we want to create a new pod with two containers: one for Goldpinger and one for the ToxiProxy. We&#x2019;ll need to configure Goldpinger to run on a different port, so that the proxy can listen on the default port 8080 that the other Goldpinger instances will try to connect to. We&#x2019;ll also create a service that routes connections to the proxy API on port 8474, so that we can use toxiproxy-cli commands to configure the proxy and add the latency that we want,just like in figure 10.14.</p>
+<p>Figure 10.14 Interacting with the modified version of Goldpinger using toxiproxy-cli</p>
+<p><img src="../images/10.14.jpg" alt=""></p>
+<p>Let&#x2019;s now translate this into a Kubernetes .yml file. You can see the resulting goldpinger-chaos.yml in listing 10.4. You will see two resource descriptions, a pod (with two containers) and a service. Note, that we use the same service account we created before, to give Goldpinger the same permissions. We&#x2019;re also using two environment variables, <code>PORT</code> and <code>CLIENT_PORT_OVERRIDE</code>, to make Goldpinger listen on port 9090, but call its peers on port 8080, respectively. This is because by default, Goldpinger calls its peers on the same port that it runs itself. Finally, notice that the service is using a label <code>chaos=absolutely</code> to match to the new pod we created. It&#x2019;s important that the Goldpinger pod has the label <code>app=goldpinger</code>, so that it can be found by its peers, but we also need another label to be able to route connections to the proxy API.</p>
+<pre><code class="lang-yaml"><span class="hljs-meta">---</span>
+<span class="hljs-attr">apiVersion:</span> v1
+<span class="hljs-attr">kind:</span> Pod
+<span class="hljs-attr">metadata:</span>
+<span class="hljs-attr">  name:</span> goldpinger-chaos
+<span class="hljs-attr">  namespace:</span> default
+<span class="hljs-attr">  labels:</span>
+<span class="hljs-attr">    app:</span> goldpinger                                <span class="hljs-comment">#A</span>
+<span class="hljs-attr">    chaos:</span> absolutely
+<span class="hljs-attr">spec:</span>
+<span class="hljs-attr">  serviceAccount:</span> <span class="hljs-string">&quot;goldpinger-serviceaccount&quot;</span>      <span class="hljs-comment">#B</span>
+<span class="hljs-attr">  containers:</span>
+<span class="hljs-attr">  - name:</span> goldpinger
+<span class="hljs-attr">    image:</span> docker.io/bloomberg/goldpinger:v3<span class="hljs-number">.0</span><span class="hljs-number">.0</span>
+<span class="hljs-attr">    env:</span>
+<span class="hljs-attr">    - name:</span> REFRESH_INTERVAL
+<span class="hljs-attr">      value:</span> <span class="hljs-string">&quot;2&quot;</span>
+<span class="hljs-attr">    - name:</span> HOST
+<span class="hljs-attr">      value:</span> <span class="hljs-string">&quot;0.0.0.0&quot;</span>
+<span class="hljs-attr">    - name:</span> PORT
+<span class="hljs-attr">      value:</span> <span class="hljs-string">&quot;9090&quot;</span>                               <span class="hljs-comment">#C</span>
+<span class="hljs-attr">    - name:</span> CLIENT_PORT_OVERRIDE
+<span class="hljs-attr">      value:</span> <span class="hljs-string">&quot;8080&quot;</span>
+<span class="hljs-attr">    - name:</span> POD_IP
+<span class="hljs-attr">      valueFrom:</span>
+<span class="hljs-attr">        fieldRef:</span>
+<span class="hljs-attr">          fieldPath:</span> status.podIP
+<span class="hljs-attr">  - name:</span> toxiproxy
+<span class="hljs-attr">    image:</span> docker.io/shopify/toxiproxy:<span class="hljs-number">2.1</span><span class="hljs-number">.4</span>
+<span class="hljs-attr">    ports:</span>
+<span class="hljs-attr">    - containerPort:</span> <span class="hljs-number">8474</span>                         <span class="hljs-comment">#D</span>
+<span class="hljs-attr">      name:</span> toxiproxy-api
+<span class="hljs-attr">    - containerPort:</span> <span class="hljs-number">8080</span>
+<span class="hljs-attr">      name:</span> goldpinger
+<span class="hljs-meta">---</span>
+<span class="hljs-attr">apiVersion:</span> v1
+<span class="hljs-attr">kind:</span> Service
+<span class="hljs-attr">metadata:</span>
+<span class="hljs-attr">  name:</span> goldpinger-chaos
+<span class="hljs-attr">  namespace:</span> default
+<span class="hljs-attr">spec:</span>
+<span class="hljs-attr">  type:</span> LoadBalancer
+<span class="hljs-attr">  ports:</span>
+<span class="hljs-attr">    - port:</span> <span class="hljs-number">8474</span>                                  <span class="hljs-comment">#E</span>
+<span class="hljs-attr">      name:</span> toxiproxy-api
+<span class="hljs-attr">  selector:</span>
+<span class="hljs-attr">    chaos:</span> absolutely                             <span class="hljs-comment">#F</span>
+</code></pre>
+<p>#A the new pod has the same label app=goldpinger to be detected by its peers, but also chaos=absolutely to be matched by the proxy api service</p>
+<p>#B we use the same service account as other instances to give Goldpinger permission to list its peers</p>
+<p>#C we use HOST envvar to make Goldpinger listen on port 9090, and CLIENT_PORT_OVERRIDE to make it call itse peers on the default port 8080</p>
+<p>#D ToxiProxy container will expose two ports: 8474 with the ToxiProxy API and 8080 to proxy through to Goldpinger</p>
+<p>#E the service will route traffic to port 8474 (ToxiProxy API)</p>
+<p>#F the service will use label chaos=absolutely to select the pods running ToxiProxy</p>
+<p>And that&#x2019;s all we need. Make sure you have this file handy (or clone it from the repo like before). Ready to rock? Let the games begin!</p>
+<h3 id="experiment-2-run">Experiment 2: run!</h3>
+<p>To run this experiment, we&#x2019;re going to use the Goldpinger UI. If you closed the browser window before, restart it by running the following command in the terminal:</p>
+<pre><code>minikube service goldpinger
+</code></pre><p>Let&#x2019;s start with the steady state, and confirm that all three nodes are visible and report as healthy. In the top bar, click Heatmap. You will see a heatmap similar to the one in figure 10.15. Each square represents connectivity between nodes and is color-coded based on the time it took to execute a request.</p>
+<ul>
+<li>Columns represent source (from)</li>
+<li>Rows represent destinations (to)</li>
+<li>The legend clarifies which number corresponds to which pod.</li>
+</ul>
+<p>In this example, all squares are the same color and shade, meaning that all requests took below 2ms, which is to be expected when all instances run on the same host. You can also tweak the values to your liking and click &#x201C;refresh&#x201D; to show a new heatmap. Close it when you&#x2019;re ready.</p>
+<p>Figure 10.15 Example of Goldpinger Heatmap</p>
+<p><img src="../images/10.15.jpg" alt=""></p>
+<p>Let&#x2019;s introduce our new pod! To do that, we&#x2019;ll <code>kubectl apply</code> the goldpinger-chaos.yml file from listing 10.4. Run the following command:</p>
+<pre><code>kubectl apply -f goldpinger-chaos.yml
+</code></pre><p>You will see an output confirming creation of a pod and service:</p>
+<pre><code>pod/goldpinger-chaos created
+service/goldpinger-chaos created
+</code></pre><p>Let&#x2019;s confirm it&#x2019;s running by going to the UI. You will now see an extra node, just like in figure 10.16. But notice that the new pod is marked as unhealthy - all of its peers are failing to connect to it. In the live UI, the node is marked in red, and in the figure 10.16 I annotated the new, unhealthy node for you. This is because we haven&#x2019;t configured the proxy to pass the traffic yet.</p>
+<p>Figure 10.16 Extra Goldpinger instance, detected by its peers, but inaccessible</p>
+<p><img src="../images/10.16.jpg" alt=""></p>
+<p>Let&#x2019;s address that by configuring the ToxiProxy. This is where the extra service we deployed comes in handy: we will use it to connect to the ToxiProxy API using toxiproxy-cli. Do you remember how we used <code>minikube service</code> to get a special URL to access the Goldpinger service? We&#x2019;ll leverage that again, but this time with the <code>--url</code> flag, to only print the url itself. Run the following command in a bash session to store the url in a variable:</p>
+<pre><code>TOXIPROXY_URL=$(minikube service --url goldpinger-chaos)
+</code></pre><p>We can now use the variable to point toxiproxy-cli to the right ToxiProxy API. That&#x2019;s done using the -h flag. Confusingly, -h is not for &#x201C;help&#x201D;, it&#x2019;s for &#x201C;host&#x201D;. Let&#x2019;s confirm it works by listing the existing proxy configuration:</p>
+<pre><code>toxiproxy-cli -h $TOXIPROXY_URL list
+</code></pre><p>You will see the following output, saying there are no proxies configured. It even goes so far as to hint we create some proxies (bold font):</p>
+<pre><code>Name       Listen          Upstream                Enabled         Toxics
+no proxies
+
+Hint: create a proxy with `toxiproxy-cli create`
+</code></pre><p>Let&#x2019;s configure one. We&#x2019;ll call it chaos, make it route to localhost:9090 (where we configured Goldpinger to listen to) and listen on 0.0.0.0:8080 to make it accessible to its peers to call. Run the following command to make that happen:</p>
+<pre><code>toxiproxy-cli \ 
+  -h $TOXIPROXY_URL \        #A
+  create chaos \             #B
+  -l 0.0.0.0:8080 \          #C
+  -u localhost:9090          #D
+</code></pre><p>#A connect to specific proxy</p>
+<p>#B create a new proxy configuration called &#x201C;chaos&#x201D;</p>
+<p>#C listen on 0.0.0.0:8080 (default Goldpinger port)</p>
+<p>#D relay connections to localhost:9090 (where we configured Goldpinger to run)</p>
+<p>You will see a simple confirmation that the proxy was created:</p>
+<pre><code>Created new proxy chaos
+</code></pre><p>Rerun the <code>toxiproxy-cli list</code> command to see the new proxy appear this time:</p>
+<pre><code>toxiproxy-cli -h $TOXIPROXY_URL list
+</code></pre><p>You will see the following output, listing a new proxy configuration called &#x201C;chaos&#x201D; (bold font):</p>
+<pre><code>Name       Listen          Upstream                Enabled         Toxics 
+  ================================================ 
+  chaos      [::]:8080       localhost:9090          enabled         None 
+
+Hint: inspect toxics with `toxiproxy-cli inspect &lt;proxyName&gt;`
+</code></pre><p>If you go back to the UI and click refresh, you will see that the <code>goldpinger-chaos</code> extra instance is now green, and all instances happily report healthy state in all directions. If you check the heatmap, it will also show all green.</p>
+<p>Let&#x2019;s change that. Using the command <code>toxiproxy-cli toxic add</code>, let&#x2019;s add a single toxic with 250ms latency. Do that by running the following command:</p>
+<pre><code>toxiproxy-cli \
+-h $TOXIPROXY_URL \
+toxic add \                  #A
+--type latency \             #B
+--a latency=250 \            #C
+--upstream \                 #D
+chaos                        #E
+</code></pre><p>#A add a toxic to an existing proxy configuration</p>
+<p>#B toxic type is latency</p>
+<p>#C we want to add 250ms of latency</p>
+<p>#D we set it in the upstream direction, towards the Goldpinger instance</p>
+<p>#E we attach this toxic to a proxy configuration called &#x201C;chaos&#x201D;</p>
+<p>You will see a confirmation:</p>
+<pre><code>Added upstream latency toxic &apos;latency_upstream&apos; on proxy &apos;chaos&apos;
+To confirm that the proxy got it right, we can inspect our proxy called &#x201C;chaos&#x201D;. To do that, run the following command:
+toxiproxy-cli -h $TOXIPROXY_URL inspect chaos
+</code></pre><p>You will see an output just like the following, listing our brand new toxic (bold font):</p>
+<pre><code>Name: chaos     Listen: [::]:8080       Upstream: localhost:9090 
+  ====================================================================== 
+  Upstream toxics: 
+  latency_upstream:       type=latency    stream=upstream toxicity=1.00   attributes=[    jitter=0        latency=250     ] 
+
+  Downstream toxics: 
+  Proxy has no Downstream toxics enabled.
+</code></pre><p>Now, go back to the Goldpinger UI in the browser and refresh. You will still see all four instances reporting healthy and happy (the 250ms delay fits within the default timeout of 300ms). But if you open the heatmap, this time it will tell a different story. The row with <code>goldpinger-chaos</code> pod will be marked in red (problem threshold), implying that all its peers detected slowness. See figure 10.17 for a screenshot.</p>
+<p>Figure 10.17 Goldpinger heatmap, showing slowness accessing pod goldpinger-chaos</p>
+<p><img src="../images/10.17.jpg" alt=""></p>
+<p>This means that our hypothesis was correct: Goldpinger correctly detects and reports the slowness, and at 250ms, below the default timeout of 300ms, the Goldpinger graph UI reports all as healthy. And we did all of that without modifying the existing pods.</p>
+<p>This wraps up the experiment, but before we go, let&#x2019;s clean up the extra pod. To do that, run the following command to delete everything we created using the goldpinger-chaos.yml file:</p>
+<pre><code>kubectl delete -f goldpinger-chaos.yml
+</code></pre><p>Let&#x2019;s discuss our findings.</p>
+<h3 id="experiment-2-discussion">Experiment 2: Discussion</h3>
+<p>How well did we do? We took some time to learn new tools, but the entire implementation of the experiment boiled down to a single .yml file and a handful of commands with ToxiProxy. We also had a tangible benefit of working on a copy of the software that we wanted to test, leaving the existing running processes unmodified. We effectively rolled out some extra capacity and then had 25% of running software affected, limiting the blast radius. Does it mean we could do that in production? As with any sufficiently complex question, the answer is, &#x201C;it depends.&#x201D; In this example, if we wanted to verify the robustness of some alerting that relies on metrics from Goldpinger to trigger, this could be a good way to do it. But the extra software could also affect the existing instances in a more profound way, making it more risky. At the end of the day, it really depends on your application.</p>
+<p>There is, of course, room for improvement. For example, the service we&#x2019;re using to access the Goldpinger UI is routing traffic to any instance matched in a pseudo-random fashion. That means that sometimes it will route to the instance that has the 250ms delay. In our case, that will be difficult to spot with the naked eye, but if you wanted to test a larger delay, it could be a problem.</p>
+<p>Time to wrap up this first part. Coming in part 2: making your chaos engineer life easier with PowerfulSeal.</p>
+<hr>
+<blockquote id="fn_1">
+<sup>1</sup>. <a href="https://tools.ietf.org/html/rfc7230" target="_blank">https://tools.ietf.org/html/rfc7230</a><a href="#reffn_1" title="Jump back to footnote [1] in the text."> &#x21A9;</a>
+</blockquote>
+<blockquote id="fn_2">
+<sup>2</sup>. <a href="https://tools.ietf.org/html/rfc7231" target="_blank">https://tools.ietf.org/html/rfc7231</a><a href="#reffn_2" title="Jump back to footnote [2] in the text."> &#x21A9;</a>
+</blockquote>
+<blockquote id="fn_3">
+<sup>3</sup>. <a href="https://tools.ietf.org/html/rfc7232" target="_blank">https://tools.ietf.org/html/rfc7232</a><a href="#reffn_3" title="Jump back to footnote [3] in the text."> &#x21A9;</a>
+</blockquote>
+<blockquote id="fn_4">
+<sup>4</sup>. <a href="https://tools.ietf.org/html/rfc7233" target="_blank">https://tools.ietf.org/html/rfc7233</a><a href="#reffn_4" title="Jump back to footnote [4] in the text."> &#x21A9;</a>
+</blockquote>
+<blockquote id="fn_5">
+<sup>5</sup>. <a href="https://tools.ietf.org/html/rfc7234" target="_blank">https://tools.ietf.org/html/rfc7234</a><a href="#reffn_5" title="Jump back to footnote [5] in the text."> &#x21A9;</a>
+</blockquote>
 
                                 
                                 </section>
@@ -694,7 +909,7 @@ goldpinger-c86c78448-shtdq   0/1     Terminating         0          43s
     <script>
         var gitbook = gitbook || [];
         gitbook.push(function() {
-            gitbook.page.hasChanged({"page":{"title":"10.4 Testing out software running on Kubernetes","level":"2.1.4","depth":2,"next":{"title":"10.5 Summary","level":"2.1.5","depth":2,"path":"docs/Summary_10.md","ref":"docs/Summary_10.md","articles":[]},"previous":{"title":"10.3 Setting up a Kubernetes cluster","level":"2.1.3","depth":2,"path":"docs/Setting_up_a_Kubernetes_cluster.md","ref":"docs/Setting_up_a_Kubernetes_cluster.md","articles":[]},"dir":"ltr"},"config":{"plugins":["page-toc-button","cnzz","hints","sitemap-general"],"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"pluginsConfig":{"search":{},"cnzz":{"style":"1","visible":true,"siteid":"1278605528"},"hints":{"danger":"fa fa-bug","info":"fa fa-info-circle","tip":"fa fa-sticky-note","working":"fa fa-cog fa-spin"},"lunr":{"maxIndexSize":1000000,"ignoreSpecialCharacters":false},"sitemap-general":{"prefix":"https://wangwei1237.gitee.io/chaos-engineering"},"fontsettings":{"theme":"white","family":"serif","size":2},"highlight":{},"page-toc-button":{"maxTocDepth":2,"minTocSize":2},"sharing":{"facebook":true,"twitter":true,"google":false,"weibo":false,"instapaper":false,"vk":false,"all":["facebook","google","twitter","weibo","instapaper"]},"theme-default":{"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"showLevel":false}},"theme":"default","author":"wangwei17","pdf":{"pageBreaksBefore":"/","headerTemplate":null,"paperSize":"a4","margin":{"right":62,"left":62,"top":36,"bottom":36},"fontSize":16,"fontFamily":"Arial","footerTemplate":null,"chapterMark":"pagebreak","pageNumbers":true},"structure":{"langs":"LANGS.md","readme":"README.md","glossary":"GLOSSARY.md","summary":"SUMMARY.md"},"isbn":"","variables":{},"title":"Chaos Engineering","links":{"sharing":{"all":null,"facebook":null,"google":null,"twitter":null,"weibo":null},"sidebar":{"17哥的个人网站":"https://wangwei1237.gitee.io/"}},"gitbook":"*","description":"Chaos-Engineering","extension":null},"file":{"path":"docs/Testing_out_software_running_on_Kubernetes.md","mtime":"2020-11-29T07:21:36.306Z","type":"markdown"},"gitbook":{"version":"3.2.3","time":"2020-11-29T07:40:20.911Z"},"basePath":"..","book":{"language":""}});
+            gitbook.page.hasChanged({"page":{"title":"10.4 Testing out software running on Kubernetes","level":"2.1.4","depth":2,"next":{"title":"10.5 Summary","level":"2.1.5","depth":2,"path":"docs/Summary_10.md","ref":"docs/Summary_10.md","articles":[]},"previous":{"title":"10.3 Setting up a Kubernetes cluster","level":"2.1.3","depth":2,"path":"docs/Setting_up_a_Kubernetes_cluster.md","ref":"docs/Setting_up_a_Kubernetes_cluster.md","articles":[]},"dir":"ltr"},"config":{"plugins":["page-toc-button","cnzz","hints","sitemap-general"],"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"pluginsConfig":{"search":{},"cnzz":{"style":"1","visible":true,"siteid":"1278605528"},"hints":{"danger":"fa fa-bug","info":"fa fa-info-circle","tip":"fa fa-sticky-note","working":"fa fa-cog fa-spin"},"lunr":{"maxIndexSize":1000000,"ignoreSpecialCharacters":false},"sitemap-general":{"prefix":"https://wangwei1237.gitee.io/chaos-engineering"},"fontsettings":{"theme":"white","family":"serif","size":2},"highlight":{},"page-toc-button":{"maxTocDepth":2,"minTocSize":2},"sharing":{"facebook":true,"twitter":true,"google":false,"weibo":false,"instapaper":false,"vk":false,"all":["facebook","google","twitter","weibo","instapaper"]},"theme-default":{"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"showLevel":false}},"theme":"default","author":"wangwei17","pdf":{"pageBreaksBefore":"/","headerTemplate":null,"paperSize":"a4","margin":{"right":62,"left":62,"top":36,"bottom":36},"fontSize":16,"fontFamily":"Arial","footerTemplate":null,"chapterMark":"pagebreak","pageNumbers":true},"structure":{"langs":"LANGS.md","readme":"README.md","glossary":"GLOSSARY.md","summary":"SUMMARY.md"},"isbn":"","variables":{},"title":"Chaos Engineering","links":{"sharing":{"all":null,"facebook":null,"google":null,"twitter":null,"weibo":null},"sidebar":{"17哥的个人网站":"https://wangwei1237.gitee.io/"}},"gitbook":"*","description":"Chaos-Engineering","extension":null},"file":{"path":"docs/Testing_out_software_running_on_Kubernetes.md","mtime":"2020-11-30T02:28:13.400Z","type":"markdown"},"gitbook":{"version":"3.2.3","time":"2020-11-30T02:28:19.508Z"},"basePath":"..","book":{"language":""}});
         });
     </script>
 </div>

@@ -1,556 +1,598 @@
+Observability: use Goldpinger UI to read delays using the graph UI and the heatmap
+Steady state: all existing Goldpinger instantes report healthy
+Hypothesis: if we add a new instance that has a 250ms delay, the connectivity graph will show all four instances healthy, and the 250ms delay will be visible in the heatmap
+Run the experiment!
+Sounds good? Let’s see how to implement it.
 
+Experiment 2: implementation
+Time to dig into what the implementation will look like. Do you remember figure 10.4 that showed how Goldpinger worked? Let me copy it for your convenience in figure 10.12. Every instance asks Kubernetes for all its peers, and then periodically makes calls to them to measure latency and detect problems.
 
+Figure 10.12 Overview of how Goldpinger works (again)
 
+Now, what we want to do is add a copy of the Goldpinger pod that has the extra proxy we just discussed in front of it. A pod in Kubernetes can have multiple containers running alongside each other and able to communicate via localhost. If we use the same label app=goldpinger, the other instances will detect the new pod and start calling. But we will configure the ports in a way that instead of directly reaching the new instance, the peers will first reach the proxy (in port 8080). And the proxy will add the desired latency. The extra Goldpinger instance will be able to ping the other hosts freely, like a regular instance. This is summarized in figure 10.13.
 
-10.2 What’s Kubernetes (in 7 minutes)?
-Kubernetes (often referred to as k8s for short) describes itself as “an open-source system for automating deployment, scaling, and management of containerized applications” (https://kubernetes.io/). That sounds great, but what does that really mean?
+Figure 10.13 A modified copy of Goldpinger with an extra proxy in front of it
 
-Let’s start simple. Let’s say you have a piece of software that you need to run on your computer. You can start your laptop, log in, and run the program. Congratulations, you just did a manual deployment of your software! So far so good.
+We’ve got the idea of what the setup will look like, now we need the actual networking proxy. Goldpinger communicates via HTTP/1.1, so we’re in luck. It’s a text-based, reasonably simple protocol running on top of TCP. All we need is the protocol specification (RFC 7230[1], RFC 7231[2], RFC 7232[3], RFC 7233[4] and RFC 7234[5]) and we should be able to implement a quick proxy in no time. Dust off your C compiler, stretch your arms, and let’s do it!
 
-Now, imagine that you need the same piece of software to run not on 1, but on 10 computers. All of a sudden, logging into 10 computers doesn’t sound so attractive, so you begin to think about automating that deployment. You could hack together a script that uses SSH to remotely log into the 10 computers and start your program. Or you could use one of the many existing configuration management tools, like Ansible (https://github.com/ansible/ansible) or Chef (https://www.chef.io/). With 10 computers to take care of, it might just work.
+Experiment 2: Toxiproxy
+Just kidding! We’ll use an existing, open-source project designed for this kind of thing, called Toxiproxy (https://github.com/shopify/toxiproxy). It works as a proxy on TCP level (L4 OSI model), which is fine for us, because we don’t actually need to understand anything about what’s going on on the HTTP level (L7) to introduce a simple latency. The added benefit is that you can use the same tool for any other TCP-based protocol in the exact same way, so what we’re about to do will be equally applicable to a lot of other popular software, like Redis, MySQL, PostgreSQL and many more.
 
-Unfortunately, it turns out that the program you started on these machines sometimes crashes. It might not even be a bug, but other problems, for example insufficient disk storage. So you need something to supervise the process, and try to bring it back up when it crashes. You could achieve that by making your configuration management tool configure a systemd service (https://www.freedesktop.org/software/systemd/man/systemd.service.html) so that the process gets restarted automatically every time it dies.
+ToxiProxy consists of two pieces:
 
-The software also needs to be upgraded. Every time you want to deploy a new version, you need to rerun your configuration management solution to stop and uninstall the previous version, and then install and start the new one. Also, the new version has different dependencies, so you need to take care of that too, during the update. Oh, and now your cluster contains 200 machines, because other people like your program, and then want you to run their software too (no need to reinvent the wheel for each piece of software we want to deploy, right?), so it’s beginning to take a long time to roll a new version out.
+the actual proxy server, which exposes an API you can use to configure what should be proxied where and the kind of failure that you expect
+and a CLI client, that connects to that API and can change the configuration live
+NOTE CLI AND API
+Instead of using the CLI, you can also talk to the API directly, and ToxiProxy offers ready-to-use clients in a variety of languages.
 
-Every machine has limited resources (CPU, RAM, disk space), so you now have this massive spreadsheet to keep track of what software should run on which machine, so that they don’t run out of resources. When you onboard a new project, you allocate resources to it, and mark where it should run in the spreadsheet. And when one of the machines goes down, you look for some available room elsewhere, and migrate the software from the affected machine onto another one. It’s hard work, but people keep coming, so you must be doing something right!
+The dynamic nature of ToxiProxy makes it really useful when used in unit and integration testing. For example, your integration test could start by configuring the proxy to add latency when connecting to a database, and then your test could verify that timeouts are triggered accordingly. It’s also going to be handy for us in implementing our experiment.
 
-Wouldn’t it be great, if there was a program that can do all this for you? Well, yes, you guessed it, it’s called Kubernetes; it does all this and more. Where did it come from?
+The version we’ll use, 2.1.4 (https://github.com/Shopify/toxiproxy/releases/tag/v2.1.4), is the latest available release at the time of writing. We’re going to run the proxy server as part of the extra Goldpinger pod using a prebuilt, publicly available image from Docker Hub. We’ll also need to use the CLI locally on your machine. To install it, download the CLI executable for your system (Ubuntu/Debian, Windows, MacOS) from https://github.com/Shopify/toxiproxy/releases/tag/v2.1.4 and add it to your PATH. To confirm it works, run the following command:
 
-10.2.1   The very brief history of Kubernetes
-Kubernetes, from a Greek word meaning “helmsman” or “governor,” is an open source project released by Google in 2015 as a reimplementation of their internal scheduler system called Borg (https://research.google/pubs/pub43438/). Google donated Kubernetes to a newly formed foundation called Cloud Native Computing Foundation (or CNCF for short https://www.cncf.io/), which created a neutral home for the project and encouraged a massive influx of investment from other companies.
+toxiproxy-cli –version
 
-It worked. In the short five years since the project creation, it has become a defacto API for scheduling containers. As companies adopted the open source project, Google managed to pull people away from investing more into AWS-specific solutions, and its cloud offering has gained more clout.
+You should see the version 2.1.4 displayed, like in the following output:
 
-Along the way, the CNCF also gained many auxiliary projects that work with Kubernetes, like the monitoring system Prometheus (https://prometheus.io/), container runtime Containerd (https://containerd.io/) and figuratively tons more.
+toxiproxy-cli version 2.1.4
 
-It all sounds great, but the real question that leads to a wide adoption is: what can it do for you? Let me show you.
+When a ToxiProxy server starts, by default it doesn’t do anything apart from running its HTTP API. By calling the API, you can configure and dynamically change the behavior of the proxy server. You can define arbitrary configurations defined by:
 
-10.2.2   What can Kubernetes do for you?
-Kubernetes works declaratively, rather than imperatively. What I mean by that is that it lets you describe the software you want to run on your cluster, and it continuously tries to converge the current cluster state into the one you requested. It also lets you read the current state at any given time. Conceptually, it’s an API for herding cats (https://en.wiktionary.org/wiki/herd_cats).
+a unique name
+a host and port to bind to and listen for connections
+a destination server to proxy to
+For every configuration like this, you can attach failures. In ToxiProxy lingo, these failures are called “toxics”. Currently, the following toxics are available:
 
-To use Kubernetes, you need a Kubernetes cluster. A Kubernetes cluster is a set of machines that run the Kubernetes components, and that make their resources (CPU, RAM, disk space) available to be allocated and used by your software. These machines are typically called worker nodes. A single Kubernetes cluster can have thousands of worker nodes.
+latency - add arbitrary latency to the connection (in either direction)
+down - take the connection down
+bandwidth - throttle the connection to the desired speed
+slow close - delay the TCP socket from closing for an arbitrary time
+timeout - wait for an arbitrary time and then close the connection
+slicer - slices the received data into smaller bits before sending it to the destination
 
-Let’s say that you have a cluster, and you want to run some new software on that cluster. There are three worker nodes in your cluster, each containing a certain amount of resources that are available. Imagine that one of your workers has a moderate amount of resources available, a second one has plenty available, and the third one is entirely used. Depending on the resources the new piece of software needs, your cluster might be able to run it on the first or the second but not the third worker node. Visually, it could look like figure 10.2. Note, that it’s possible (and sometimes pretty useful) to have heterogeneous nodes, with various configurations of resources available.
+You can attach an arbitrary combination of failures to every proxy configuration you define. For our needs, the latency toxic will do exactly what we want it to. Let’s see how all of this fits together.
 
-Figure 10.2 Resources available in a small Kubernetes cluster
-
-What would starting new software on this cluster look like? All you need to do is tell your cluster what your software looks like (the container image to run, any configuration like environment variables of secrets), how much resources you want to give it (CPU, RAM, disk space), and how to run it (how many copies, any constraints on where it should run). You do that by making an HTTP request to the Kubernetes API (or using a tool, like the official CLI called kubectl). The part of the cluster that receives the request, stores it as the desired state, and immediately goes to work in the background on converging the current state of the cluster to the desired state is often referred to as the control plane. Let’s say that you want to deploy version v1.0 of mysoftware. You need to allocate 1 core and 1GB of RAM for each copy, and you need to run two copies for high availability. To make sure that one worker going down doesn’t take both copies down with it, you add a constraint that the two copies shouldn’t run on the same worker node. You send this request to the control plane, which stores it and returns OK. In the background, the same control plane calculates where to schedule the new software, finds two workers with enough available resources and notifies these workers to start your software. See figure 10.3 which shows this process visually.
-
-Figure 10.3 Interacting with a Kubernetes cluster
-
-And voila! That’s what Kubernetes can do for you. Instead of making your machines do specific, low-level tasks like starting a process, you can tell your cluster to figure out how to do what you need it to do. This is a 10,000-feet aerial view, but don’t worry, we’ll get into the nitty gritty later in the chapter. Right now, I bet you can’t wait for some hands-on experience. Let’s get to that by setting up a test cluster.
-
-NOTE POP QUIZ: WHAT’S KUBERNETES?
+NOTE POP QUIZ: WHAT’S TOXIPROXY?
 Pick one:
 
-1. A solution to all of your problems
-
-2. A software that automatically renders the system running on it immune to failure
-
-3. A container orchestrator that can managed thousands of VMs and will continuously try to converge the current state into the desired state
-
-4. A thing for sailors
+1. A configurable TCP proxy, that can simulate various problems, like dropped packets or network slowness
+ A K-pop band singing about the environmental consequences of dumping large amounts of toxic waste sent to third world countries through the use of proxy and shell companies
 
 See appendix B for answers.
 
-10.3 Setting up a Kubernetes cluster
-Before we can continue with our scenario, you’re going to need access to a working Kubernetes cluster. The beauty of Kubernetes, is that you can get the cluster from various providers, and it should behave exactly the same! All the examples in this chapter will work on any conformant clusters and I will mention where there might be potential caveats. Therefore you’re free to pick whatever installation of Kubernetes is the most convenient for you.
+Experiment 2: implementation continued
+To sum it all up, we want to create a new pod with two containers: one for Goldpinger and one for the ToxiProxy. We’ll need to configure Goldpinger to run on a different port, so that the proxy can listen on the default port 8080 that the other Goldpinger instances will try to connect to. We’ll also create a service that routes connections to the proxy API on port 8474, so that we can use toxiproxy-cli commands to configure the proxy and add the latency that we want,just like in figure 10.14.
 
-For those who don’t have a Kubernetes cluster handy, the easiest way to get started is to deploy a single-node, local mini-cluster on your local machine with Minikube (https://github.com/kubernetes/minikube). Minikube is an official part of Kubernetes itself, and allows you to deploy a single node with single instances of all the Kubernetes control plane components inside of a virtual machine. It also takes care of the little-yet-crucial things like helping you easily access things running inside of the cluster.
+Figure 10.14 Interacting with the modified version of Goldpinger using toxiproxy-cli
 
-Before continuing, please follow Appendix A to install Minikube. In this chapter, I’ll assume you’re following along with a Minikube installation on your laptop. I’ll also mention whatever might be different if you’re not. Everything in this chapter was tested on Minikube 1.12.3, and Kubernetes 1.18.3.
+Let’s now translate this into a Kubernetes .yml file. You can see the resulting goldpinger-chaos.yml in listing 10.4. You will see two resource descriptions, a pod (with two containers) and a service. Note, that we use the same service account we created before, to give Goldpinger the same permissions. We’re also using two environment variables, PORT and CLIENT_PORT_OVERRIDE, to make Goldpinger listen on port 9090, but call its peers on port 8080, respectively. This is because by default, Goldpinger calls its peers on the same port that it runs itself. Finally, notice that the service is using a label chaos=absolutely to match to the new pod we created. It’s important that the Goldpinger pod has the label app=goldpinger, so that it can be found by its peers, but we also need another label to be able to route connections to the proxy API.
 
-10.3.1   Starting a cluster
-Depending on the platform, Minikube supports multiple virtualization options to run the actual VM with Kubernetes. The options differ for each platform and include:
 
-Linux: KVM or VirtualBox (running processes directly on the host is also supported)
-macOS: HyperKit, VMware Fusion, Parallels or VirtualBox
-Windows: Hyper-V or VirtualBox
-For our purposes, you can pick any of the supported options and it should work all the same. But because I already made you install VirtualBox for the previous chapters and it’s a common denominator of all three supported platforms, I’d recommend we stick with VirtualBox.
 
-To start a cluster, all you need is the minikube start command. To specify the VirtualBox driver, use the --driver flag. Run the following command from a terminal to start a new cluster using VirtualBox:
-
-minikube start --driver=virtualbox
-
-The command might take a minute, because minikube needs to download the VM image for your cluster and then start a VM with that image. When it’s done, you will see the output similar to the following. Someone took the time to pick relevant emoticons for each log message, so I took the time to respect that and copy verbatim. You can see that it used the VirtualBox driver like I requested and defaulted to give the VM 2 CPUs, 4GB of RAM and 2GB of storage. It’s also running Kubernetes v1.18.3 on Docker 19.03.12 (all in bold font).
-
-😄  minikube v1.12.3 on Darwin 10.14.6 
-  ✨  Using the virtualbox driver based on user configuration 
-  👍  Starting control plane node minikube in cluster minikube 
-  🔥  Creating virtualbox VM (CPUs=2, Memory=4000MB, Disk=20000MB) … 
-  🐳  Preparing Kubernetes v1.18.3 on Docker 19.03.12 … 
-  🔎  Verifying Kubernetes components… 
-  🌟  Enabled addons: default-storageclass, storage-provisioner 
-  🏄  Done! kubectl is now configured to use "minikube"
-
-To confirm that it started OK, try to list all pods running on the cluster. Run the following command in a terminal:
-
-kubectl get pods -A
-
-You will see the output just like the following, listing the different components that together make the Kubernetes control plane. We will cover in detail how they work later in this chapter. For now, this command working at all proves that the control plane works.
-
-NAMESPACE     NAME                  READY   STATUS    RESTARTS   AGE 
-  kube-system   coredns-66bff467f8-62g9p           1/1     Running   0          5m44s 
-  kube-system   etcd-minikube         1/1     Running   0          5m49s 
-  kube-system   kube-apiserver-minikube            1/1     Running   0          5m49s 
-  kube-system   kube-controller-manager-minikube   1/1     Running   0          5m49s 
-  kube-system   kube-proxy-bwzcf      1/1     Running   0          5m44s 
-  kube-system   kube-scheduler-minikube            1/1     Running   0          5m49s 
-  kube-system   storage-provisioner                1/1     Running   0          5m49s
-
-  We’re now ready to go. When you’re done for the day and want to stop the cluster, use minikube stop, and to resume the cluster use minikube start.
-
-NOTE GETTING KUBECTL HELP
-You can use the command kubectl --help to get help on all available commands in kubectl. If you’d like more details on a particular command, use --help on that command. For example, to get help about the available options of the get command, just run kubectl get --help.
-
-Time to get our hands dirty with the High Profile Project.
-
-10.4 Testing out software running on Kubernetes
-With a functional Kubernetes cluster at our disposal, we’re now ready to start working on the High Profile Project, aka ICANT. The pressure is on, we have a project to save!
-
-As always, the first step is to build an understanding of how things work before we can reason about how they break. We’ll do that by kicking the tires and looking how ICANT is deployed and configured. Once we’re done with that, we’ll conduct two experiments and then finish this section by seeing how to make things easier for ourselves for the next time. Let’s start at the beginning - by running the actual project
-
-10.4.1   Running the ICANT Project
-As we discovered earlier when reading the documentation you inherited, the project didn’t get very far. They took an off-the-shelf component (Goldpinger), deployed it, and called it a day. All of which is bad news for the project, but good news to me; I have less explaining to do!
-
-Goldpinger works by querying Kubernetes for all the instances of itself, and then periodically calling each of these instances and measuring the response time. It then uses that data to generate statistics (metrics) and plot a pretty connectivity graph. Each instance works in the same way - it periodically gets the address of its peers, and makes a request to each one of them. This is illustrated in figure 10.4. Goldpinger was invented to detect network slow-downs and problems, especially in larger clusters. It’s really simple and very effective.
-
-Figure 10.4 Overview of how Goldpinger works
-
-How do we go about running it? We’ll do it in two steps:
-
-Set up the right permissions, so that Goldpinger can query Kubernetes for its peer
-Deploy it on the cluster
-We’re about to step into Kubernetes Wonderland, so let me introduce you to some Kubernetes lingo.
-
-Kubernetes terminology
-The documentation often mentions resources to mean the objects representing various abstractions that Kubernetes offers. For now, I’m going to introduce you to three basic building blocks used to describe software on Kubernetes:
-
-Pod. A pod is a collection of containers that are grouped together, run on the same host and share some system resources, for example an IP address. This is the unit of software that you can schedule on Kubernetes. You can schedule pods directly, but most of the time you will be using a higher level abstraction, such as a Deployment.
-Deployment. A deployment describes a blueprint for creating pods, along with extra metadata, like for example the number of replicas to run. Importantly, it also manages the lifecycle of pods that it creates. For example, if you modify a deployment to update a version of the image you want to run, the deployment can handle a rollout, deleting old pods and creating new ones one by one to avoid an outage. It also offers other things, like roll-back, if the roll out ever fails.
-Service. A service matches an arbitrary set of pods, and provides a single IP address that resolves to the matched pods. That IP is kept up to date with the changes made to the cluster. For example, if a pod goes down, it will be taken out of the pool.
-
-You can see a visual representation of how these fit together in figure 10.5.
-
-Figure 10.5 Pods, deployments and services example in Kubernetes
-
-Another thing you need to know to understand how Goldpinger works is that to query Kubernetes, you need to have the right permissions.
-
-NOTE POP QUIZ: WHAT’S A KUBERNETES DEPLOYMENT?
-Pick one:
-
-1. A description of how to reach software running on your cluster
-
-2. A description of how to deploy some software on your cluster
-
-3. A description of how to build a container
-
-See appendix B for answers.
-
-Permissions
-Kubernetes has an elegant way of managing permissions. First, it has a concept of a ClusterRole, that allows you to define a role and a corresponding set of permissions to execute verbs (create, get, delete, list, …) on various resources. Second, it has the concept of ServiceAccounts, which can be linked to any software running on Kubernetes, so that it inherits all the permissions that the ServiceAccount was granted. And finally, to make a link between a ServiceAccount and a ClusterRole, you can use a ClusterRoleBinding, which does exactly what it says on the tin.
-
-If you’re new to it, this permissioning might sound a little bit abstract, so take a look at figure 10.6 for a graphical representation of how all of this comes together.
-
-Figure 10.6 Kubernetes permissioning example
-
-In our case, we want to allow Goldpinger pods to list its peers, so all we need is a single ClusterRole, and the corresponding ServiceAccount and ClusterRoleBinding. Later, we will use that ServiceAccount to permission the Goldpinger pods.
-
-Creating the resources
-Time for some code! In Kubernetes, we can describe all resources we want to create using a Yaml file (.yml; https://yaml.org/) that follows the specific format that Kubernetes accepts. See listing 10.1 to see how all of this permissioning translates into .yml. For each element we described, there is a Yaml object, specifying the corresponding type (kind) and the expected parameters. First, a ClusterRole called goldpinger-clusterrole that allows for listing pods (bold font). Then a ServiceAccount called goldpinger-serviceaccount (bold font). And finally, a ClusterRoleBinding, linking the ClusterRole to the ServiceAccount. If you’re new to Yaml, note that the --- separators allow for describing multiple resources in a single file.
-
----
-apiVersion: rbac.authorization.k8s.io/v1
-kind: ClusterRole
-metadata:
-  name: goldpinger-clusterrole
-rules:
-- apiGroups:
-  - ""
-  resources:
-  - pods
-  verbs:
-  - list
 ---
 apiVersion: v1
-kind: ServiceAccount
+kind: Pod
 metadata:
-  name: goldpinger-serviceaccount
-  namespace: default
----
-apiVersion: rbac.authorization.k8s.io/v1beta1
-kind: ClusterRoleBinding
-metadata:
-  name: goldpinger-clusterrolebinding
-roleRef:
-  apiGroup: rbac.authorization.k8s.io
-  kind: ClusterRole
-  name: goldpinger-clusterrole
-subjects:
-  - kind: ServiceAccount
-    name: goldpinger-serviceaccount
-    namespace: default
-
-#A we start with a cluster role
-
-#B the cluster role gets permissions for resource of type pod
-
-#C the cluster role gets permissions to list the resource of type pod
-
-#D we create a service account to use later
-
-#E we create a cluster role binding, that binds the cluster role...
-
-#F … to the service account
-
-This takes care of the permissionsing part. Let’s now go ahead and see what deploying the actual Goldpinger looks like.
-
-Goldpinger .yml files
-To make sense of deploying Goldpinger, I need to explain one more detail that I skipped over so far: matching and labels.
-
-Kubernetes makes extensive use of labels, which are simple key-value pairs of type string. Every resource can have arbitrary metadata attached to it, including labels. They are used by Kubernetes to match sets of resources, and are fairly flexible and easy to use.
-
-For example, let’s say that you have two pods, with the following labels:
-
-Pod A, with labels app=goldpinger and stage=dev
-Pod B, with labels app=goldpinger and stage=prod
-If you match (select) all pods with label app=goldpinger, you will get both pods. But if you match with label stage=dev, you will only get pod A. You can also query by multiple labels, and in that case Kubernetes will return pods matching all requested labels (a logical AND).
-
-Labels are useful for manually grouping resources, but they’re also leveraged by Kubernetes, for example to implement deployments. When you create a deployment, you need to specify the selector (a set of labels to match), and that selector needs to match the pods created by the deployment. The connection between the deployment and the pods it manages relies on labels.
-
-Label-matching is also the same mechanism that Goldpinger leverages to query for its peers: it just asks Kubernetes for all pods with a specific label (by default app=goldpinger). Figure 10.7 shows that graphically.
-
-Figure 10.7 Kubernetes permissioning example
-
-Putting this all together, we can finally write a .yml file with two resource descriptors: a deployment and a matching service.
-
-Inside the deployment, we need to specify the following:
-
-The number of replicas (we’ll go with three for demonstration purposes)
-The selector (again the default app=goldpinger),
-The actual template of pods to create
-In the pod template, we will specify the container image to run, some environment values required for Goldpinger to work and ports to expose so that other instances can reach it. The important bit is that we need to specify some arbitrary port that matches the PORT environment variable (this is what Goldpinger uses to know what port to listen on). We’ll go with 8080. Finally, we also specify the service account we created earlier on, to permission the Goldpinger pods to query Kubernetes for their peers.
-
-Inside the service, we once again use the same selector (app=goldpinger), so that the service matches the pods created by the deployment, and the same port 8080 that we specified on the deployment.
-
-NOTE DEPLOYMENTS AND DAEMONSETS
-In a typical installation, we would like to have one Goldpinger pod per node (physical machine, VM) in your cluster. That can be easily achieved by using a DaemonSet (it works a lot like a deployment, but instead of specifying the number of replicas, it just assumes one replica per node - learn more at https://kubernetes.io/docs/concepts/workloads/controllers/daemonset/). In our example setup we will use a Deployment instead, because with only one node, we would only have a single pod of Goldpinger, which defeats the purpose of this demonstration.
-
-Listing 10.2 contains the .yml file we can use to create the deployment and the service. Take a look.
-
----
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  name: goldpinger
+  name: goldpinger-chaos
   namespace: default
   labels:
     app: goldpinger
+    chaos: absolutely
 spec:
-  replicas: 3
-  selector:
-    matchLabels:
-      app: goldpinger
-  template:
-    metadata:
-      labels:
-        app: goldpinger
-    spec:
-      serviceAccount: "goldpinger-serviceaccount"
-      containers:
-      - name: goldpinger
-        image: "docker.io/bloomberg/goldpinger:v3.0.0"
-        env:
-        - name: REFRESH_INTERVAL
-          value: "2"
-        - name: HOST
-          value: "0.0.0.0"
-        - name: PORT
-          value: "8080"
-        # injecting real pod IP will make things easier to understand
-        - name: POD_IP
-          valueFrom:
-            fieldRef:
-              fieldPath: status.podIP
-        ports:
-        - containerPort: 8080
-          name: http
+  serviceAccount: "goldpinger-serviceaccount"
+  containers:
+  - name: goldpinger
+    image: docker.io/bloomberg/goldpinger:v3.0.0
+    env:
+    - name: REFRESH_INTERVAL
+      value: "2"
+    - name: HOST
+      value: "0.0.0.0"
+    - name: PORT
+      value: "9090"
+    - name: CLIENT_PORT_OVERRIDE
+      value: "8080"
+    - name: POD_IP
+      valueFrom:
+        fieldRef:
+          fieldPath: status.podIP
+  - name: toxiproxy
+    image: docker.io/shopify/toxiproxy:2.1.4
+    ports:
+    - containerPort: 8474
+      name: toxiproxy-api
+    - containerPort: 8080
+      name: goldpinger
 ---
 apiVersion: v1
 kind: Service
 metadata:
-  name: goldpinger
+  name: goldpinger-chaos
   namespace: default
-  labels:
-    app: goldpinger
 spec:
   type: LoadBalancer
   ports:
-    - port: 8080
-      name: http
+    - port: 8474
+      name: toxiproxy-api
   selector:
-    app: goldpinger
+    chaos: absolutely
 
-#A the deployment will create three replicas of the pods (three pods)
+    #A the new pod has the same label app=goldpinger to be detected by its peers, but also chaos=absolutely to be matched by the proxy api service
 
-#B the deployment is configured to match pods with label app=goldpinger
+#B we use the same service account as other instances to give Goldpinger permission to list its peers
 
-#C the pods template actually gets the label app=goldpinger
+#C we use HOST envvar to make Goldpinger listen on port 9090, and CLIENT_PORT_OVERRIDE to make it call itse peers on the default port 8080
 
-#D we configure the Goldpinger pods to run on port 8080
+#D ToxiProxy container will expose two ports: 8474 with the ToxiProxy API and 8080 to proxy through to Goldpinger
 
-#E we expose the port 8080 on the pod, so that it’s reachable
+#E the service will route traffic to port 8474 (ToxiProxy API)
 
-#F in the service, we target port 8080 that we made available on the pods
+#F the service will use label chaos=absolutely to select the pods running ToxiProxy
 
-#G the service will target pods based on the label app=goldpinger
+And that’s all we need. Make sure you have this file handy (or clone it from the repo like before). Ready to rock? Let the games begin!
 
-With that, we’re now ready to actually start it! If you’re following along, you can find the source code for both of these files (goldpinger-rbac.yml and goldpinger.yml) at https://github.com/seeker89/chaos-engineering-book/tree/master/examples/kubernetes. Let’s make sure that both files are in the same folder, and let’s go ahead and run them.
-
-Deploying Goldpinger
-
-Start by creating the permissioning resources (the goldpinger-rbac.yml file), by running the following command: 
-   kubectl apply -f goldpinger-rbac.yml
-
-You will see Kubernetes confirming the three resources were created successfully, with the following output:
-
-clusterrole.rbac.authorization.k8s.io/goldpinger-clusterrole created 
-  serviceaccount/goldpinger-serviceaccount created 
-  clusterrolebinding.rbac.authorization.k8s.io/goldpinger-clusterrolebinding created
-
-Then, create the actual deployment and a service by running the following command:
-
-kubectl apply -f goldpinger.yml
-
-Just like before, you will see the confirmation that the resources were created:
-
-deployment.apps/goldpinger created
-service/goldpinger created
-
-Once that’s done, let’s confirm that pods are running as expected. To do that, list the pods by running the following command:
-
-kubectl get pods
-
-You should see an output similar to the following, with three pods in status Running (bold font). If they’re not, you might need to give it a few seconds to start:
-
-NAME            READY   STATUS    RESTARTS   AGE
-goldpinger-c86c78448-5kwpp   1/1     Running   0          1m4s
-goldpinger-c86c78448-gtbvv   1/1     Running   0          1m4s
-goldpinger-c86c78448-vcwx2   1/1     Running   0          1m4s
-
-The pods are running, meaning that the deployment did its job. Goldpinger crashes if it can’t list its peers, which means that the permissioning we set up also works as expected. The last thing to check, is that the service was configured correctly. You can do that by running the following command, specifying the name of the service we created (“goldpinger”):
-
-1
-kubectl describe svc goldpinger
-
-You will see the details of the service, just like in the following output (abbreviated). Note the Endpoints field, specifying three IP addresses, for the three pods that it’s configured to match.
-
-Name:        goldpinger
-Namespace:                default
-Labels:      app=goldpinger
-(...)
-Endpoints:                172.17.0.3:8080,172.17.0.4:8080,172.17.0.5:8080
-(...)
-
-If you want to be 100% sure that the IPs are correct, you can compare them to the IPs of Goldpinger pods. You can display them easily, by appending -o wide (for wide output) to the kubectl get pods command. Try it by running the following:
-
-kubectl get pods -o wide
-
-You will see the same list as before, but this time with extra details, including the IP (bold font). They should correspond to the list specified in the service. If they weren’t, it would point to misconfigured labels. Note, that depending on your internet connection speed and your setup, it might take a little bit of time to start. If you see pods in pending state, give it an extra minute:
-
-NAME            READY   STATUS    RESTARTS   AGE   IP           NODE       NOMINATED NODE   READINESS GATES
-goldpinger-c86c78448-5kwpp   1/1     Running   0          15m   172.17.0.4   minikube   <none>           <none>
-goldpinger-c86c78448-gtbvv   1/1     Running   0          15m   172.17.0.3   minikube   <none>           <none>
-goldpinger-c86c78448-vcwx2   1/1     Running   0          15m   172.17.0.5   minikube   <none>           <none>
-
-Everything's up and running, so let’s access Goldpinger to see what it’s really doing. To do that, we’ll need to access the service we created.
-
-NOTE ACCESSING THE SOFTWARE RUNNING ON KUBERNETES FROM OUTSIDE THE CLUSTER
-Kubernetes does a great job standardizing the way people run their software. Unfortunately, not everything is easily standardized. Although every Kubernetes cluster supports services, the way you access the cluster and therefore its services depends on the way the cluster was set up. In this chapter, we will stick to Minikube, because it’s simple and easily accessible to anyone. If you’re running your own Kubernetes cluster, or use a managed solution from one of the cloud providers, accessing software running on the cluster might involve some extra setup (for example setting up an Ingress https://kubernetes.io/docs/concepts/services-networking/ingress/). Refer to the relevant documentation.
-
-On Minikube, we can leverage the command minikube service, which will figure out a way to access the service directly from your host machine and open the browser for you. To do that, run the following command:
+Experiment 2: run!
+To run this experiment, we’re going to use the Goldpinger UI. If you closed the browser window before, restart it by running the following command in the terminal:
 
 minikube service goldpinger
 
-You will see an output similar to the following, specifying the special URL that Minikube prepared for you (bold font). Your default browser will be launched to open that URL.
+Let’s start with the steady state, and confirm that all three nodes are visible and report as healthy. In the top bar, click Heatmap. You will see a heatmap similar to the one in figure 10.15. Each square represents connectivity between nodes and is color-coded based on the time it took to execute a request.
 
-|-----------|------------|-------------|-----------------------------|
-| NAMESPACE |    NAME    | TARGET PORT |             URL             |
-|-----------|------------|-------------|-----------------------------|
-| default   | goldpinger | http/8080   | http://192.168.99.100:30426 |
-|-----------|------------|-------------|-----------------------------|
-🎉  Opening service default/goldpinger in default browser…
+Columns represent source (from)
+Rows represent destinations (to)
+The legend clarifies which number corresponds to which pod.
+In this example, all squares are the same color and shade, meaning that all requests took below 2ms, which is to be expected when all instances run on the same host. You can also tweak the values to your liking and click “refresh” to show a new heatmap. Close it when you’re ready.
 
-Inside the newly launched browser window, you will see the Goldpinger UI. It will look similar to what’s shown in figure 10.8. It’s a graph, on which every point represents an instance of Goldpinger, and every arrow represents the last connectivity check (an HTTP request) between the instances. You can click a node to select it and display extra information. It also provides other functionality like a heatmap, showing hotspots of any potential networking slowness; and metrics, providing statistics that can be used to generate alerts and pretty dashboards. Goldpinger is a really handy tool for detecting any network issues, downloaded more than a million times from Docker Hub!
+Figure 10.15 Example of Goldpinger Heatmap
 
-Figure 10.8 Goldpinger UI in action
 
-Feel free to take some time to play around, but otherwise we’re done setting it all up. We have a running application that we can interact with, all deployed with just two kubectl commands.
+Let’s introduce our new pod! To do that, we’ll kubectl apply the goldpinger-chaos.yml file from listing 10.4. Run the following command:
 
-Unfortunately, on our little test cluster, all three instances are running on the same host, so we’re unlikely to see any network slowness, which is pretty boring. Fortunately, as chaos engineering practitioners, we’re well equipped to introduce failure and make things interesting again. Let’s start with the basics - an experiment to kill some pods.
+kubectl apply -f goldpinger-chaos.yml
 
-10.4.2   Experiment 1: kill 50% of pods
-Much like a villain from a comic book movie, we might be interested in seeing what happens when we kill 50% of Goldpinger pods. Why do that? It’s an inexpensive experiment that can answer a lot of questions about what happens when one of these instances goes down (simulating a machine going down). For example:
+You will see an output confirming creation of a pod and service:
 
-Do the other instances detect that to begin with?
-If so, how long before they detect it?
-How does Goldpinger configuration affect all of that?
-If we had an alert set up, would it get triggered?
-How should we go about implementing this? In the previous chapters, we’ve covered different ways this could be addressed. For example, you could log into the machine running the Goldpinger process you want to kill, and simply run a kill command, like we did before. Or, if your cluster uses Docker to run the containers (more on that soon), you could leverage the tools we’ve covered in chapter 5. The point is that all of the techniques you learned in the previous chapter still apply. That said, Kubernetes gives us other options, like directly deleting pods. It’s definitely the most convenient way of achieving that, so let’s go with that option.
+pod/goldpinger-chaos created
+service/goldpinger-chaos created
 
-There is another crucial detail to our experiment: Goldpinger works by periodically making HTTP requests to all of its peers. That period is controlled by the environment variable called REFRESH_PERIOD. In the goldpinger.yml file you deployed, that value was set to 2 seconds:
+Let’s confirm it’s running by going to the UI. You will now see an extra node, just like in figure 10.16. But notice that the new pod is marked as unhealthy - all of its peers are failing to connect to it. In the live UI, the node is marked in red, and in the figure 10.16 I annotated the new, unhealthy node for you. This is because we haven’t configured the proxy to pass the traffic yet.
 
-name: REFRESH_INTERVAL 
-  value: "2"
+Figure 10.16 Extra Goldpinger instance, detected by its peers, but inaccessible
 
-  That means that the maximum time it takes for an instance to notice another instance being down is 2 seconds. This is pretty aggressive and in a large cluster would result in a lot of traffic and CPU time spent on this, but I chose that value for our demonstration purposes. It will be handy to see the changes detected quickly. With that, we now have all the elements, so let’s turn this into a concrete plan of an experiment.
+Let’s address that by configuring the ToxiProxy. This is where the extra service we deployed comes in handy: we will use it to connect to the ToxiProxy API using toxiproxy-cli. Do you remember how we used minikube service to get a special URL to access the Goldpinger service? We’ll leverage that again, but this time with the --url flag, to only print the url itself. Run the following command in a bash session to store the url in a variable:
 
-Experiment 1: plan
-If we take the first question we mentioned (do other Goldpinger instances detect a peer down), we can design a simple experiment plan like so:
+TOXIPROXY_URL=$(minikube service --url goldpinger-chaos)
+
+We can now use the variable to point toxiproxy-cli to the right ToxiProxy API. That’s done using the -h flag. Confusingly, -h is not for “help”, it’s for “host”. Let’s confirm it works by listing the existing proxy configuration:
+
+toxiproxy-cli -h $TOXIPROXY_URL list
+
+You will see the following output, saying there are no proxies configured. It even goes so far as to hint we create some proxies (bold font):
+
+Name       Listen          Upstream                Enabled         Toxics
+no proxies
+ 
+Hint: create a proxy with `toxiproxy-cli create`
+
+Let’s configure one. We’ll call it chaos, make it route to localhost:9090 (where we configured Goldpinger to listen to) and listen on 0.0.0.0:8080 to make it accessible to its peers to call. Run the following command to make that happen:
+
+toxiproxy-cli \ 
+  -h $TOXIPROXY_URL \
+  create chaos \
+  -l 0.0.0.0:8080 \
+  -u localhost:9090
+
+  #A connect to specific proxy
+
+#B create a new proxy configuration called “chaos”
+
+#C listen on 0.0.0.0:8080 (default Goldpinger port)
+
+#D relay connections to localhost:9090 (where we configured Goldpinger to run)
+
+You will see a simple confirmation that the proxy was created:
+
+Created new proxy chaos
+
+Rerun the toxiproxy-cli list command to see the new proxy appear this time:
+
+toxiproxy-cli -h $TOXIPROXY_URL list
+
+You will see the following output, listing a new proxy configuration called “chaos” (bold font):
+
+Name       Listen          Upstream                Enabled         Toxics 
+  ================================================ 
+  chaos      [::]:8080       localhost:9090          enabled         None 
+  
+Hint: inspect toxics with `toxiproxy-cli inspect <proxyName>`
+
+If you go back to the UI and click refresh, you will see that the goldpinger-chaos extra instance is now green, and all instances happily report healthy state in all directions. If you check the heatmap, it will also show all green.
+
+Let’s change that. Using the command toxiproxy-cli toxic add, let’s add a single toxic with 250ms latency. Do that by running the following command:
+
+toxiproxy-cli \
+-h $TOXIPROXY_URL \
+toxic add \
+--type latency \
+--a latency=250 \
+--upstream \
+chaos
+
+#A add a toxic to an existing proxy configuration
+
+#B toxic type is latency
+
+#C we want to add 250ms of latency
+
+#D we set it in the upstream direction, towards the Goldpinger instance
+
+#E we attach this toxic to a proxy configuration called “chaos”
+
+You will see a confirmation:
+
+Added upstream latency toxic 'latency_upstream' on proxy 'chaos'
+To confirm that the proxy got it right, we can inspect our proxy called “chaos”. To do that, run the following command:
+toxiproxy-cli -h $TOXIPROXY_URL inspect chaos
+
+You will see an output just like the following, listing our brand new toxic (bold font):
+
+Name: chaos     Listen: [::]:8080       Upstream: localhost:9090 
+  ====================================================================== 
+  Upstream toxics: 
+  latency_upstream:       type=latency    stream=upstream toxicity=1.00   attributes=[    jitter=0        latency=250     ] 
+  
+  Downstream toxics: 
+  Proxy has no Downstream toxics enabled.
+
+  Now, go back to the Goldpinger UI in the browser and refresh. You will still see all four instances reporting healthy and happy (the 250ms delay fits within the default timeout of 300ms). But if you open the heatmap, this time it will tell a different story. The row with goldpinger-chaos pod will be marked in red (problem threshold), implying that all its peers detected slowness. See figure 10.17 for a screenshot.
+
+Figure 10.17 Goldpinger heatmap, showing slowness accessing pod goldpinger-chaos
+
+This means that our hypothesis was correct: Goldpinger correctly detects and reports the slowness, and at 250ms, below the default timeout of 300ms, the Goldpinger graph UI reports all as healthy. And we did all of that without modifying the existing pods.
+
+This wraps up the experiment, but before we go, let’s clean up the extra pod. To do that, run the following command to delete everything we created using the goldpinger-chaos.yml file:
+
+kubectl delete -f goldpinger-chaos.yml
+
+Let’s discuss our findings.
+
+Experiment 2: Discussion
+How well did we do? We took some time to learn new tools, but the entire implementation of the experiment boiled down to a single .yml file and a handful of commands with ToxiProxy. We also had a tangible benefit of working on a copy of the software that we wanted to test, leaving the existing running processes unmodified. We effectively rolled out some extra capacity and then had 25% of running software affected, limiting the blast radius. Does it mean we could do that in production? As with any sufficiently complex question, the answer is, “it depends.” In this example, if we wanted to verify the robustness of some alerting that relies on metrics from Goldpinger to trigger, this could be a good way to do it. But the extra software could also affect the existing instances in a more profound way, making it more risky. At the end of the day, it really depends on your application.
+
+There is, of course, room for improvement. For example, the service we’re using to access the Goldpinger UI is routing traffic to any instance matched in a pseudo-random fashion. That means that sometimes it will route to the instance that has the 250ms delay. In our case, that will be difficult to spot with the naked eye, but if you wanted to test a larger delay, it could be a problem.
+
+Time to wrap up this first part. Coming in part 2: making your chaos engineer life easier with PowerfulSeal.
+
+
+
+11 Automating Kubernetes experiments
+This chapter covers
+Automating chaos experiments for Kubernetes with PowerfulSeal
+Recognizing the difference between one-off experiments and ongoing SLO verification
+Designing chaos experiments on the VM level using cloud provider APIs
+In this second helping of Kubernetes goodness, we’ll see how to use higher-level tools to implement chaos experiments. In the previous chapter we set things up manually to build the understanding of how to implement the experiment. But now that you know that, I want to show you how much more quickly you can go when using the right tools. Enter PowerfulSeal.
+
+11.1 Automating chaos with PowerfulSeal
+
+It’s often said that software engineering is one of the very few jobs where being lazy is a good thing. And I tend to agree with that; a lot of automation or reducing toil can be seen as a manifestation of being too lazy to do manual labor. Automation also reduces operator errors and improves speed and accuracy.
+
+The tools for automation of chaos experiments are steadily becoming more advanced and mature. For a good, up-to-date list of available tools, it’s worth checking out the Awesome Chaos Engineering list (https://github.com/dastergon/awesome-chaos-engineering). For Kubernetes, I recommend PowerfulSeal (https://github.com/powerfulseal/powerfulseal), created by yours truly, that we’re going to use here. Other good options include Chaos Toolkit (https://github.com/chaostoolkit/chaostoolkit) and Litmus (https://litmuschaos.io/).
+
+In this section, we’re going to build on the two experiments we implemented manually to make you more efficient the next time. In fact, we’re going to re-implement a slight variation of these experiments, each in 5 minutes flat. So, what’s PowerfulSeal again?
+
+11.1.1   What’s PowerfulSeal?
+PowerfulSeal is a chaos engineering tool for Kubernetes. It has quite a few features:
+
+interactive mode helping you understand how software on your cluster works and manually break it
+integrating with your cloud provider to take VMs up and down
+automatically killing pods marked with special labels
+autonomous mode supporting sophisticated scenarios
+The latter point in this list is the functionality we’ll focus on here.
+
+The autonomous mode allows you to implement chaos experiments by writing a simple .yml file. Inside that file, you can write any number of scenarios, each listing the steps necessary to implement, validate, and clean up after your experiment. There are plenty of options you can use (documented at https://powerfulseal.github.io/powerfulseal/policies), but at its heart, it’s a very simple format. The .yml file containing scenarios is referred to as a policy file.
+
+To give you an example, take a look at listing 11.1. It contains a simple policy file, with a single scenario, with a single step. That single step is an HTTP probe. It will try to make an HTTP request to the designated endpoint of the specified service, and fail the scenario if that doesn’t work.
+
+scenarios:
+- name: Just check that my service responds
+  steps:
+  - probeHTTP:
+      target:
+        service:
+          name: my-service
+          namespace: myapp
+      endpoint: /healthz
+
+#A instruct PowerfulSeal to conduct an HTTP probe
+
+#B target service my-service in namespace myapp
+
+#C call the /healthz endpoint on that service
+
+Once you have your policy file ready, there are many ways you can run PowerfulSeal. Typically, it tends to be used either from your local machine -- the same one you use to interact with the Kubernetes cluster (useful for development) -- or as a Deployment running directly on the cluster (useful for ongoing, continuous experiments).
+
+To run, PowerfulSeal needs permission to interact with the Kubernetes cluster, either through a ServiceAccount, like we did with Goldpinger in chapter 10, or through specifying a kubectl config file. If you want to manipulate VMs in your cluster, you’ll also need to configure access to the cloud provider. With that, you can start PowerfulSeal in autonomous mode and let it execute your scenario. PowerfulSeal will go through the policy and execute scenarios step by step, killing pods and taking down VMs as appropriate. Take a look at figure 11.1 that shows what this setup looks like visually.
+
+Figure 11.1 Setting up PowerfulSeal
+
+And that’s it. Point it at a cluster, tell it what your experiment is like, and watch it do the work for you! We’re almost ready to get our hands dirty, but before we do, we’ll need to install PowerfulSeal.
+
+NOTE POP QUIZ: WHAT DOES POWEFULSEAL DO?
+Pick one:
+
+1. Illustrates - in equal measures - the importance and futility of trying to pick up good names in software
+
+2. Guesses what kind of chaos you might need by looking at your Kubernetes clusters
+
+3. Allows you to write a Yaml file to describe how to run and validate chaos experiments
+
+See appendix B for answers.
+
+11.1.2   PowerfulSeal - installation
+PowerfulSeal is written in Python, and it’s distributed in two forms:
+
+a pip package called powerfulseal
+a Docker image called powerfulseal/powerfulseal on Docker Hub
+For the two examples we’re going to run, it will be much easier to run PowerfulSeal locally, so let’s install it through pip. It requires Python3.7+ and pip available.
+
+To install it using a virtualenv (recommended), run the following commands in a terminal window to create a subfolder called env and install everything in it:
+
+python3 --version
+  python3 -m virtualenv env
+  source env/bin/activate
+  pip install powerfulseal
+
+  #A check the version to make sure it’s python3.7
+
+#B create a new virtualenv in the current working directory, called env
+
+#C activate the new virtualenv
+
+#D install powerfulseal from pip
+
+Depending on your internet connection, the last step might take a minute or two. When it’s done, you will have a new command accessible, called powerfulseal. Try it out by running the following command:
+
+powerfulseal --version
+
+You will see the version printed, corresponding to the latest version available. If, at any point, you need help, feel free to consult the help pages of PowerfulSeal, by running the following command:
+
+powerfulseal --help
+
+With that, we’re ready to roll. Let’s see what experiment 1 would look like using PowerfulSeal.
+
+11.1.3   Experiment 1b: kill 50% of pods
+As a reminder, this was our plan for experiment 1:
 
 Observability: use Goldpinger UI to see if there are any pods marked as inaccessible; use kubectl to see new pods come and go
 Steady state: all nodes healthy
 Hypothesis: if we delete one pod, we should see it in marked as failed in Goldpinger UI, and then be replaced by a new, healthy pod
 Run the experiment
+We have already covered the observability, but if you closed the browser window with the Goldpinger UI, here’s a refresher. Open the Goldpinger UI by running the following command in a terminal window:
 
-That’s it! Let’s see how to implement it.
+minikube service goldpinger
 
-Experiment 1: implementation
-To implement this experiment, the pod labels come in useful once again. All we need to do is leverage kubectl get pods to get all pods with label app=goldpinger, pick a random pod and kill it, using kubectl delete. To make things easy, we can also leverage kubectl’s -o name flag to only display the pod names, and use a combination of sort --random-sort and head -n1 to pick a random line of the output. Put all of this together, and you get a script like kube-thanos.sh from listing 10.3. Store it somewhere on your system (or clone it from the Github repo).
-
-#!/bin/bash
- 
-kubectl get pods \
-  -l app=goldpinger \
-  -o name \
-    | sort --random-sort \
-    | head -n 1 \
-    | xargs kubectl delete
-
-#A use kubectl to list pods
-
-#B only list pods with label app=goldpinger
-
-#C only display the name as the output
-
-#D sort in random order
-
-#E pick the first one
-
-#E delete the pod
-
-Armed with that, we’re ready to rock. Let’s run the experiment.
-
-Experiment 1: run!
-
-Let’s start by double-checking the steady state. Your Goldpinger installation should still be running and you should have the UI open in a browser window. If it’s not, you can bring both back up by running the following commands:
-
-kubectl apply -f goldpinger-rbac.yml 
-  kubectl apply -f goldpinger.yml 
-  minikube service goldpinger
-
-To confirm all nodes are OK, simply refresh the graph by clicking the “reload” button, and verify that all three nodes are showing in green. So far so good.
-
-To confirm that our script works, let’s also set up some observability for the pods being deleted and created. We can leverage the --watch flag of the kubectl get command to print the names of all pods coming and going to the console. You can do that by opening a new terminal window, and running the following command:
+And just like before, we’d like to have a way to see what pods were created and deleted. To do that, we leverage the --watch flag of the kubectl get pods command. In another terminal window, start a kubectl command to print all changes:
 
 kubectl get pods --watch
 
-You will see the familiar output, showing all the Goldpinger pods, but this time the command will stay active, blocking the terminal. You can use Ctrl-C to exit at any time, if needed.
+Now, to the actual experiment. Fortunately, it translates one-to-one to a built-in feature of PowefulSeal. Actions on pods are done using PodAction (I’m good at naming like that). Every PodAction consists of three steps:
 
-NAME            READY   STATUS    RESTARTS   AGE 
-  goldpinger-c86c78448-6rtw4   1/1     Running   0          20h 
-  goldpinger-c86c78448-mj76q   1/1     Running   0          19h 
-  goldpinger-c86c78448-xbj7s   1/1     Running   0          19h
+match some pods, for example based on labels
+filter the pods (various filters available, for example take a 50% subset)
+apply an action on pods (for example, kill them)
+This translates directly into experiment1b.yml that you can see in listing 11.2. Store it or clone it from the repo.
 
-Now, to the fun part! To conduct our experiment, we’ll open another terminal window for the kube-thanos.sh script, run it to kill a random pod, and then quickly go to the Goldpinger UI to observe what the Goldpinger pods saw. Bear in mind that in the local setup, the pods will recover very rapidly, so you might need to be quick to actually observe the pod becoming unavailable and then healing. In the meantime, the kubectl get pods --watch command will record the pod going down and a replacement coming up. Let’s do that!
+config:
+  runStrategy:
+    runs: 1
+scenarios:
+- name: Kill 50% of Goldpinger nodes
+  steps:
+  - podAction:
+      matches:
+        - labels:
+            selector: app=goldpinger
+            namespace: default
+      filters:
+        - randomSample:
+            ratio: 0.5
+      actions:
+        - kill:
+            force: true
 
-Open a new terminal window and run the script to kill a random pod:
+#A only run the scenario once, and then exit
 
-bash kube-thanos.sh
+#B select all pods in namespace default, with labels app=goldpinger
 
-You will see an output showing the name of the pod being deleted, like in the following:
+#C filter out to only take 50% of the matched pods
 
-pod "goldpinger-c86c78448-shtdq" deleted
+#D kill the pods
 
-Go quickly to the Goldpinger UI and click refresh. You should see some failure, like in figure 10.9. Nodes that can’t be reached by at least one other node will be marked as unhealthy. I marked the unhealthy node in the figure. The live UI also uses a red color to differentiate them. You will also notice that there are four nodes showing up. This is because after the pod is deleted, Kubernetes tries to recoverge to the desired state (three replicas), so it creates a new pod to replace the one we deleted.
+You must be itching to run it, so let’s not wait any longer. On Minikube, the kubectl config is stored in ~/.kube/config, and it will be automatically picked up when you run PowerfulSeal. So the only argument we need to specify is the policy file (--policy-file) flag. Run the following command, pointing to the experiment1b.yml file:
 
-NOTE BE QUICK!
-If you’re not seeing any errors, the pods probably recovered before you switched to the UI window, because your computer is quicker than mine when I was writing this and chose the parameters. If you re-run the command and refresh the UI more quickly, you should be able to see it.
+powerfulseal autonomous --policy-file experiment1b.yml
 
-Figure 10.9 Goldpinger UI showing an unavailable pod being replaced by a new one
+You will see an output similar to the following (abbreviated). Note the lines when it says it found three pods, filtered out two and selected a pod to be killed (bold font):
 
-Now, go back to the terminal window that is running kubectl get pods --watch. You will see an output similar to the following. Note the pod that we killed (-shtdq) going into Terminating state, and a new pod (-lwxrq) taking its place (both in bold font). You will also notice that the new pod goes through a lifecycle of Pending to ContainerCreating to Running, while the old one goes to Terminating.
+(...) 
+  2020-08-25 09:51:20 INFO __main__ STARTING AUTONOMOUS MODE 
+  2020-08-25 09:51:20 INFO scenario.Kill 50% of Gol Starting scenario 'Kill 50% of Goldpinger nodes' (1 steps) 
+  2020-08-25 09:51:20 INFO action_nodes_pods.Kill 50% of Gol Matching 'labels' {'labels': {'selector': 'app=goldpinger', 'namespace': 'default'}} 
+  2020-08-25 09:51:20 INFO action_nodes_pods.Kill 50% of Gol Matched 3 pods for selector app=goldpinger in namespace default 
+  2020-08-25 09:51:20 INFO action_nodes_pods.Kill 50% of Gol Initial set length: 3 
+  2020-08-25 09:51:20 INFO action_nodes_pods.Kill 50% of Gol Filtered set length: 1 
+  2020-08-25 09:51:20 INFO action_nodes_pods.Kill 50% of Gol Pod killed: [pod #0 name=goldpinger-c86c78448-8lfqd namespace=default containers=1 ip=172.17.0.3 host_ip=192.168.99.100 state=Running labels:app=goldpinger,pod-template-hash=c86c78448 annotations:] 
+  2020-08-25 09:51:20 INFO scenario.Kill 50% of Gol Scenario finished 
+  (...)
 
-NAME            READY   STATUS    RESTARTS   AGE 
-  goldpinger-c86c78448-pfqmc   1/1     Running   0          47s 
-  goldpinger-c86c78448-shtdq   1/1     Running   0          22s 
-  goldpinger-c86c78448-xbj7s   1/1     Running   0          20h 
-  goldpinger-c86c78448-shtdq   1/1     Terminating   0          38s 
-  goldpinger-c86c78448-lwxrq   0/1     Pending       0          0s 
-  goldpinger-c86c78448-lwxrq   0/1     Pending       0          0s 
-  goldpinger-c86c78448-lwxrq   0/1     ContainerCreating   0          0s 
-  goldpinger-c86c78448-shtdq   0/1     Terminating         0          39s 
-  goldpinger-c86c78448-lwxrq   1/1     Running             0          2s 
-  goldpinger-c86c78448-shtdq   0/1     Terminating         0          43s 
-  goldpinger-c86c78448-shtdq   0/1     Terminating         0          43s
+  If you’re quick enough, you will see a pod becoming unavailable and then replaced by a new pod in the Goldpinger UI, just like you did the first time we ran this experiment. And in the terminal window running kubectl, you will see the familiar sight, confirming that a pod was killed (goldpinger-c86c78448-8lfqd) and then replaced with a new one (goldpinger-c86c78448-czbkx):
 
-  Finally, let’s check that everything recovered smoothly. To do that, go back to the browser window with Goldpinger UI, and refresh once more. You should now see the three new pods happily pinging each other, all in green. Which means that our hypothesis was correct, on both fronts.
+  NAME            READY   STATUS    RESTARTS   AGE 
+  goldpinger-c86c78448-lwxrq   1/1     Running   1          45h 
+  goldpinger-c86c78448-tl9xq   1/1     Running   0          40m 
+  goldpinger-c86c78448-xqfvc   1/1     Running   0          8m33s 
+  goldpinger-c86c78448-8lfqd   1/1     Terminating   0          41m 
+  goldpinger-c86c78448-8lfqd   1/1     Terminating   0          41m 
+  goldpinger-c86c78448-czbkx   0/1     Pending       0          0s 
+  goldpinger-c86c78448-czbkx   0/1     Pending       0          0s 
+  goldpinger-c86c78448-czbkx   0/1     ContainerCreating   0          0s 
+  goldpinger-c86c78448-czbkx   1/1     Running             0          2s
 
-Nice job. Another one bites the dust, another experiment under your belt. But before we move on, let’s just discuss a few points.
+  That concludes the first experiment and shows you the ease of use of higher level tools like PowerfulSeal. But we’re just warming up. Let’s take a look at experiment 2 once again, this time using the new toys.
 
-NOTE POP QUIZ: WHAT HAPPENS WHEN A POD DIES ON A KUBERNETES CLUSTER?
-Pick one:
+11.1.4   Experiment 2b: network slowness
+As a reminder, this was our plan for experiment 2:
 
-1. Kubernetes detects it and send you an alert
+Observability: use Goldpinger UI to read delays using the graph UI and the heatmap
+Steady state: all existing Goldpinger instances report healthy
+Hypothesis: if we add a new instance that has a 250ms delay, the connectivity graph will show all four instances healthy, and the 250ms delay will be visible in the heatmap
+Run the experiment!
 
-2. Kubernetes detects it, and will restart it as necessary to make sure the expected number of replicas are running
+It’s a perfectly good plan, so let’s use it again. But this time, instead of manually setting up a new deployment and doing the gymnastics to point the right port to the right place, we’ll leverage the clone feature of PowerfulSeal.
 
-3. Nothing
+It works like this. You point it at a source deployment that it will copy at runtime (the deployment must exist on the cluster). This is to make sure that we don’t break the existing running software, and instead add an extra instance, just like we did before. And then you can specify a list of mutations that PowerfulSeal will apply to the deployment to achieve specific goals. Of particular interest is the toxiproxy mutation. It does almost exactly the same thing that we did:
 
-See appendix B for answers.
+add a toxiproxy container to the deployment
+configure toxiproxy to create a proxy configuration for each port specified on the deployment
+automatically redirect the traffic incoming to each port specified in the original deployment to its corresponding proxy port
+configure any toxics requested
 
-Experiment 1: discussion
+The only real difference between what we did before and what PowefulSeal does is the automatic redirection of ports, which means that we don’t need to change any ports configuration in the deployment.
 
-For the sake of teaching, I took a few shortcuts here that I want to make you aware of. First, when accessing the pods through the UI, we’re using a service, which resolves to a pseudo-random instance of Goldpinger every time you make a new call. That means that it’s possible to get routed to the instance we just killed, and get an error in the UI. It also means that every time you refresh the view, you get the reality from a point of view of a different pod. For illustration purposes, that’s not a deal-breaker on a small test cluster but if you run a large cluster and want to make sure that a network partition doesn’t obscure your view, you will need to make sure you consult all available instances, or at least a reasonable subset. Goldpinger addresses that issue with metrics, and you can learn more about that at https://github.com/bloomberg/goldpinger#prometheus
+To implement this scenario using PowerfulSeal, we need to write another policy file. It’s pretty straightforward. We need to use the clone feature, and specify the source deployment to clone. To introduce the network slowness, we can add a mutation of type toxiproxy, with a toxic on port 8080, of type latency, with the latency attribute set to 250ms. And just to show you how easy it is to use, let’s set the number of replicas affected to 2. That means that two replicas out of the total of five (three from the original deployment plus these two), or 40% of the traffic will be affected. Also note that at the end of a scenario, PowerfulSeal cleans up after itself by deleting the clone it created. To give you enough time to look around, let’s add a wait of 120 seconds before that happens.
 
-Second, using a GUI-based tool this way is a little bit awkward. If you see what you expect, that’s great. But if you don’t, it doesn’t necessarily mean it didn’t happen, it might be that you simply missed it. Again, this can be alleviated by using the metrics, which I skipped here for the sake of simplicity.
+When translated into Yaml, it looks like the file experiment2b.yml that you can see in listing 11.3. Take a look.
 
-Third, if you look closely at the failures that you see in the graph, you will see that the pods sometimes start receiving traffic before they are actually up. This is because, again for simplicity, I skipped the readiness probe that serves exactly that purpose. If set, a readiness probe prevents a pod from receiving any traffic until a certain condition is met (see the documentation at https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/). For an example of how to use it, see the installation docs of Goldpinger (https://github.com/bloomberg/goldpinger#installation).
+config:
+  runStrategy:
+    runs: 1
+scenarios:
+- name: Toxiproxy latency
+  steps:
+  - clone:
+source:
+        deployment:
+          name: goldpinger
+          namespace: default
+      replicas: 2
+      mutations:
+        - toxiproxy:
+            toxics:
+              - targetProxy: "8080"
+                toxicType: latency
+                toxicAttributes:
+     - name: latency
+       value: 250
+  - wait:
+      seconds: 120
 
-Finally, remember that depending on the refresh period you’re running Goldpinger with, the data you’re looking at is up to that many seconds stale, which means that for the pods we killed, we’ll keep seeing them for an extra number of seconds equal to the refresh period (2 seconds in our setup).
+      #A use the clone feature of PowerfulSeal
 
-These are the caveats my lawyers advised me to clarify before this goes to print. In case that makes you think I’m not fun at parties, let me prove you wrong. Let’s play some Invaders, like it’s 1978.
+#B clone the deployment called “goldpinger” in the default namespace
 
-10.4.3   Party trick: killing pods in style
-If you really want to make a point that chaos engineering is fun, I’ve got two tools for you.
+#C use two replicas of the clone
 
-First, KubeInvaders (https://github.com/lucky-sideburn/KubeInvaders). It gamifies the process of killing pods by starting a clone of Space Invaders, where the aliens are pods in the specified namespace. You guessed it, the ones you shoot down are deleted in Kubernetes. Installation involves deploying it on a cluster, and then connecting a local client that actually displays the game content. See figure 10.10 to see what it looks like in action.
+#D target port 8080 (the one that Goldpinger is running on)
 
-Figure 10.10 Kubeinvader screenshot from https://github.com/lucky-sideburn/KubeInvaders
+#E specify latency of 250ms
 
-The second one is for fans of the first-person shooter genre: Kube DOOM (https://github.com/storax/kubedoom). Similar to KubeInvaders, it represents pods as enemies, and kills in Kubernetes the ones that die in the game. Tip to justify using it: it’s often much quicker than copying and pasting a name of a pod, saving so much time (mandatory reference: https://xkcd.com/303/). See figure 10.11 for a screenshot.
+#F wait for 120 seconds
 
-Figure 10.11 Kube DOOM screenshot from https://github.com/storax/kubedoom
+NOTE BRINGING GOLDPINGER BACK UP AGAIN
+If you got rid of the Goldpinger deployment from experiment 2, you can bring it back up by running the following command in a terminal window:
 
-For Kube DOOM, the installation is pretty straightforward: you run a pod on the host, pass a kubectl configuration file to it, and then use a desktop sharing client to connect to the game. After a long day of debugging, it might be just what you need. I’ll just leave it there.
+kubectl apply -f goldpinger-rbac.yml
 
-I’m sure that will help with your next house party. When you finish the game, let’s take a look at another experiment - some good old network slowness.
+kubectl apply -f goldpinger.yml
 
-10.4.4   Experiment 2: network slowness
-Slowness, my nemesis, we meet again. If you’re a software engineer, chances are you’re spending a lot of your time trying to outwit slowness. When things go wrong, actual failure is often easier to debug than situations when things mostly work. And slowness tends to fall into the latter category.
+You’ll see a confirmation of the created resources. After a few seconds, you will be able to see the Goldpinger UI in the browser by running the following command:
 
-Slowness is such an important topic that we touch upon it in nearly every chapter of this book. We introduced some slowness using tc in chapter 4, and then again using Pumba in Docker in chapter 5. We use some in the context of JVM, application level ,and even browser in other chapters. Time to take a look at what’s different when running on Kubernetes.
+minikube service goldpinger
 
-It’s worth mentioning that everything we covered before still applies here. We could very well use tc or Pumba directly on one of the machines running the processes we’re interested in, and modify them to introduce the failure we care about. In fact, using kubectl cp and kubectl exec, we could upload and execute tc commands directly in a pod, without even worrying about accessing the host. Or we could even add a second container to the Goldpinger pod that would execute the necessary tc commands.
+You will see the familiar graph with three goldpinger nodes, just like in chapter 10. See figure 11.2 for a reminder of what it looks like.
 
-All of these options are viable, but share one downside: they modify the existing software that’s running on your cluster, and so by definition carry risks of messing things up. A convenient alternative is to add extra software, tweaked to implement the failure we care about, but otherwise identical to the original and introduce the extra software in a way that will integrate with the rest of the system. Kubernetes makes it really easy. Let me show you what I mean; let’s design an experiment around simulated network slowness.
+Figure 11.2 Goldpinger UI in action
 
-Experiment 2: plan
+Let’s execute the experiment. Run the following command in a terminal window:
 
-Let’s say that we want to see what happens when one instance of Goldpinger is slow to respond to queries of its peers. After all, this is what this piece of software was designed to help with, so before we rely on it, we should test that it works as expected.
+powerfulseal autonomous --policy-file experiment2b.yml
 
-A convenient way of doing that is to deploy a copy of Goldpinger that we can modify to add a delay. Once again, we could do it with tc, but to show you some new tools, let’s use a standalone network proxy instead. That proxy will sit in front of that new Goldpinger instance, receive the calls from its peers, add the delay, and relay the calls to Goldpinger. Thanks to Kubernetes, setting it all up is pretty straightforward.
+You will see PowerfulSeal creating the clone, and then eventually deleting it, similar to the following output:
 
-Let’s iron out some details. Goldpinger’s default timeout for all calls is 300ms, so let’s pick an arbitrary value of 250ms for our delay: enough to be clearly seen, but not enough to cause a timeout. And thanks to the built-in heatmap, we will be able to visually show the connections that take longer than others, so the observability aspect is taken care of. The plan of the experiment figuratively writes itself:
+(...)
+2020-08-31 10:49:32 INFO __main__ STARTING AUTONOMOUS MODE 
+  2020-08-31 10:49:33 INFO scenario.Toxiproxy laten Starting scenario 'Toxiproxy latency' (2 steps) 
+  2020-08-31 10:49:33 INFO action_clone.Toxiproxy laten Clone deployment created successfully 
+  2020-08-31 10:49:33 INFO scenario.Toxiproxy laten Sleeping for 120 seconds 
+  2020-08-31 10:51:33 INFO scenario.Toxiproxy laten Scenario finished 
+  2020-08-31 10:51:33 INFO scenario.Toxiproxy laten Cleanup started (1 items) 
+  2020-08-31 10:51:33 INFO action_clone Clone deployment deleted successfully: goldpinger-chaos in default 
+  2020-08-31 10:51:33 INFO scenario.Toxiproxy laten Cleanup done 
+  2020-08-31 10:51:33 INFO policy_runner All done here!
 
+  During the 2-minute wait you configured, check the Goldpinger UI. You will see a graph with five nodes. When all pods come up, the graph will show all healthy. But there is more to it. Click the heatmap, and you will see that the cloned pods (they will have “chaos” in their name) are slow to respond. But if you look closely, you will notice that the connections they are making to themselves are unaffected. That’s because PowerfulSeal doesn’t inject itself into communications on localhost. Click the heatmap button. You will see a heatmap similar to figure 11.2. Note that the squares on the diagonal (pods calling themselves) remain unaffected by the added latency.
+
+Figure 11.3 Goldpinger heatmap showing two pods with added latency, injected by PowerfulSeal
+
+That concludes the experiment. Wait for PowerfulSeal to clean up after itself and delete the cloned deployment. When it’s finished (it will exit(, let’s move on to the next topic: ongoing testing.
+
+11.2 Ongoing testing & Service Level Objectives (SLOs)
+So far, all the experiments we’ve conducted were designed to verify a hypothesis and call it a day. Like everything in science, a single counter-example is enough to prove a hypothesis wrong, but absence of such counter-example doesn’t prove anything. And sometimes our hypotheses are about normal functioning of a system, where various events might occur and influence the outcome.
+
+To illustrate what I mean, let me give you an example. Think of a typical Service Level Agreement (SLA) that you might see for a Platform as a Service (PaaS). Let’s say that your product is to offer managed services, similar to AWS Lambda (https://aws.amazon.com/lambda/), where the client can make an API call specifying a location of some code, and your platform will build, deploy, and run that service for them. Your clients care deeply about the speed at which they can deploy new versions of their services, so they want an SLA for the time it takes from their request to their service being ready to serve traffic. To keep things simple, let’s say that the time for building their code is excluded, and the time to deploy it on your platform is agreed to be one minute.
+
+As the engineer responsible for that system, you need to work backward from that constraint to set up the system in a way that can satisfy these requirements. You design an experiment to verify that a typical request you expect to see in your clients fits in that timeline. You run it, turns out it only takes about 30 seconds, the champagne cork is popping and the party starts! Or does it?
+
+When you run the experiment like this and it works, what you actually proved is that the system behaved the expected way during the experiment. But does it guarantee that it will work the same way in different conditions (peak traffic, different usage patterns, different data)? Typically, the larger and more complex the system is, the harder it is to answer that question. And that’s a problem, especially if the SLAs you signed have financial penalties for missing the goals.
+
+Fortunately, chaos engineering really shines in this scenario. Instead of running an experiment once, we can run it continuously to detect any anomalies, experimenting every time on a system in a different state and during the kind of failure we expect to see. Simple yet effective.
+
+Let’s go back to our example. We have a 1-minute deadline to start a new service. Let’s automate an ongoing experiment that starts a new service every few minutes, measures the time it took to become available, and alerts if it exceeds a certain threshold. That threshold will be our internal SLO, which is more aggressive than the legally binding version in the SLA that we signed, so that we can get alerted when we get close to trouble.
+
+It’s a common scenario, so let’s take our time and make it real.
+
+11.2.1   Experiment 3: verify pods are ready within (n) seconds of being created
+Chances are, that PaaS you’re building is running on Kubernetes. When your client makes a request to your system, it translates into a request for Kubernetes to create a new deployment. You can acknowledge the request to your client, but this is where things start getting tricky. How do you know that the service is ready? In one of the previous experiments we used kubectl get pods --watch to print to the console all changes to the state of the pods we cared about. All of them are happening asynchronously, in the background, while Kubernetes is trying to converge to the desired state. In Kubernetes, pods can be in one of the following states:
+
+pending - the pod has been accepted by Kubernetes, but it’s not been setup yet
+running - the pod has been setup, and at least one container is still running
+succeeded - all containers in the pod have terminated in success
+failed - all containers in the pod have terminated, at least one of them in failure
+unknown - the state of the pod is unknown (typically the node running it stopped reporting its state to Kubernetes)
+
+If everything goes well, the happy path is for a pod to start in pending, and then move to running. But before that happens, a lot of things need to happen, many of which will take a different amount of time every time.; for example:
+
+image download - unless already present on the host, the images for each container need to be downloaded, potentially from a remote location. Depending on the size of the image and on how busy the location from which it needs to be downloaded is at the time, it might take a different amount of time every time. Additionally, like everything on the network, it’s prone to failure and might need to be retried.
+preparing dependencies - before a pod is actually run, Kubernetes might need to prepare some dependencies it relies on, like (potentially large) volumes, configuration files and so on
+actually running the containers - the time to actually start a container will vary, depending on how busy the host machine is
+
+In a not-so-happy path, for example, if an image download gets interrupted, you might end up with a pod going from pending through failed to running. The point is that it can’t easily be predicted how long it’s going to take to actually have it running. So the next best thing we can do is to continuously test it and alert when it gets too close to the threshold we care about.
+
+With PowerfulSeal, it’s very easy to do. We can write a policy that will deploy some example application to run on the cluster, wait the time we expect it to take, and then execute an HTTP request to verify that the application is running correctly. It can also automatically clean the application up when it’s done, and provide means to get alerted when the experiment failed.
+
+Normally, we would add some type of failure, and test that the system withstands that. But right now I just want to illustrate the idea of ongoing experiments, so let’s keep it simple and stick to just verifying our SLO on the system without any disturbance.
+
+Leveraging that, we can design the following experiment:
+
+Observability: read PowerfulSeal output (and/or metrics)
+Steady state: N/A
+Hypothesis: when I schedule a new pod and a service, it becomes available for HTTP calls within 30 seconds
+Run the experiment!
+That translates into a PowerfulSeal policy that runs indefinitely the following steps:
+
+create a pod and a service
+wait 30 seconds
+make a call to the service to verify it’s available, fail if it’s not
+clean up (remote the pod and service)
+rinse and repeat
+Take a look at figure 11.3 that shows this process visually.
+
+Figure 11.4 Example of an ongoing chaos experiment
+
+To write the actual PowerfulSeal policy file, we’re going to use three more features:
+
+First, a step of type kubectl behaves just like you expect it to: it executes the attached Yaml just like if you did a kubectl apply or kubectl delete. We’ll use that to create the pods in question. We’ll also use the option for automatic clean up at the end of the scenario, called autoDelete.
+Second, we’ll use the wait feature to wait for the 30 seconds we expect to be sufficient to deploy and start the pod.
+Third, we’ll use the probeHTTP to make an HTTP request and detect whether it works. probeHTTP is fairly flexible; it supports calling services or arbitrary urls, using proxies and more.
+We’ll also need an actual test app to deploy and call. Ideally, we’d choose something that represents a reasonable approximation of the type of software that the platform is supposed to handle. To keep things simple, we can deploy a simple version of Goldpinger again. It has an endpoint /healthz that we can reach to confirm that it started correctly.
+
+# Listing 11.4 experiment3.yml TODO
