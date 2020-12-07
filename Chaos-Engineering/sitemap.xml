@@ -8,6 +8,10 @@
 <url> <loc>https://wangwei1237.gitee.io/docs/Testing_out_software_running_on_Kubernetes.html</loc> <changefreq>weekly</changefreq> <priority>0.5</priority> </url>
 <url> <loc>https://wangwei1237.gitee.io/docs/Summary_10.html</loc> <changefreq>weekly</changefreq> <priority>0.5</priority> </url>
 <url> <loc>https://wangwei1237.gitee.io/docs/Automating_Kubernetes_experiments.html</loc> <changefreq>weekly</changefreq> <priority>0.5</priority> </url>
+<url> <loc>https://wangwei1237.gitee.io/docs/Automating_chaos_with_PowerfulSeal.html</loc> <changefreq>weekly</changefreq> <priority>0.5</priority> </url>
+<url> <loc>https://wangwei1237.gitee.io/docs/Ongoing_testing_Service_Level_Objectives_SLOs.html</loc> <changefreq>weekly</changefreq> <priority>0.5</priority> </url>
+<url> <loc>https://wangwei1237.gitee.io/docs/Cloud_layer.html</loc> <changefreq>weekly</changefreq> <priority>0.5</priority> </url>
+<url> <loc>https://wangwei1237.gitee.io/docs/Summary_11.html</loc> <changefreq>weekly</changefreq> <priority>0.5</priority> </url>
 <url> <loc>https://wangwei1237.gitee.io/docs/Under_the_hood_of_Kubernetes.html</loc> <changefreq>weekly</changefreq> <priority>0.5</priority> </url>
 <url> <loc>https://wangwei1237.gitee.io/docs/Chaos_engineering_for_people.html</loc> <changefreq>weekly</changefreq> <priority>0.5</priority> </url>
 </urlset>

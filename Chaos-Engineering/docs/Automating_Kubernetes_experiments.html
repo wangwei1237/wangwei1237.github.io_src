@@ -65,7 +65,7 @@
     <link rel="shortcut icon" href="../gitbook/images/favicon.ico" type="image/x-icon">
 
     
-    <link rel="next" href="Under_the_hood_of_Kubernetes.html" />
+    <link rel="next" href="Automating_chaos_with_PowerfulSeal.html" />
     
     
     <link rel="prev" href="Summary_10.html" />
@@ -221,6 +221,64 @@
             
 
             
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="2.2.1" data-path="Automating_chaos_with_PowerfulSeal.html">
+            
+                <a href="Automating_chaos_with_PowerfulSeal.html">
+            
+                    
+                    11.1 Automating chaos with PowerfulSeal
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="2.2.2" data-path="Ongoing_testing_Service_Level_Objectives_SLOs.html">
+            
+                <a href="Ongoing_testing_Service_Level_Objectives_SLOs.html">
+            
+                    
+                    11.2 Ongoing testing & Service Level Objectives (SLOs)
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="2.2.3" data-path="Cloud_layer.html">
+            
+                <a href="Cloud_layer.html">
+            
+                    
+                    11.3 Cloud layer
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="2.2.4" data-path="Summary_11.html">
+            
+                <a href="Summary_11.html">
+            
+                    
+                    11.4 Summary
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+            </ul>
+            
         </li>
     
         <li class="chapter " data-level="2.3" data-path="Under_the_hood_of_Kubernetes.html">
@@ -294,7 +352,15 @@
     
                                 <section class="normal markdown-section">
                                 
-                                
+                                <h1 id="11-automating-kubernetes-experiments">11 Automating Kubernetes experiments</h1>
+<p>This chapter covers</p>
+<ul>
+<li>Automating chaos experiments for Kubernetes with PowerfulSeal</li>
+<li>Recognizing the difference between one-off experiments and ongoing SLO verification</li>
+<li>Designing chaos experiments on the VM level using cloud provider APIs</li>
+</ul>
+<p>In this second helping of Kubernetes goodness, we&#x2019;ll see how to use higher-level tools to implement chaos experiments. In the previous chapter we set things up manually to build the understanding of how to implement the experiment. But now that you know that, I want to show you how much more quickly you can go when using the right tools. Enter PowerfulSeal.</p>
+
                                 
                                 </section>
                             
@@ -326,7 +392,7 @@
                 </a>
                 
                 
-                <a href="Under_the_hood_of_Kubernetes.html" class="navigation navigation-next " aria-label="Next page: 12 Under the hood of Kubernetes">
+                <a href="Automating_chaos_with_PowerfulSeal.html" class="navigation navigation-next " aria-label="Next page: 11.1 Automating chaos with PowerfulSeal">
                     <i class="fa fa-angle-right"></i>
                 </a>
                 
@@ -337,7 +403,7 @@
     <script>
         var gitbook = gitbook || [];
         gitbook.push(function() {
-            gitbook.page.hasChanged({"page":{"title":"11 Automating Kubernetes experiments","level":"2.2","depth":1,"next":{"title":"12 Under the hood of Kubernetes","level":"2.3","depth":1,"path":"docs/Under_the_hood_of_Kubernetes.md","ref":"docs/Under_the_hood_of_Kubernetes.md","articles":[]},"previous":{"title":"10.5 Summary","level":"2.1.5","depth":2,"path":"docs/Summary_10.md","ref":"docs/Summary_10.md","articles":[]},"dir":"neutral"},"config":{"plugins":["page-toc-button","cnzz","hints","sitemap-general"],"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"pluginsConfig":{"search":{},"cnzz":{"style":"1","visible":true,"siteid":"1278605528"},"hints":{"danger":"fa fa-bug","info":"fa fa-info-circle","tip":"fa fa-sticky-note","working":"fa fa-cog fa-spin"},"lunr":{"maxIndexSize":1000000,"ignoreSpecialCharacters":false},"sitemap-general":{"prefix":"https://wangwei1237.gitee.io/chaos-engineering"},"fontsettings":{"theme":"white","family":"serif","size":2},"highlight":{},"page-toc-button":{"maxTocDepth":2,"minTocSize":2},"sharing":{"facebook":true,"twitter":true,"google":false,"weibo":false,"instapaper":false,"vk":false,"all":["facebook","google","twitter","weibo","instapaper"]},"theme-default":{"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"showLevel":false}},"theme":"default","author":"wangwei17","pdf":{"pageBreaksBefore":"/","headerTemplate":null,"paperSize":"a4","margin":{"right":62,"left":62,"top":36,"bottom":36},"fontSize":16,"fontFamily":"Arial","footerTemplate":null,"chapterMark":"pagebreak","pageNumbers":true},"structure":{"langs":"LANGS.md","readme":"README.md","glossary":"GLOSSARY.md","summary":"SUMMARY.md"},"isbn":"","variables":{},"title":"Chaos Engineering","links":{"sharing":{"all":null,"facebook":null,"google":null,"twitter":null,"weibo":null},"sidebar":{"17哥的个人网站":"https://wangwei1237.gitee.io/"}},"gitbook":"*","description":"Chaos-Engineering","extension":null},"file":{"path":"docs/Automating_Kubernetes_experiments.md","mtime":"2020-11-29T01:35:37.934Z","type":"markdown"},"gitbook":{"version":"3.2.3","time":"2020-11-30T02:28:19.508Z"},"basePath":"..","book":{"language":""}});
+            gitbook.page.hasChanged({"page":{"title":"11 Automating Kubernetes experiments","level":"2.2","depth":1,"next":{"title":"11.1 Automating chaos with PowerfulSeal","level":"2.2.1","depth":2,"path":"docs/Automating_chaos_with_PowerfulSeal.md","ref":"docs/Automating_chaos_with_PowerfulSeal.md","articles":[]},"previous":{"title":"10.5 Summary","level":"2.1.5","depth":2,"path":"docs/Summary_10.md","ref":"docs/Summary_10.md","articles":[]},"dir":"ltr"},"config":{"plugins":["page-toc-button","cnzz","hints","sitemap-general"],"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"pluginsConfig":{"search":{},"cnzz":{"style":"1","visible":true,"siteid":"1278605528"},"hints":{"danger":"fa fa-bug","info":"fa fa-info-circle","tip":"fa fa-sticky-note","working":"fa fa-cog fa-spin"},"lunr":{"maxIndexSize":1000000,"ignoreSpecialCharacters":false},"sitemap-general":{"prefix":"https://wangwei1237.gitee.io/chaos-engineering"},"fontsettings":{"theme":"white","family":"serif","size":2},"highlight":{},"page-toc-button":{"maxTocDepth":2,"minTocSize":2},"sharing":{"facebook":true,"twitter":true,"google":false,"weibo":false,"instapaper":false,"vk":false,"all":["facebook","google","twitter","weibo","instapaper"]},"theme-default":{"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"showLevel":false}},"theme":"default","author":"wangwei17","pdf":{"pageBreaksBefore":"/","headerTemplate":null,"paperSize":"a4","margin":{"right":62,"left":62,"top":36,"bottom":36},"fontSize":16,"fontFamily":"Arial","footerTemplate":null,"chapterMark":"pagebreak","pageNumbers":true},"structure":{"langs":"LANGS.md","readme":"README.md","glossary":"GLOSSARY.md","summary":"SUMMARY.md"},"isbn":"","variables":{},"title":"Chaos Engineering","links":{"sharing":{"all":null,"facebook":null,"google":null,"twitter":null,"weibo":null},"sidebar":{"17哥的个人网站":"https://wangwei1237.gitee.io/"}},"gitbook":"*","description":"Chaos-Engineering","extension":null},"file":{"path":"docs/Automating_Kubernetes_experiments.md","mtime":"2020-12-04T02:19:17.084Z","type":"markdown"},"gitbook":{"version":"3.2.3","time":"2020-12-07T10:53:07.757Z"},"basePath":"..","book":{"language":""}});
         });
     </script>
 </div>

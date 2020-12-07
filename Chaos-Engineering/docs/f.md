@@ -1,598 +1,615 @@
-Observability: use Goldpinger UI to read delays using the graph UI and the heatmap
-Steady state: all existing Goldpinger instantes report healthy
-Hypothesis: if we add a new instance that has a 250ms delay, the connectivity graph will show all four instances healthy, and the 250ms delay will be visible in the heatmap
-Run the experiment!
-Sounds good? Let’s see how to implement it.
-
-Experiment 2: implementation
-Time to dig into what the implementation will look like. Do you remember figure 10.4 that showed how Goldpinger worked? Let me copy it for your convenience in figure 10.12. Every instance asks Kubernetes for all its peers, and then periodically makes calls to them to measure latency and detect problems.
-
-Figure 10.12 Overview of how Goldpinger works (again)
-
-Now, what we want to do is add a copy of the Goldpinger pod that has the extra proxy we just discussed in front of it. A pod in Kubernetes can have multiple containers running alongside each other and able to communicate via localhost. If we use the same label app=goldpinger, the other instances will detect the new pod and start calling. But we will configure the ports in a way that instead of directly reaching the new instance, the peers will first reach the proxy (in port 8080). And the proxy will add the desired latency. The extra Goldpinger instance will be able to ping the other hosts freely, like a regular instance. This is summarized in figure 10.13.
-
-Figure 10.13 A modified copy of Goldpinger with an extra proxy in front of it
-
-We’ve got the idea of what the setup will look like, now we need the actual networking proxy. Goldpinger communicates via HTTP/1.1, so we’re in luck. It’s a text-based, reasonably simple protocol running on top of TCP. All we need is the protocol specification (RFC 7230[1], RFC 7231[2], RFC 7232[3], RFC 7233[4] and RFC 7234[5]) and we should be able to implement a quick proxy in no time. Dust off your C compiler, stretch your arms, and let’s do it!
-
-Experiment 2: Toxiproxy
-Just kidding! We’ll use an existing, open-source project designed for this kind of thing, called Toxiproxy (https://github.com/shopify/toxiproxy). It works as a proxy on TCP level (L4 OSI model), which is fine for us, because we don’t actually need to understand anything about what’s going on on the HTTP level (L7) to introduce a simple latency. The added benefit is that you can use the same tool for any other TCP-based protocol in the exact same way, so what we’re about to do will be equally applicable to a lot of other popular software, like Redis, MySQL, PostgreSQL and many more.
-
-ToxiProxy consists of two pieces:
-
-the actual proxy server, which exposes an API you can use to configure what should be proxied where and the kind of failure that you expect
-and a CLI client, that connects to that API and can change the configuration live
-NOTE CLI AND API
-Instead of using the CLI, you can also talk to the API directly, and ToxiProxy offers ready-to-use clients in a variety of languages.
-
-The dynamic nature of ToxiProxy makes it really useful when used in unit and integration testing. For example, your integration test could start by configuring the proxy to add latency when connecting to a database, and then your test could verify that timeouts are triggered accordingly. It’s also going to be handy for us in implementing our experiment.
-
-The version we’ll use, 2.1.4 (https://github.com/Shopify/toxiproxy/releases/tag/v2.1.4), is the latest available release at the time of writing. We’re going to run the proxy server as part of the extra Goldpinger pod using a prebuilt, publicly available image from Docker Hub. We’ll also need to use the CLI locally on your machine. To install it, download the CLI executable for your system (Ubuntu/Debian, Windows, MacOS) from https://github.com/Shopify/toxiproxy/releases/tag/v2.1.4 and add it to your PATH. To confirm it works, run the following command:
-
-toxiproxy-cli –version
-
-You should see the version 2.1.4 displayed, like in the following output:
-
-toxiproxy-cli version 2.1.4
-
-When a ToxiProxy server starts, by default it doesn’t do anything apart from running its HTTP API. By calling the API, you can configure and dynamically change the behavior of the proxy server. You can define arbitrary configurations defined by:
-
-a unique name
-a host and port to bind to and listen for connections
-a destination server to proxy to
-For every configuration like this, you can attach failures. In ToxiProxy lingo, these failures are called “toxics”. Currently, the following toxics are available:
-
-latency - add arbitrary latency to the connection (in either direction)
-down - take the connection down
-bandwidth - throttle the connection to the desired speed
-slow close - delay the TCP socket from closing for an arbitrary time
-timeout - wait for an arbitrary time and then close the connection
-slicer - slices the received data into smaller bits before sending it to the destination
-
-You can attach an arbitrary combination of failures to every proxy configuration you define. For our needs, the latency toxic will do exactly what we want it to. Let’s see how all of this fits together.
-
-NOTE POP QUIZ: WHAT’S TOXIPROXY?
-Pick one:
-
-1. A configurable TCP proxy, that can simulate various problems, like dropped packets or network slowness
- A K-pop band singing about the environmental consequences of dumping large amounts of toxic waste sent to third world countries through the use of proxy and shell companies
-
-See appendix B for answers.
-
-Experiment 2: implementation continued
-To sum it all up, we want to create a new pod with two containers: one for Goldpinger and one for the ToxiProxy. We’ll need to configure Goldpinger to run on a different port, so that the proxy can listen on the default port 8080 that the other Goldpinger instances will try to connect to. We’ll also create a service that routes connections to the proxy API on port 8474, so that we can use toxiproxy-cli commands to configure the proxy and add the latency that we want,just like in figure 10.14.
-
-Figure 10.14 Interacting with the modified version of Goldpinger using toxiproxy-cli
-
-Let’s now translate this into a Kubernetes .yml file. You can see the resulting goldpinger-chaos.yml in listing 10.4. You will see two resource descriptions, a pod (with two containers) and a service. Note, that we use the same service account we created before, to give Goldpinger the same permissions. We’re also using two environment variables, PORT and CLIENT_PORT_OVERRIDE, to make Goldpinger listen on port 9090, but call its peers on port 8080, respectively. This is because by default, Goldpinger calls its peers on the same port that it runs itself. Finally, notice that the service is using a label chaos=absolutely to match to the new pod we created. It’s important that the Goldpinger pod has the label app=goldpinger, so that it can be found by its peers, but we also need another label to be able to route connections to the proxy API.
-
-
-
----
-apiVersion: v1
-kind: Pod
-metadata:
-  name: goldpinger-chaos
-  namespace: default
-  labels:
-    app: goldpinger
-    chaos: absolutely
-spec:
-  serviceAccount: "goldpinger-serviceaccount"
-  containers:
-  - name: goldpinger
-    image: docker.io/bloomberg/goldpinger:v3.0.0
-    env:
-    - name: REFRESH_INTERVAL
-      value: "2"
-    - name: HOST
-      value: "0.0.0.0"
-    - name: PORT
-      value: "9090"
-    - name: CLIENT_PORT_OVERRIDE
-      value: "8080"
-    - name: POD_IP
-      valueFrom:
-        fieldRef:
-          fieldPath: status.podIP
-  - name: toxiproxy
-    image: docker.io/shopify/toxiproxy:2.1.4
-    ports:
-    - containerPort: 8474
-      name: toxiproxy-api
-    - containerPort: 8080
-      name: goldpinger
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: goldpinger-chaos
-  namespace: default
-spec:
-  type: LoadBalancer
-  ports:
-    - port: 8474
-      name: toxiproxy-api
-  selector:
-    chaos: absolutely
-
-    #A the new pod has the same label app=goldpinger to be detected by its peers, but also chaos=absolutely to be matched by the proxy api service
-
-#B we use the same service account as other instances to give Goldpinger permission to list its peers
-
-#C we use HOST envvar to make Goldpinger listen on port 9090, and CLIENT_PORT_OVERRIDE to make it call itse peers on the default port 8080
-
-#D ToxiProxy container will expose two ports: 8474 with the ToxiProxy API and 8080 to proxy through to Goldpinger
-
-#E the service will route traffic to port 8474 (ToxiProxy API)
-
-#F the service will use label chaos=absolutely to select the pods running ToxiProxy
-
-And that’s all we need. Make sure you have this file handy (or clone it from the repo like before). Ready to rock? Let the games begin!
-
-Experiment 2: run!
-To run this experiment, we’re going to use the Goldpinger UI. If you closed the browser window before, restart it by running the following command in the terminal:
-
-minikube service goldpinger
-
-Let’s start with the steady state, and confirm that all three nodes are visible and report as healthy. In the top bar, click Heatmap. You will see a heatmap similar to the one in figure 10.15. Each square represents connectivity between nodes and is color-coded based on the time it took to execute a request.
-
-Columns represent source (from)
-Rows represent destinations (to)
-The legend clarifies which number corresponds to which pod.
-In this example, all squares are the same color and shade, meaning that all requests took below 2ms, which is to be expected when all instances run on the same host. You can also tweak the values to your liking and click “refresh” to show a new heatmap. Close it when you’re ready.
-
-Figure 10.15 Example of Goldpinger Heatmap
-
-
-Let’s introduce our new pod! To do that, we’ll kubectl apply the goldpinger-chaos.yml file from listing 10.4. Run the following command:
-
-kubectl apply -f goldpinger-chaos.yml
-
-You will see an output confirming creation of a pod and service:
-
-pod/goldpinger-chaos created
-service/goldpinger-chaos created
-
-Let’s confirm it’s running by going to the UI. You will now see an extra node, just like in figure 10.16. But notice that the new pod is marked as unhealthy - all of its peers are failing to connect to it. In the live UI, the node is marked in red, and in the figure 10.16 I annotated the new, unhealthy node for you. This is because we haven’t configured the proxy to pass the traffic yet.
-
-Figure 10.16 Extra Goldpinger instance, detected by its peers, but inaccessible
-
-Let’s address that by configuring the ToxiProxy. This is where the extra service we deployed comes in handy: we will use it to connect to the ToxiProxy API using toxiproxy-cli. Do you remember how we used minikube service to get a special URL to access the Goldpinger service? We’ll leverage that again, but this time with the --url flag, to only print the url itself. Run the following command in a bash session to store the url in a variable:
-
-TOXIPROXY_URL=$(minikube service --url goldpinger-chaos)
-
-We can now use the variable to point toxiproxy-cli to the right ToxiProxy API. That’s done using the -h flag. Confusingly, -h is not for “help”, it’s for “host”. Let’s confirm it works by listing the existing proxy configuration:
-
-toxiproxy-cli -h $TOXIPROXY_URL list
-
-You will see the following output, saying there are no proxies configured. It even goes so far as to hint we create some proxies (bold font):
-
-Name       Listen          Upstream                Enabled         Toxics
-no proxies
- 
-Hint: create a proxy with `toxiproxy-cli create`
-
-Let’s configure one. We’ll call it chaos, make it route to localhost:9090 (where we configured Goldpinger to listen to) and listen on 0.0.0.0:8080 to make it accessible to its peers to call. Run the following command to make that happen:
-
-toxiproxy-cli \ 
-  -h $TOXIPROXY_URL \
-  create chaos \
-  -l 0.0.0.0:8080 \
-  -u localhost:9090
-
-  #A connect to specific proxy
-
-#B create a new proxy configuration called “chaos”
-
-#C listen on 0.0.0.0:8080 (default Goldpinger port)
-
-#D relay connections to localhost:9090 (where we configured Goldpinger to run)
-
-You will see a simple confirmation that the proxy was created:
-
-Created new proxy chaos
-
-Rerun the toxiproxy-cli list command to see the new proxy appear this time:
-
-toxiproxy-cli -h $TOXIPROXY_URL list
-
-You will see the following output, listing a new proxy configuration called “chaos” (bold font):
-
-Name       Listen          Upstream                Enabled         Toxics 
-  ================================================ 
-  chaos      [::]:8080       localhost:9090          enabled         None 
-  
-Hint: inspect toxics with `toxiproxy-cli inspect <proxyName>`
-
-If you go back to the UI and click refresh, you will see that the goldpinger-chaos extra instance is now green, and all instances happily report healthy state in all directions. If you check the heatmap, it will also show all green.
-
-Let’s change that. Using the command toxiproxy-cli toxic add, let’s add a single toxic with 250ms latency. Do that by running the following command:
-
-toxiproxy-cli \
--h $TOXIPROXY_URL \
-toxic add \
---type latency \
---a latency=250 \
---upstream \
-chaos
-
-#A add a toxic to an existing proxy configuration
-
-#B toxic type is latency
-
-#C we want to add 250ms of latency
-
-#D we set it in the upstream direction, towards the Goldpinger instance
-
-#E we attach this toxic to a proxy configuration called “chaos”
-
-You will see a confirmation:
-
-Added upstream latency toxic 'latency_upstream' on proxy 'chaos'
-To confirm that the proxy got it right, we can inspect our proxy called “chaos”. To do that, run the following command:
-toxiproxy-cli -h $TOXIPROXY_URL inspect chaos
-
-You will see an output just like the following, listing our brand new toxic (bold font):
-
-Name: chaos     Listen: [::]:8080       Upstream: localhost:9090 
-  ====================================================================== 
-  Upstream toxics: 
-  latency_upstream:       type=latency    stream=upstream toxicity=1.00   attributes=[    jitter=0        latency=250     ] 
-  
-  Downstream toxics: 
-  Proxy has no Downstream toxics enabled.
-
-  Now, go back to the Goldpinger UI in the browser and refresh. You will still see all four instances reporting healthy and happy (the 250ms delay fits within the default timeout of 300ms). But if you open the heatmap, this time it will tell a different story. The row with goldpinger-chaos pod will be marked in red (problem threshold), implying that all its peers detected slowness. See figure 10.17 for a screenshot.
-
-Figure 10.17 Goldpinger heatmap, showing slowness accessing pod goldpinger-chaos
-
-This means that our hypothesis was correct: Goldpinger correctly detects and reports the slowness, and at 250ms, below the default timeout of 300ms, the Goldpinger graph UI reports all as healthy. And we did all of that without modifying the existing pods.
-
-This wraps up the experiment, but before we go, let’s clean up the extra pod. To do that, run the following command to delete everything we created using the goldpinger-chaos.yml file:
-
-kubectl delete -f goldpinger-chaos.yml
-
-Let’s discuss our findings.
-
-Experiment 2: Discussion
-How well did we do? We took some time to learn new tools, but the entire implementation of the experiment boiled down to a single .yml file and a handful of commands with ToxiProxy. We also had a tangible benefit of working on a copy of the software that we wanted to test, leaving the existing running processes unmodified. We effectively rolled out some extra capacity and then had 25% of running software affected, limiting the blast radius. Does it mean we could do that in production? As with any sufficiently complex question, the answer is, “it depends.” In this example, if we wanted to verify the robustness of some alerting that relies on metrics from Goldpinger to trigger, this could be a good way to do it. But the extra software could also affect the existing instances in a more profound way, making it more risky. At the end of the day, it really depends on your application.
-
-There is, of course, room for improvement. For example, the service we’re using to access the Goldpinger UI is routing traffic to any instance matched in a pseudo-random fashion. That means that sometimes it will route to the instance that has the 250ms delay. In our case, that will be difficult to spot with the naked eye, but if you wanted to test a larger delay, it could be a problem.
-
-Time to wrap up this first part. Coming in part 2: making your chaos engineer life easier with PowerfulSeal.
-
-
-
-11 Automating Kubernetes experiments
+12 Under the hood of Kubernetes
 This chapter covers
-Automating chaos experiments for Kubernetes with PowerfulSeal
-Recognizing the difference between one-off experiments and ongoing SLO verification
-Designing chaos experiments on the VM level using cloud provider APIs
-In this second helping of Kubernetes goodness, we’ll see how to use higher-level tools to implement chaos experiments. In the previous chapter we set things up manually to build the understanding of how to implement the experiment. But now that you know that, I want to show you how much more quickly you can go when using the right tools. Enter PowerfulSeal.
+Understanding how Kubernetes components work together under the hood
+Debugging Kubernetes - understanding how the components break
+Designing chaos experiments to make your Kubernetes clusters more reliable
+Finally, in this third and final chapter on Kubernetes, we dive deep under the hood and see how Kubernetes really works. If I do my job well, by the end of this chapter you should have a solid understanding of the components that make up a Kubernetes cluster, how they work together, and what their fragile points might be. It’s the most advanced of the triptych, but I promise it will also be the most satisfying. Take a deep breath, and let’s get straight into the thick of it. Time for an anatomy lesson.
 
-11.1 Automating chaos with PowerfulSeal
+12.1 Anatomy of a Kubernetes cluster and how to break it
+As I’m writing, Kubernetes is one of the hottest technologies out there. And it’s for a good reason; it solves a whole lot of problems that come from running a large number of applications on large clusters. But like everything else in life, it comes with some costs. One of them is the complexity of the underlying workings of Kubernetes. And although this can be somewhat alleviated by using managed Kubernetes clusters, where most of it is someone else’s problem, you’re never fully insulated from the consequences. And perhaps you’re reading this on your way to a job managing Kubernetes clusters, which is yet another reason to understand how things work.
 
-It’s often said that software engineering is one of the very few jobs where being lazy is a good thing. And I tend to agree with that; a lot of automation or reducing toil can be seen as a manifestation of being too lazy to do manual labor. Automation also reduces operator errors and improves speed and accuracy.
+Regardless of whose problem this is, it’s good to know how Kubernetes works under the hood and how to test it works well. And as you’re about to see, chaos engineering fits neatly right in.
 
-The tools for automation of chaos experiments are steadily becoming more advanced and mature. For a good, up-to-date list of available tools, it’s worth checking out the Awesome Chaos Engineering list (https://github.com/dastergon/awesome-chaos-engineering). For Kubernetes, I recommend PowerfulSeal (https://github.com/powerfulseal/powerfulseal), created by yours truly, that we’re going to use here. Other good options include Chaos Toolkit (https://github.com/chaostoolkit/chaostoolkit) and Litmus (https://litmuschaos.io/).
+NOTE KEEPING UP WITH THE KUBERNETIANS
+In this section, I’m going to describe things as they stand for Kubernetes v1.18.3. Kubernetes is a fast-moving target, so even though special care was taken to keep the details in this section as future-proof as possible, things change quickly in Kubernetes Land.
 
-In this section, we’re going to build on the two experiments we implemented manually to make you more efficient the next time. In fact, we’re going to re-implement a slight variation of these experiments, each in 5 minutes flat. So, what’s PowerfulSeal again?
+Let’s start at the beginning - with the control plane.
 
-11.1.1   What’s PowerfulSeal?
-PowerfulSeal is a chaos engineering tool for Kubernetes. It has quite a few features:
+12.1.1   Control plane
+Kubernetes control plane is the brain of the cluster. It consists of the following components:
 
-interactive mode helping you understand how software on your cluster works and manually break it
-integrating with your cloud provider to take VMs up and down
-automatically killing pods marked with special labels
-autonomous mode supporting sophisticated scenarios
-The latter point in this list is the functionality we’ll focus on here.
+etcd - the database storing all the information about the cluster
+kube-apiserver - the server through which all interactions with the cluster are done, and that stores information in etcd
+kube-controller-manager - implements the infinite loop reading the current state, and attempting to modify it to converge into the desired state
+kube-scheduler - detects newly created pods and assigns them to nodes, taking into account various constraints (affinity, resource requirements, policies, etc)
+kube-cloud-manager (optional) - controls cloud-specific resources (VMs, routing)
 
-The autonomous mode allows you to implement chaos experiments by writing a simple .yml file. Inside that file, you can write any number of scenarios, each listing the steps necessary to implement, validate, and clean up after your experiment. There are plenty of options you can use (documented at https://powerfulseal.github.io/powerfulseal/policies), but at its heart, it’s a very simple format. The .yml file containing scenarios is referred to as a policy file.
 
-To give you an example, take a look at listing 11.1. It contains a simple policy file, with a single scenario, with a single step. That single step is an HTTP probe. It will try to make an HTTP request to the designated endpoint of the specified service, and fail the scenario if that doesn’t work.
+In the previous chapter, we created a deployment for Goldpinger. Let’s see, on a high level, what happens under the hood in the control plane when you run a kubectl apply command. First, your request reaches the kube-apiserver of your cluster. The server validates the request and stores the new or modified resources in etcd. In our case, it creates a new deployment resource. Once that’s done, kube-controller-manager gets notified of the new deployment. It reads the current state to see what needs to be done, and eventually creates new pods through another call to kube-apiserver. Once the kube-apiserver stores it in etcd, the kube-scheduler gets notified about the new pods, picks the best node to run them, assigns the node to them, and updates them back in kube-apiserver. As you can see, the kube-apiserver is at the center of it all, and all the logic is implemented in asynchronous, eventually consistent loops in loosely connected components. See figure 12.1 for a graphic representation.
 
-scenarios:
-- name: Just check that my service responds
-  steps:
-  - probeHTTP:
-      target:
-        service:
-          name: my-service
-          namespace: myapp
-      endpoint: /healthz
+Figure 12.1 Kubernetes control plane interactions when creating a deployment
 
-#A instruct PowerfulSeal to conduct an HTTP probe
 
-#B target service my-service in namespace myapp
+Let’s take a closer look at each of these components and see their strengths and weaknesses, starting with etcd.
 
-#C call the /healthz endpoint on that service
+etcd
+Legend has it that etcd (https://etcd.io/) was first written by an intern at a company called CoreOS that was bought by Red Hat that was acquired by IBM. Talk about bigger fish eating smaller fish. If the legend is to be believed, it was an exercise in implementing a distributed consensus algorithm called Raft (https://raft.github.io/). What does consensus have to do with etcd?
 
-Once you have your policy file ready, there are many ways you can run PowerfulSeal. Typically, it tends to be used either from your local machine -- the same one you use to interact with the Kubernetes cluster (useful for development) -- or as a Deployment running directly on the cluster (useful for ongoing, continuous experiments).
+Four words: availability and fault tolerance. Earlier in this chapter, we spoke about mean time to failure (MTTF) and how with just 20 servers, you were playing Russian roulette with 0.05% probability of losing your data every day. If you have only a single copy of the data, when it’s gone it’s gone. We want a system that’s immune to that. That’s fault tolerance.
 
-To run, PowerfulSeal needs permission to interact with the Kubernetes cluster, either through a ServiceAccount, like we did with Goldpinger in chapter 10, or through specifying a kubectl config file. If you want to manipulate VMs in your cluster, you’ll also need to configure access to the cloud provider. With that, you can start PowerfulSeal in autonomous mode and let it execute your scenario. PowerfulSeal will go through the policy and execute scenarios step by step, killing pods and taking down VMs as appropriate. Take a look at figure 11.1 that shows what this setup looks like visually.
+Similarly, if you have a single server, if it’s down your system is down. We want a system that’s immune to that. That’s availability.
 
-Figure 11.1 Setting up PowerfulSeal
+In order to achieve fault tolerance and availability, there isn’t really much else that you can do other than run multiple copies. And that’s where you run into trouble: the multiple copies have to somehow agree on a version of reality. In other words, they need to reach a consensus.
 
-And that’s it. Point it at a cluster, tell it what your experiment is like, and watch it do the work for you! We’re almost ready to get our hands dirty, but before we do, we’ll need to install PowerfulSeal.
+Consensus is agreeing on watching a movie on Netflix. If you’re by yourself, there is no one to argue with. When you’re with your partner, it becomes almost impossible, because neither of you can gather a majority for a particular choice. That’s when power moves and barter comes into play. But if you add a third person, then whoever convinces them gains a majority and wins the argument.
 
-NOTE POP QUIZ: WHAT DOES POWEFULSEAL DO?
+That’s pretty much exactly how Raft (and by extension, etcd) works. Instead of running a single etcd instance, you run a cluster with an odd number of nodes (typically three or five) and then the instances use the consensus algorithm to decide on the leader who basically makes all decisions while in power. If the leader stops responding (Raft uses a system of heartbeats, or regular calls between all instances, to detect that), a new election begins where everyone announces their candidacy, votes for themselves, and waits for other votes to come in. Whoever gets a majority of votes assumes power. The best thing about Raft is that it’s relatively easy to understand. The second best thing about Raft is that it works.
+
+If you'd like to see the algorithm in action, their official website has a very nice animation with heartbeats represented as little balls flying between bigger balls representing nodes (https://raft.github.io/). I took a screenshot showing a five-node-cluster (S1 to S5) in figure 12.2. It’s also interactive, so you can take nodes down and see how the rest of the system copes.
+
+Figure 12.2 Animation showing Raft consensus algorithm in action (https://raft.github.io/)
+
+I could talk (and I have talked) about etcd and Raft all day, but let’s focus on what’s important from the chaos engineering perspective. Etcd holds pretty much all of the data about a Kubernetes cluster. It’s strongly consistent, meaning that the data you write to etcd is replicated to all nodes, and regardless of which node you connect to, you get the up-to-date data. The price you pay for that is in performance. Typically you’ll be running in clusters of three or five nodes, because that tends to give enough fault tolerance and any extra nodes just slow the cluster down with little benefit. And odd numbers of members are better, because they actually decrease fault tolerance.
+
+Take a three-node cluster for example. To achieve a quorum, you need a majority of two nodes (n/2+1 = 3/2+1 = 2). Or looking at it from the availability perspective, you can lose a single node and your cluster keeps working. Now, if you add an extra node for a total of four, now you need a majority of three to function. That means that you still can survive only a single node failure at a time, but you now have more nodes in the cluster that can fail, so overall you are worse off in terms of fault tolerance.
+
+Running etcd reliably is not easy. It requires an understanding of your hardware profiles, tweaking various parameters accordingly, continuous monitoring, and keeping up to date with bug fixes and improvements in etcd itself. It also requires building an understanding of what actually happens when failure occurs and whether the cluster heals correctly. And that’s where chaos engineering can really shine. The way that etcd is run varies from one Kubernetes offering to another, so the details will vary too, but here are a few high-level ideas:
+
+Experiment 1: in a three-node cluster take down a single etcd instance
+a) Does kubectl still work? Can you schedule, modify and scale new pods?
+b) Do you see any failures connecting to etcd? Etcd clients are expected to retry their requests to another instance, if the one they connected to doesn’t respond
+c) When you take the node back up, does the etcd cluster recover? How long does it take?
+d) Can you see the new leader election and small increase in traffic in your monitoring setup?
+Experiment 2: restrict resources (CPU) available to an etcd instance to simulate an unusually high load on the machine running the instance
+a) Does the cluster still work?
+b) Does the cluster slow down? By how much?
+Experiment 3: add a networking delay to a single etcd instance
+a) Does a single slow instance affect the overall performance?
+b) Can you see the slowness in your monitoring setup? Will you be alerted if that happens? Does your dashboard show how close the values are to the limits (the values causing timeouts)?
+Experiment 4: take down enough nodes for the etcd cluster to lose quorum
+a) Does kubectl still work?
+b) Do the pods already on the cluster keep running?
+c) Does healing work?
+i. If you kill a pod, is it restarted?
+ii. If you delete a pod managed by a deployment, will a new pod be created?
+
+This book gives you all the tools you need to implement all of these experiments and more. Etcd is the memory of your cluster, so it’s crucial to test it well. And if you’re using a managed Kubernetes offering, you’re trusting that the people responsible for running your clusters know the answers to all these questions (and that they can prove it with experimental data). Ask them. If they’re taking your money, they should be able to give you reasonable answers!
+
+Hopefully that’s enough for a primer on etcd. Let’s pull the thread a little bit more and look at the only thing actually speaking to etcd in your cluster - the kube-apiserver.
+
+kube-apiserver
+The kube-apiserver, true to its name, provides a set of APIs to read and modify the state of your cluster. Every component interacting with the cluster does so through the kube-apiserver. For availability reasons, kube-apiserver also needs to be run in multiple copies. But because all the state is stored in etcd and etcd takes care of its consistency, kube-apiserver can be stateless. That means that running it is much simpler, and as long as there are enough instances running to handle the load of requests, we’re good. There is no need to worry about majorities or anything like that. It also means that they can be load-balanced, although some internal components are often configured to skip the load balancer. Figure 12.3 shows what this typically looks like.
+
+Figure 12.3 Etcd and kube-apiserver
+
+From the chaos engineering perspective, you might be interested in knowing how slowness on the kube-apiserver affects the overall performance of the cluster. Here are a few ideas:
+
+Experiment 1: create traffic to the kube-apiserver
+a) Since everything, including the internal components responsible for creating, updating and scheduling resources, talks to kube-apiserver, creating enough traffic to keep it busy could affect how the cluster behaves.
+Experiment 2: add network slowness
+a) Similarly, adding a networking delay in front of the proxy could lead to build up of queuing of new requests and adversely affect the cluster.
+
+Overall, you will find kube-apiserver start up quickly and perform pretty well. Despite the amount of work that it does, running it is pretty lightweight. Next in the line, the kube-controller-manager.
+
+kube-controller-manager
+Kube-controller-manager implements the infinite control loop, continuously detecting changes in the cluster state and reacting to them to move it toward the desired state. You can think of it as a collection of loops, each handling a particular type of resource.
+
+Do you remember when you created a deployment with kubectl in the previous chapter? What actually happened is that kubectl connected to an instance of kube-apiserver and requested creation of a new resource of type deployment. That was picked up by kube-controller-manager, which in turn created a ReplicaSet. The purpose of the latter is to manage a set of pods, ensuring that the desired number runs on the cluster. How is it done? You guessed it: a replica set controller (part of kube-controller-manager) picks it up and creates pods. Both the notification mechanism (called watch in Kubernetes) and the updates are served by the kube-apiserver. See figure 12.4 for a graphical representation. A similar cascade happens when a deployment is updated or deleted; the corresponding controllers get notified about the change and do their bit.
+
+Figure 12.4 Kubernetes control plane interactions when creating a deployment - more details
+
+This loosely coupled setup allows for separation of responsibilities; each controller does only one thing. It is also the heart of Kubernetes’ ability to heal from failure. Any discrepancies from the desired state will be attempted to be corrected ad infinitum.
+
+Like kube-apiserver, kube-controller-manager is typically run in multiple copies for failure resilience. Unlike kube-apiserver, only one of the copies is actually doing work at a time. The instances agree between themselves on who the leader is through acquiring a lease in etcd.
+
+How does that work? Thanks to its property of strong consistency, etcd can be used as a leader-election mechanism. In fact, its API allows for acquiring what they call a lock - a distributed mutex with an expiration date. Let’s say that you run three instances of the kube-controller manager. If all three try to acquire the lease simultaneously, only one will succeed. The lease then needs to be renewed before it expires. If the leader stops working or disappears, the lease will expire and another copy will acquire it. Once again, etcd comes in handy and allows for offloading a difficult problem (leader election) and keeping the component relatively simple.
+
+From the chaos engineering perspective, here are some ideas of experiments:
+
+Experiment 1: how busy your kube-apiserver is may affect the speed at which your cluster converges towards the desired state
+a) Kube-controller-manager gets all its information about the cluster from kube-apiserver. It’s worth understanding how any extra traffic on kube-apiserver affects the speed at which your cluster is converging towards the desired state. At what point does kube-controller-manager start timing out, rendering the cluster broken?
+Experiment 2: how your lease expiry affects how quickly the cluster recovers from losing the leader instance of kube-controller-manager
+b) If you run your own Kubernetes cluster, you can choose various timeouts for this component. That includes the expiry time of the leadership lease. A shorter value will increase speed at which the cluster restarts converging towards the desired state after losing the leader kube-controller-manager, but it comes at a price of increased load on kube-apiserver and etcd. A larger value
+
+When kube-controller-manager is done reacting to the new deployment, the pods are created, but they aren’t scheduled anywhere. That’s where kube-scheduler comes in.
+
+kube-scheduler
+Like we mentioned earlier, kube-scheduler’s job is to detect pods that haven’t been scheduled on any nodes, and find them a new home. It might be brand new pods, or it might be that a node that used to run the pod went down and a replacement is needed.
+
+Every time the kube-scheduler assigns a pod to run on a particular node in the cluster, it tries to find a best fit. Finding the best fit consists of two steps:
+
+filter out the nodes that don’t satisfy the pod’s requirements
+rank the remaining nodes by a giving them scores based on a predefined list of priorities
+
+INFO
+If you’d like to know the details of the algorithm used by the latest version of the kube-scheduler, you can see it in https://github.com/kubernetes/community/blob/master/contributors/devel/sig-scheduling/scheduler_algorithm.md.
+
+For a quick overview, the filters include:
+
+check that the resources (CPU, RAM, disk) requested by the pod can fit in the node
+check that any ports requested on the host are available on the node
+check if the pod is supposed to run on a node with a particular hostname
+check that the affinity (or anti-affinity) requested by the pod matches (or doesn’t match) the node
+check that the node is not under memory or disk pressure
+The priorities taken into account when ranking nodes include:
+
+the highest amount of free resources after scheduling (the higher the better - this has the effect of enforcing spreading)
+balance between the CPU and memory utilization (the more balanced the better)
+anti-affinity - nodes matching the anti-affinity setting are least preferred
+image locality - nodes already having the image are preferred (this has the effect of minimizing the amount of downloads of images)
+
+Just like kube-controller-manager, a cluster typically runs multiple copies of kube-scheduler but only the leader actually does the scheduling at any given time. From the chaos engineering perspective, this component is prone to basically the same issues as the kube-controller-manager.
+
+From the moment you ran the kubectl apply command, the components you just saw worked together to figure out how to move your cluster towards the new state you requested (the state with a new deployment). At the end of that process, the new pods were scheduled, assigned a node to run. But so far, we haven’t seen the actual component that starts the newly scheduled process. Time to take a look at Kubelet.
+
+NOTE POP QUIZ: WHERE IS THE CLUSTER DATA STORED?
 Pick one:
 
-1. Illustrates - in equal measures - the importance and futility of trying to pick up good names in software
+1. Spread across the various components on the cluster
 
-2. Guesses what kind of chaos you might need by looking at your Kubernetes clusters
+2. In /var/kubernetes/state.json
 
-3. Allows you to write a Yaml file to describe how to run and validate chaos experiments
+3. In etcd
+
+4. In the cloud, uploaded using the latest AI and machine learning algorithms and leveraging the revolutionary power of blockchain technology
 
 See appendix B for answers.
 
-11.1.2   PowerfulSeal - installation
-PowerfulSeal is written in Python, and it’s distributed in two forms:
+NOTE POP QUIZ: WHAT’S THE CONTROL PLANE IN KUBERNETES JARGON?
+Pick one:
 
-a pip package called powerfulseal
-a Docker image called powerfulseal/powerfulseal on Docker Hub
-For the two examples we’re going to run, it will be much easier to run PowerfulSeal locally, so let’s install it through pip. It requires Python3.7+ and pip available.
+1. The set of components implementing the logic of Kubernetes converging towards the desired state
 
-To install it using a virtualenv (recommended), run the following commands in a terminal window to create a subfolder called env and install everything in it:
+2. A remote control aircraft, used in Kubernetes commercials
 
-python3 --version
-  python3 -m virtualenv env
-  source env/bin/activate
-  pip install powerfulseal
+3. A name for Kubelet and Docker
 
-  #A check the version to make sure it’s python3.7
+See appendix B for answers.
 
-#B create a new virtualenv in the current working directory, called env
+12.1.2   Kubelet and pause container
+Kubelet is the agent starting and stopping containers on a host to implement the pods you requested. Running a Kubelet daemon on a computer turns it into a part of a Kubernetes cluster. Don’t be fooled by the affectionate name; Kubelet is a real workhorse, doing the dirty work ordered by the control plane. Like everything else on a cluster, it reads the state and takes its orders from the kube-apiserver. It also reports the data about the factual state of what’s running on the node, whether it’s running or crashing, how much CPU and RAM is actually used, and more. That data is later leveraged by the control plane to make decisions and make it available to the user.
 
-#C activate the new virtualenv
+To illustrate how Kubelet works, let’s do a thought experiment. Let’s say that the deployment we created earlier always crashes within seconds after it starts. The pod is scheduled to be running on a particular node. The Kubelet daemon is notified about the new pod. First, it downloads the requested image. Then, it creates a new container with that image and the specified configuration. In fact, it creates two containers - the one we requested, and another special one called pause. What is the purpose of the pause container?
 
-#D install powerfulseal from pip
+It’s a pretty neat hack. In Kubernetes, the unit of software is a pod, not a single container. Containers inside a pod need to share certain resources and not others. For example, processes in two containers inside a single pod share the same IP address and can communicate via localhost. Do you remember namespaces from the chapter on Docker? The IP address-sharing is implemented by sharing the network namespace. But other things, like for example the CPU limit, are applicable to each container separately. The reason for pause to exist is simply to hold these resources while the other containers might be crashing and coming back up. The pause container doesn’t do much. It starts and immediately goes to sleep. The name is pretty fitting.
 
-Depending on your internet connection, the last step might take a minute or two. When it’s done, you will have a new command accessible, called powerfulseal. Try it out by running the following command:
+Once the container is up, Kubelet will monitor it. If it crashes, it will bring it back up. See figure 12.5 for a graphical representation of the whole process.
 
-powerfulseal --version
+Figure 12.5 Kubelet starting a new pod
 
-You will see the version printed, corresponding to the latest version available. If, at any point, you need help, feel free to consult the help pages of PowerfulSeal, by running the following command:
+When we delete the pod, or perhaps it gets rescheduled somewhere else, Kubelet takes care of removing the relevant containers. Without Kubelet, all the resources created and scheduled by the control plane would remain abstract concepts.
 
-powerfulseal --help
+This also makes Kubelet a single point of failure. If it crashes, for whatever reason, , no changes will be made to the containers running on that node, even though Kubernetes will happily accept your changes. They just won’t ever get implemented on that node.
 
-With that, we’re ready to roll. Let’s see what experiment 1 would look like using PowerfulSeal.
+From the perspective of chaos engineering, it’s important to understand what actually happens to the cluster if Kubelet stops working. Here are a few ideas:
 
-11.1.3   Experiment 1b: kill 50% of pods
-As a reminder, this was our plan for experiment 1:
+Experiment 1: after Kubelet dies, how long does it take for pods to get rescheduled somewhere else?
+a) When Kubelet stops reporting its readiness to the control plane, after a certain timeout, it’s marked as unavailable (NotReady). That timeout is configurable and defaults to 5 minutes at the time of writing. Pods are not immediately removed from that node. The control plane will wait another configurable timeout before it starts assigning the pods to another node.
+b) In a scenario where a node disappears (for example, the hypervisor running the VM crashes), this means that you’re going to need to wait a certain minimal amount of time for the pods to start running somewhere else.
+c) If the pod is still running, but for some reason Kubelet can’t connect to the control plane (network partition) or dies, then you’re going to end up with a node running whatever it was running before the event, and it won’t get any updates. One of the possible side-effects is to run extra copies of your software with potentially stale configuration.
+d) We’ve covered the tools to take VMs up and down in the previous chapter, as well as killing processes. PowerfulSeal also supports executing commands over SSH, for example to kill or switch off Kubelet.
 
-Observability: use Goldpinger UI to see if there are any pods marked as inaccessible; use kubectl to see new pods come and go
-Steady state: all nodes healthy
-Hypothesis: if we delete one pod, we should see it in marked as failed in Goldpinger UI, and then be replaced by a new, healthy pod
-Run the experiment
-We have already covered the observability, but if you closed the browser window with the Goldpinger UI, here’s a refresher. Open the Goldpinger UI by running the following command in a terminal window:
+Experiment 2: does Kubelet restart correctly after crashing?
+a) Kubelet typically runs directly on the host to minimise the number of dependencies. If it crashes, it should be restarted.
+b) As we saw in chapter 2, sometimes setting things up to get restarted is harder than it initially looks, so it’s worth checking that different patterns of crashing (consecutive crashes, time-spaced crashes, and so on) are all covered. This takes little time and can avoid pretty bad outages.
+So the question now remains: how exactly does Kubelet run these containers? Let’s take a look at that now.
 
-minikube service goldpinger
 
-And just like before, we’d like to have a way to see what pods were created and deleted. To do that, we leverage the --watch flag of the kubectl get pods command. In another terminal window, start a kubectl command to print all changes:
 
-kubectl get pods --watch
+NOTE POP QUIZ: WHICH COMPONENT ACTUALLY STARTS AND STOPS PROCESSES ON THE HOST?
+Pick one:
 
-Now, to the actual experiment. Fortunately, it translates one-to-one to a built-in feature of PowefulSeal. Actions on pods are done using PodAction (I’m good at naming like that). Every PodAction consists of three steps:
+1. kube-apiserver
 
-match some pods, for example based on labels
-filter the pods (various filters available, for example take a 50% subset)
-apply an action on pods (for example, kill them)
-This translates directly into experiment1b.yml that you can see in listing 11.2. Store it or clone it from the repo.
+2. etcd
 
-config:
-  runStrategy:
-    runs: 1
-scenarios:
-- name: Kill 50% of Goldpinger nodes
-  steps:
-  - podAction:
-      matches:
-        - labels:
-            selector: app=goldpinger
-            namespace: default
-      filters:
-        - randomSample:
-            ratio: 0.5
-      actions:
-        - kill:
-            force: true
 
-#A only run the scenario once, and then exit
 
-#B select all pods in namespace default, with labels app=goldpinger
+ kubelet
 
-#C filter out to only take 50% of the matched pods
+4. docker
 
-#D kill the pods
+See appendix B for answers.
 
-You must be itching to run it, so let’s not wait any longer. On Minikube, the kubectl config is stored in ~/.kube/config, and it will be automatically picked up when you run PowerfulSeal. So the only argument we need to specify is the policy file (--policy-file) flag. Run the following command, pointing to the experiment1b.yml file:
+12.1.3   Kubernetes, Docker, and container runtimes
+Kubelet leverages lower-level software to start and stop containers to implement the pods that you ask it to create. This lower-level software is often called container runtimes. In chapter 5, we covered Linux containers and Docker (their most popular representative), and that’s for a good reason. Initially, Kubernetes was written to use Docker directly, and you can still see some naming that matches one-to-one to Docker; even the kubectl CLI feels similar to the Docker CLI.
 
-powerfulseal autonomous --policy-file experiment1b.yml
+Today, Docker is still one of the most popular container runtimes to use with Kubernetes, but it’s by no means the only option. Initially, the support for new runtimes was baked directly into Kubernetes internals. In order to make it easier to add new supported container runtimes, a new API was introduced to standardize the interface between Kubernetes and container runtimes. It is called container runtime interface (CRI) and you can read more about how they introduced it in Kubernetes 1.5 in 2016 at https://kubernetes.io/blog/2016/12/container-runtime-interface-cri-in-kubernetes/.
 
-You will see an output similar to the following (abbreviated). Note the lines when it says it found three pods, filtered out two and selected a pod to be killed (bold font):
+Thanks to that new interface, interesting things happened. For example, since version 1.14, Kubernetes has had Windows support, where it uses Windows containers (https://docs.microsoft.com/en-us/virtualization/windowscontainers/) to start and stop containers on machines running Windows. And on Linux, other options have emerged; for example, the following runtimes leverage basically the same set of underlying technologies as Docker:
 
-(...) 
-  2020-08-25 09:51:20 INFO __main__ STARTING AUTONOMOUS MODE 
-  2020-08-25 09:51:20 INFO scenario.Kill 50% of Gol Starting scenario 'Kill 50% of Goldpinger nodes' (1 steps) 
-  2020-08-25 09:51:20 INFO action_nodes_pods.Kill 50% of Gol Matching 'labels' {'labels': {'selector': 'app=goldpinger', 'namespace': 'default'}} 
-  2020-08-25 09:51:20 INFO action_nodes_pods.Kill 50% of Gol Matched 3 pods for selector app=goldpinger in namespace default 
-  2020-08-25 09:51:20 INFO action_nodes_pods.Kill 50% of Gol Initial set length: 3 
-  2020-08-25 09:51:20 INFO action_nodes_pods.Kill 50% of Gol Filtered set length: 1 
-  2020-08-25 09:51:20 INFO action_nodes_pods.Kill 50% of Gol Pod killed: [pod #0 name=goldpinger-c86c78448-8lfqd namespace=default containers=1 ip=172.17.0.3 host_ip=192.168.99.100 state=Running labels:app=goldpinger,pod-template-hash=c86c78448 annotations:] 
-  2020-08-25 09:51:20 INFO scenario.Kill 50% of Gol Scenario finished 
-  (...)
+containerd (https://containerd.io/) - the emerging industry standard that seems poised to eventually replace Docker. To make matters more confusing, Docker versions >= 1.11.0 actually use containerd under the hood to run containers
+CRI-O (https://cri-o.io/) - aims to provide a simple, lightweight container runtime optimized for use with Kubernetes
+rkt (https://coreos.com/rkt) - initially developed by CoreOS, the project now appears to be no longer maintained. It was pronounced “rocket”.
 
-  If you’re quick enough, you will see a pod becoming unavailable and then replaced by a new pod in the Goldpinger UI, just like you did the first time we ran this experiment. And in the terminal window running kubectl, you will see the familiar sight, confirming that a pod was killed (goldpinger-c86c78448-8lfqd) and then replaced with a new one (goldpinger-c86c78448-czbkx):
+To further the confusion, the ecosystem has some more surprises for you. First, both containerd (and therefore Docker, which relies on it) and CRIO-O share some code by leveraging another open-source project called runC (https://github.com/opencontainers/runc), which manages the lower-level aspects of running a Linux container. Visually, when you stack the blocks on top of one another, it looks like figure 12.6. The user requests a pod, Kubernetes reaches out to the container runtime it was configured with. It might go to Docker, Containerd, or CRI-O, but at the end of the day it all ends up using runC.
 
-  NAME            READY   STATUS    RESTARTS   AGE 
-  goldpinger-c86c78448-lwxrq   1/1     Running   1          45h 
-  goldpinger-c86c78448-tl9xq   1/1     Running   0          40m 
-  goldpinger-c86c78448-xqfvc   1/1     Running   0          8m33s 
-  goldpinger-c86c78448-8lfqd   1/1     Terminating   0          41m 
-  goldpinger-c86c78448-8lfqd   1/1     Terminating   0          41m 
-  goldpinger-c86c78448-czbkx   0/1     Pending       0          0s 
-  goldpinger-c86c78448-czbkx   0/1     Pending       0          0s 
-  goldpinger-c86c78448-czbkx   0/1     ContainerCreating   0          0s 
-  goldpinger-c86c78448-czbkx   1/1     Running             0          2s
+Figure 12.6 Container Runtime Interface, Docker, Containerd, CRI-O and runC.
 
-  That concludes the first experiment and shows you the ease of use of higher level tools like PowerfulSeal. But we’re just warming up. Let’s take a look at experiment 2 once again, this time using the new toys.
+The second surprise is that in order to avoid having different standards pushed by different entities, a bunch of companies led by Docker came together to form the Open Container Initiative (or OCI for short https://opencontainers.org/). It provides two specifications:
 
-11.1.4   Experiment 2b: network slowness
-As a reminder, this was our plan for experiment 2:
+the Runtime Specification that describes how to run a filesystem bundle (new term to describe what used to be called a Docker image downloaded and unpacked)
+the Image Specification that describes what an OCI Image (new term for Docker image) looks like, how to build, upload, and download one
+As you might imagine, most people didn’t just stop using names like Docker images and start prepending everything with OCI, so things can get a little bit confusing at times. But that’s all right. At least there is a standard now!
 
-Observability: use Goldpinger UI to read delays using the graph UI and the heatmap
-Steady state: all existing Goldpinger instances report healthy
-Hypothesis: if we add a new instance that has a 250ms delay, the connectivity graph will show all four instances healthy, and the 250ms delay will be visible in the heatmap
-Run the experiment!
+One more plot twist. In recent years, we’ve seen a few interesting projects pop up, that implement the CRI, but instead of running Docker-style Linux containers, get creative:
 
-It’s a perfectly good plan, so let’s use it again. But this time, instead of manually setting up a new deployment and doing the gymnastics to point the right port to the right place, we’ll leverage the clone feature of PowerfulSeal.
+Kata Containers (https://katacontainers.io/) - runs “lightweight VMs” instead of containers, that are optimized for speed, to offer a “container-like” experience, but with stronger isolation offered by different hypervisors
 
-It works like this. You point it at a source deployment that it will copy at runtime (the deployment must exist on the cluster). This is to make sure that we don’t break the existing running software, and instead add an extra instance, just like we did before. And then you can specify a list of mutations that PowerfulSeal will apply to the deployment to achieve specific goals. Of particular interest is the toxiproxy mutation. It does almost exactly the same thing that we did:
+Firecracker (https://github.com/firecracker-microvm/firecracker) - runs “microVMs”, also lightweight type of VMs, implemented using Linux Kernel Virtual Machine (KVM - https://en.wikipedia.org/wiki/Kernel-based_Virtual_Machine). The idea is the same as Kata Containers, with a different implementation.
+gVisor (https://github.com/google/gvisor) - implements container isolation in a different way than Docker-style projects do. It runs a user space kernel that implements a subset of syscalls that it makes available to the processes running inside of the sandbox. It then sets things up to capture the syscalls made by the process and execute them in the user space kernel. Unfortunately, that capture and redirection of syscalls introduce a performance penalty. There are multiple mechanisms you can use to do that, but the default leverages ptrace that we briefly mention in the chapter on syscalls, and so it takes a serious performance hit.
 
-add a toxiproxy container to the deployment
-configure toxiproxy to create a proxy configuration for each port specified on the deployment
-automatically redirect the traffic incoming to each port specified in the original deployment to its corresponding proxy port
-configure any toxics requested
+Now, if we plug these into the previous figure, we end up with something along the lines of figure 12.7. Once again, the user requests a pod, and Kubernetes makes a call through the CRI. But this time, depending on which container runtime you are using, the end process might be running in a container or a VM.
 
-The only real difference between what we did before and what PowefulSeal does is the automatic redirection of ports, which means that we don’t need to change any ports configuration in the deployment.
+Figure 12.7 RunC-based container runtimes, alongside Kata Containers, FIrecracker and gVisor.
 
-To implement this scenario using PowerfulSeal, we need to write another policy file. It’s pretty straightforward. We need to use the clone feature, and specify the source deployment to clone. To introduce the network slowness, we can add a mutation of type toxiproxy, with a toxic on port 8080, of type latency, with the latency attribute set to 250ms. And just to show you how easy it is to use, let’s set the number of replicas affected to 2. That means that two replicas out of the total of five (three from the original deployment plus these two), or 40% of the traffic will be affected. Also note that at the end of a scenario, PowerfulSeal cleans up after itself by deleting the clone it created. To give you enough time to look around, let’s add a wait of 120 seconds before that happens.
+If you’re running Docker as your container runtime, everything you learned in chapter 5 will be directly applicable to your Kuberentes cluster. If you’re using ContainerD or CRI-O, it will be mostly the same, because they all use the same underlying technologies. GVisor will differ in many aspects, because of the different approach they chose to implement the isolation. If your cluster uses Kata Containers or Firecracker, you’re going to be running VMs rather than containers. This is a fast-changing landscape, so it’s worth following the new developments in this zone. Unfortunately, as much as I love these technologies, we need to wrap up. I strongly encourage you to at least play around with them.
 
-When translated into Yaml, it looks like the file experiment2b.yml that you can see in listing 11.3. Take a look.
+Let’s take a look at the last piece of the puzzle - the Kubernetes networking model.
 
-config:
-  runStrategy:
-    runs: 1
-scenarios:
-- name: Toxiproxy latency
-  steps:
-  - clone:
-source:
-        deployment:
-          name: goldpinger
-          namespace: default
-      replicas: 2
-      mutations:
-        - toxiproxy:
-            toxics:
-              - targetProxy: "8080"
-                toxicType: latency
-                toxicAttributes:
-     - name: latency
-       value: 250
-  - wait:
-      seconds: 120
+NOTE POP QUIZ: CAN YOU USE A DIFFERENT CONTAINER RUNTIME THAN DOCKER?
+Pick one:
 
-      #A use the clone feature of PowerfulSeal
+1. If you’re in the USA, it depends on the state. Some states allow it
 
-#B clone the deployment called “goldpinger” in the default namespace
+2. No, Docker is required for running Kubernetes
 
-#C use two replicas of the clone
+3. Yes, you can use a number of alternative container runtimes, like CRI-O, containerd and others
 
-#D target port 8080 (the one that Goldpinger is running on)
+See appendix B for answers.
 
-#E specify latency of 250ms
+12.1.4   Kubernetes networking
+There are three parts of Kubernetes networking that you need to understand to be effective as a chaos engineering practitioner:
 
-#F wait for 120 seconds
+pod-to-pod networking
+service networking
+ingress networking
+I’ll walk you through them one by one. Let’s start with pod-to-pod networking.
 
-NOTE BRINGING GOLDPINGER BACK UP AGAIN
-If you got rid of the Goldpinger deployment from experiment 2, you can bring it back up by running the following command in a terminal window:
+Pod-to-pod networking
+To communicate between pods, or have any traffic routed to them, pods need to be able to resolve each other’s IP addresses. When discussing kubelet, we mentioned that the pause container was holding the IP address that was common for the whole pod. But where does this IP address come from, and how does it work?
 
-kubectl apply -f goldpinger-rbac.yml
 
-kubectl apply -f goldpinger.yml
 
-You’ll see a confirmation of the created resources. After a few seconds, you will be able to see the Goldpinger UI in the browser by running the following command:
+The answer is simple. It’s a made-up IP address that's assigned to the pod by Kubelet when it starts. When configuring a Kubernetes cluster, a certain range of IP addresses is configured, and then subranges are given to every node in the cluster. Kubelet is then aware of that subrange, and when it creates a pod through the CRI, it gives it an IP address from its range. From the perspective of processes running in that pod, they will see that IP address as the address of their networking interface. So far so good.
 
-minikube service goldpinger
+Unfortunately, by itself, this doesn’t implement any pod-to-pod networking. It merely attributes a fake IP address to every pod, and then stores it in kube-apiserver.
 
-You will see the familiar graph with three goldpinger nodes, just like in chapter 10. See figure 11.2 for a reminder of what it looks like.
+Kubernetes then expects you to configure the networking independently. In fact, it only gives you two conditions that you need to satisfy, and doesn’t really care how you achieve that (https://kubernetes.io/docs/concepts/cluster-administration/networking/#the-kubernetes-network-model):
 
-Figure 11.2 Goldpinger UI in action
+all pods can communicate to all other pods on the cluster directly
+processes running on the node can communicate with all pods on that node
 
-Let’s execute the experiment. Run the following command in a terminal window:
+This is typically done with an overlay network (https://en.wikipedia.org/wiki/Overlay_network), where the nodes in the cluster are configured to route the fake IP addresses between themselves, and deliver them to the right containers.
 
-powerfulseal autonomous --policy-file experiment2b.yml
+Once again, the interface for dealing with the networking has been standardized. It’s called Container Networking Interface (CNI). At the time of writing, there are 29 different options for implementing the networking layer listed in the official documentation (https://kubernetes.io/docs/concepts/cluster-administration/networking/#how-to-implement-the-kubernetes-networking-model). To keep things simple, I’m going to show you an example of how one of the most basic works: flannel (https://github.com/coreos/flannel).
 
-You will see PowerfulSeal creating the clone, and then eventually deleting it, similar to the following output:
+Flannel runs a daemon (flanneld) on each Kubernetes node and agrees on subranges of IP addresses that should be available to each node. It stores that information in etcd. Every instance of the daemon then ensures that the networking is configured to forward packets from different ranges to their respective nodes. On the other end, the receiving flanneld daemon delivers received packets to the right container. The forwarding is done using one of the supported existing backends, for example VXLAN (https://en.wikipedia.org/wiki/Virtual_Extensible_LAN).
 
-(...)
-2020-08-31 10:49:32 INFO __main__ STARTING AUTONOMOUS MODE 
-  2020-08-31 10:49:33 INFO scenario.Toxiproxy laten Starting scenario 'Toxiproxy latency' (2 steps) 
-  2020-08-31 10:49:33 INFO action_clone.Toxiproxy laten Clone deployment created successfully 
-  2020-08-31 10:49:33 INFO scenario.Toxiproxy laten Sleeping for 120 seconds 
-  2020-08-31 10:51:33 INFO scenario.Toxiproxy laten Scenario finished 
-  2020-08-31 10:51:33 INFO scenario.Toxiproxy laten Cleanup started (1 items) 
-  2020-08-31 10:51:33 INFO action_clone Clone deployment deleted successfully: goldpinger-chaos in default 
-  2020-08-31 10:51:33 INFO scenario.Toxiproxy laten Cleanup done 
-  2020-08-31 10:51:33 INFO policy_runner All done here!
+To make it easier to understand, let’s walk through a concrete example. Let’s say that your cluster has two nodes, and the overall pod IP address range is 192.168.0.0/16. To keep things simple, let’s say that node A was assigned range 192.168.1.0/24 and node B was assigned range 192.168.2.0/24. And node A has a pod A1, with an address 192.168.1.1 and it wants to send a packet to pod B2, with an address 192.168.2.2 running on node B.
 
-  During the 2-minute wait you configured, check the Goldpinger UI. You will see a graph with five nodes. When all pods come up, the graph will show all healthy. But there is more to it. Click the heatmap, and you will see that the cloned pods (they will have “chaos” in their name) are slow to respond. But if you look closely, you will notice that the connections they are making to themselves are unaffected. That’s because PowerfulSeal doesn’t inject itself into communications on localhost. Click the heatmap button. You will see a heatmap similar to figure 11.2. Note that the squares on the diagonal (pods calling themselves) remain unaffected by the added latency.
 
-Figure 11.3 Goldpinger heatmap showing two pods with added latency, injected by PowerfulSeal
 
-That concludes the experiment. Wait for PowerfulSeal to clean up after itself and delete the cloned deployment. When it’s finished (it will exit(, let’s move on to the next topic: ongoing testing.
+When pod A1 tries to connect to pod B2, the forwarding set up by flannel will match the node IP address range for node B and encapsulate and forward the packets there. On the receiving end, the instance of flannel running on node B will receive the packets, undo the encapsulation, and deliver them to pod B. From the perspective of a pod, our fake IP addresses are as real as anything else. Take a look at figure 12.8 that shows this in a graphical way.
 
-11.2 Ongoing testing & Service Level Objectives (SLOs)
-So far, all the experiments we’ve conducted were designed to verify a hypothesis and call it a day. Like everything in science, a single counter-example is enough to prove a hypothesis wrong, but absence of such counter-example doesn’t prove anything. And sometimes our hypotheses are about normal functioning of a system, where various events might occur and influence the outcome.
+Figure 12.8 High-level overview of pod networking with flannel
 
-To illustrate what I mean, let me give you an example. Think of a typical Service Level Agreement (SLA) that you might see for a Platform as a Service (PaaS). Let’s say that your product is to offer managed services, similar to AWS Lambda (https://aws.amazon.com/lambda/), where the client can make an API call specifying a location of some code, and your platform will build, deploy, and run that service for them. Your clients care deeply about the speed at which they can deploy new versions of their services, so they want an SLA for the time it takes from their request to their service being ready to serve traffic. To keep things simple, let’s say that the time for building their code is excluded, and the time to deploy it on your platform is agreed to be one minute.
 
-As the engineer responsible for that system, you need to work backward from that constraint to set up the system in a way that can satisfy these requirements. You design an experiment to verify that a typical request you expect to see in your clients fits in that timeline. You run it, turns out it only takes about 30 seconds, the champagne cork is popping and the party starts! Or does it?
+Flannel is pretty bare-bones. There are much more advanced solutions, doing things like allowing for dynamic policies that dictate which pods can talk to what other pods in what circumstances, and much more. But the high-level idea is the same: the pod IP addresses get routed, and there is a daemon running on each node that makes sure that happens. And that daemon will always be a fragile part of the setup.If it stops working, the networking settings will be stale and potentially wrong.
 
-When you run the experiment like this and it works, what you actually proved is that the system behaved the expected way during the experiment. But does it guarantee that it will work the same way in different conditions (peak traffic, different usage patterns, different data)? Typically, the larger and more complex the system is, the harder it is to answer that question. And that’s a problem, especially if the SLAs you signed have financial penalties for missing the goals.
+That’s the pod networking in a nutshell. There is another set of fake IP addresses in Kubernetes - service IP addresses. Let’s take a look at that now.
 
-Fortunately, chaos engineering really shines in this scenario. Instead of running an experiment once, we can run it continuously to detect any anomalies, experimenting every time on a system in a different state and during the kind of failure we expect to see. Simple yet effective.
+Service networking
+As a reminder, services in Kubernetes give a shared IP address to a set of pods that you can mix and match based on the labels. In our previous example, we had some pods with a label app=goldpinger: the service used that same label to match the pods and give them a single IP address.
 
-Let’s go back to our example. We have a 1-minute deadline to start a new service. Let’s automate an ongoing experiment that starts a new service every few minutes, measures the time it took to become available, and alerts if it exceeds a certain threshold. That threshold will be our internal SLO, which is more aggressive than the legally binding version in the SLA that we signed, so that we can get alerted when we get close to trouble.
+Just like the pod IP addresses, the service IP addresses are completely made-up. They are implemented by a component called kube-proxy, that also runs on each node on your Kubernetes cluster. Kube-proxy watches for changes to the pods matching the particular label, and reconfigures the host to route these fake IP addresses to their respective destinations. They also offer some load-balancing. The single service IP address will resolve to many pod IP addresses, and depending on how kube-proxy is configured, you can load-balance them in different fashions.
 
-It’s a common scenario, so let’s take our time and make it real.
+Kube-proxy can use multiple backends to implement the networking changes. One of them is to use iptables (https://en.wikipedia.org/wiki/Iptables). We don’t have time to dive into how iptables works, but at the high level, it allows you to write a set of rules that modify the flow of the packets on the machine.
 
-11.2.1   Experiment 3: verify pods are ready within (n) seconds of being created
-Chances are, that PaaS you’re building is running on Kubernetes. When your client makes a request to your system, it translates into a request for Kubernetes to create a new deployment. You can acknowledge the request to your client, but this is where things start getting tricky. How do you know that the service is ready? In one of the previous experiments we used kubectl get pods --watch to print to the console all changes to the state of the pods we cared about. All of them are happening asynchronously, in the background, while Kubernetes is trying to converge to the desired state. In Kubernetes, pods can be in one of the following states:
+In this mode, kube-proxy will create rules that forward the packets to particular pod IP addresses. If there is more than one pod, there will be rules for each pod, with corresponding probabilities. The first rule to match wins. Let’s say that you have a service that resolves to three pods. On a high level, they would look something like this:
 
-pending - the pod has been accepted by Kubernetes, but it’s not been setup yet
-running - the pod has been setup, and at least one container is still running
-succeeded - all containers in the pod have terminated in success
-failed - all containers in the pod have terminated, at least one of them in failure
-unknown - the state of the pod is unknown (typically the node running it stopped reporting its state to Kubernetes)
+if IP == SERVICE_IP, forward to pod A with probability 33%
+if IP == SERVICE_IP, forward to pod B with probability 50%
+if IP == SERVICE_IP, forward to pod C with probability 100%
+This way, on average, the traffic should be routed roughly equally to the three pods.
 
-If everything goes well, the happy path is for a pod to start in pending, and then move to running. But before that happens, a lot of things need to happen, many of which will take a different amount of time every time.; for example:
+The weakness of this setup is that iptables evaluates all the rules one by one, until it hits a rule that matches. As you can imagine, the pod services and pods you’re running on your cluster, the more rules there will be, and therefore the bigger overhead this will create.
 
-image download - unless already present on the host, the images for each container need to be downloaded, potentially from a remote location. Depending on the size of the image and on how busy the location from which it needs to be downloaded is at the time, it might take a different amount of time every time. Additionally, like everything on the network, it’s prone to failure and might need to be retried.
-preparing dependencies - before a pod is actually run, Kubernetes might need to prepare some dependencies it relies on, like (potentially large) volumes, configuration files and so on
-actually running the containers - the time to actually start a container will vary, depending on how busy the host machine is
+To alleviate that problem, kube-proxy can also use IPVS (https://en.wikipedia.org/wiki/IP_Virtual_Server), which scales much better for large deployments.
 
-In a not-so-happy path, for example, if an image download gets interrupted, you might end up with a pod going from pending through failed to running. The point is that it can’t easily be predicted how long it’s going to take to actually have it running. So the next best thing we can do is to continuously test it and alert when it gets too close to the threshold we care about.
+From the chaos engineering perspective, that’s one of the things you need to be aware of. Here are a few ideas for chaos experiments:
 
-With PowerfulSeal, it’s very easy to do. We can write a policy that will deploy some example application to run on the cluster, wait the time we expect it to take, and then execute an HTTP request to verify that the application is running correctly. It can also automatically clean the application up when it’s done, and provide means to get alerted when the experiment failed.
+Experiment 1: does number of services affect the speed of networking?
+a) If you’re using iptables, you will find that just creating a few thousand services (even if they’re empty) will suddenly slow down the networking on all nodes in a significant way. Do you think your cluster shouldn’t be affected by that? You’re one experiment away from checking that.
+Experiment 2: how good is the load-balancing?
+b) With the probability-based load balancing, you might sometimes find interesting results in terms of traffic split. It might be a good idea to verify your assumptions about that.
+Experiment 3: what happens when kube-proxy is down?
+c) If the networking is not updated, it is quite possible to end up with not only stale routing that doesn’t work, but also routing to the wrong service. Can your setup detect when that happens? Would you get alerted, if requests start flowing to the wrong destinations?
+Once you have a service configured, one last thing that you want to do with it is to make it accessible outside the cluster. That’s what ingresses are designed for. Let’s take a look at that now.
 
-Normally, we would add some type of failure, and test that the system withstands that. But right now I just want to illustrate the idea of ongoing experiments, so let’s keep it simple and stick to just verifying our SLO on the system without any disturbance.
+Ingress networking
+Having the routing work inside of the cluster is great, but the cluster won’t be of much use if you can’t access the software running on it from the outside. That’s where the ingresses come in.
 
-Leveraging that, we can design the following experiment:
+In Kubernetes, an ingress is a natively supported resource that effectively describes a set of hosts and the destination service that these hosts should be routed to. For example, an ingress could say that requests for example.com should go to a service called example, in the namespace called mynamespace, and route to port 8080. It’s a first-class citizen, natively supported by Kubernetes API.
 
-Observability: read PowerfulSeal output (and/or metrics)
-Steady state: N/A
-Hypothesis: when I schedule a new pod and a service, it becomes available for HTTP calls within 30 seconds
-Run the experiment!
-That translates into a PowerfulSeal policy that runs indefinitely the following steps:
+But once again, creating this kind of resource doesn’t do anything by itself. You need to have an ingress controller installed that will listen on changes to the resources of this kind and implement them. And yes, you guessed it, there are multiple options. As I’m looking at it now, the official docs list 15 options at https://kubernetes.io/docs/concepts/services-networking/ingress-controllers/.
 
-create a pod and a service
-wait 30 seconds
-make a call to the service to verify it’s available, fail if it’s not
-clean up (remote the pod and service)
-rinse and repeat
-Take a look at figure 11.3 that shows this process visually.
+Let me use the nginx ingress controller (https://github.com/kubernetes/ingress-nginx) as an example. We saw nginx in the previous chapters. It’s often used as a reverse proxy, receiving traffic and sending it to some kind of server upstream. That’s precisely how it’s used in the ingress controller.
+When you deploy it, it runs a pod on each host. Inside of that pod, it runs an instance of nginx, and an extra process that listens to changes on resources of type ingress. Every time a change is detected, it re-generates a config for nginx, and asks nginx to reload it. Nginx then knows which hosts to listen on, and where to proxy the incoming traffic. It’s that simple.
 
-Figure 11.4 Example of an ongoing chaos experiment
+It goes without saying, that the ingress controller is typically the single point of entry to the cluster, and so everything that prevents it from working well will deeply affect the cluster. And like any proxy, it’s easy to mess up its parameters. From the chaos engineering perspective, here are some ideas to get you started:
 
-To write the actual PowerfulSeal policy file, we’re going to use three more features:
+What happens when a new ingress is created or modified and a config is reloaded? Are the existing connections dropped? What about corner cases like websockets?
+Does your proxy have the same timeout as the service it proxies to? If you time out quicker, not only you can have outstanding requests being processed long after the proxy dropped the connection, but the consequent retries might accumulate and take down the target service.
 
-First, a step of type kubectl behaves just like you expect it to: it executes the attached Yaml just like if you did a kubectl apply or kubectl delete. We’ll use that to create the pods in question. We’ll also use the option for automatic clean up at the end of the scenario, called autoDelete.
-Second, we’ll use the wait feature to wait for the 30 seconds we expect to be sufficient to deploy and start the pod.
-Third, we’ll use the probeHTTP to make an HTTP request and detect whether it works. probeHTTP is fairly flexible; it supports calling services or arbitrary urls, using proxies and more.
-We’ll also need an actual test app to deploy and call. Ideally, we’d choose something that represents a reasonable approximation of the type of software that the platform is supposed to handle. To keep things simple, we can deploy a simple version of Goldpinger again. It has an endpoint /healthz that we can reach to confirm that it started correctly.
+We could chat about that for a whole day, but this should be enough to get you started with your testing. Unfortunately, all good things come to an end. Let’s finish with a summary of the key components we covered in this chapter.
 
-# Listing 11.4 experiment3.yml TODO
+NOTE POP QUIZ: WHICH COMPONENT DID I JUST MAKE UP?
+Pick one:
+
+1. kube-apiserver
+
+2. kube-controller-manager
+
+3. kube-scheduler
+
+4. kube-converge-loop
+
+5. kubelet
+
+6. etcd
+
+7. kube-proxy
+
+See appendix B for answers.
+
+12.2 Summary of key components
+We covered quite a few components in this chapter, so before I let you go, I’ve got a little parting gift for you - a handy reference of the key functions of these components. Take a look at table 12.1. If you’re new to all of this, don’t worry - it will soon start feeling like home.
+
+Table 12.1 Summary of the key Kubernetes components
+
+Component
+
+Key function
+
+kube-apiserver
+
+Provides APIs for interacting with the Kubernetes cluster.
+
+etcd
+
+The database used by Kubernetes to store all its data.
+
+kube-controller-manager
+
+Implements the infinite loop converging the current state toward the desired one.
+
+kube-scheduler
+
+Scheduled pods onto nodes, trying to find the best fit.
+
+kube-proxy
+
+Implements the networking for Kubernetes services.
+
+container networking interface (CNI)
+
+Implements the pod-to-pod networking in Kubernetes. For example Flannel, Calico.
+
+kubelet
+
+Starts and stops containers on hosts, using a container runtime.
+
+container runtime
+
+Actually runs the processes (containers, VMs) on a host. For example Docker, containerd, CRI-O, Kata, gVisor.
+
+And with that, it’s time to wrap up!
+
+12.3 Summary
+Kubernetes is implemented as a set of loosely coupled components, using etcd as the storage for all data
+Kubernetes’ capacity to continuously converge to the desired state is implemented through various components reacting to well-defined situations and updating the part of the state they are responsible for
+Kubernetes can be configured in various ways, so implementation details might vary, but the Kubernetes APIs will work broadly the same wherever you go
+By designing chaos experiments to expose various Kubernetes components to expected kinds of failure, you can find fragile points in your clusters nad make your cluster more reliable
+
+13 Chaos engineering (for) people
+This chapter covers
+Mindset shifts required for effective chaos engineering
+Getting buy-in from the team and management for doing chaos engineering
+Applying chaos engineering to teams to make them more reliable
+Let’s focus on the other type of resource that’s necessary for any project to succeed: people. In many ways, human beings and the networks we form are more complex, dynamic, and harder to diagnose and debug than the software we write. Talking about chaos engineering without including all that human complexity would therefore be incomplete.
+
+In this chapter, I would like to bring to your attention three facets of chaos engineering meeting human brains.
+
+First, we’ll discuss what kind of mindset is required to be an effective chaos engineer, and why sometimes that shift is hard to make.
+Second is the hurdle to get a buy-in from the people around you. We will see how to communicate clearly the benefits of this approach.
+Finally, we’ll talk about human teams as distributed systems and how we can apply the same chaos engineering approach we did with machines to make teams more resilient.
+If that sounds like your idea of fun, we can be friends. First stop: the chaos engineering mindset.
+
+13.1 Chaos engineering mindset
+Find a comfortable position, lean back, and relax. Take control of your breath and try taking in deep, slow breaths through your nose, and release the air with your mouth. Now, close your eyes and try to not think about anything. I bet you found that hard, thoughts just keep coming. Don’t worry, I’m not going to pitch to you my latest yoga and mindfulness classes (they’re all sold out for the year)!. I just want to bring to your attention that a lot of what you consider “you” is happening without your explicit knowledge. From the chemicals produced inside of your body to help process the food you ate and make you feel sleepy at the right time of the night to split-second, subconscious decisions on other people’s friendliness and attractiveness based on visual cues, we’re all a mix of rational decisions and rationalizing the automatic ones.
+
+To put it differently, parts of what makes up your identity are coming from the general-purpose, conscious parts of the brain, while others are coming from the subconscious. The conscious brain is much like implementing things in software - easy to adapt to any type of problem, but more costly and slow. That’s opposed to the quicker, cheaper, and more-difficult-to-change logic implemented in the hardware.
+
+One of the interesting aspects of this duality is our perception of risk and rewards. We are capable of making the conscious effort to think about and estimate risks, but a lot of this estimation is done automatically without even reaching the level of consciousness. And the problem is that some of these automatic responses might still be optimized for surviving in the harsh environments the early human was exposed to, and not doing computer science.
+
+Chaos engineering mindset is all about estimating risks and rewards with partial information, instead of relying on the automatic responses and gut feelings. It requires doing things that feel counterintuitive at first, like introducing failure into computer systems, after a careful consideration of the risk-reward ratio. It necessitates a scientific, evidence-based approach, coupled with a keen eye for potential problems. In the rest of this chapter I will try to illustrate why.
+
+CALCULATING RISKS - THE TROLLEY PROBLEM
+If you think that you’re good at risk mathematics, think again. You might be familiar with the Trolley problem (https://en.wikipedia.org/wiki/Trolley_problem). In the experiment, participants are asked to make a choice which will affect other people - either keep them alive, or not. There is a trolley barrelling down the tracks. Ahead, there are five people attached to the tracks. If the trolley hits them, they die. You can’t stop the trolley and there is not enough time to detach even a single person. However, you notice a lever, Pulling the lever will redirect the trolley to another set of tracks, which only has one person attached to it. What do you do?
+
+You might think that most people would calculate that one person dying is better than five people dying, and pull the lever. But the reality is that most people wouldn’t do it. There is something about it that makes the basic arithmetics go out of the window.
+
+Let’s take a look at the mindset of an effective chaos engineering practitioner, starting with failure.
+
+13.1.1   Failure is not a maybe: it will happen
+Let’s assume that we’re using good-quality servers. One way of expressing the quality of being “good quality” in a scientific manner is the mean time between failure (MTBF). For example, if the servers had a very long MTBF of 10 years, that means that on average, each of them would fail every 10 years. Or put differently, the probability of the machine failing today is 1/(10 years * 365.25 days in a year) ~= 0.0003, or 0.03%. If we’re talking about the laptop I’m writing these words on, I am only 0.03% worried it will die on me today.
+
+The problem is that small samples like this give us a false impression of how reliable things really are. Imagine now a datacenter with 10,000 servers in it. How many servers can they expect to fail on any given day? It’s 0.0003 * 10,000 ~= 3. Even with a third of that, at 3333 servers, the number would be 0.0003 * 3,333 ~= 1. The scale of modern systems we’re building makes small error rates like this more pronounced, but as you can see you don’t need to be Google or Facebook to experience them.
+
+Once you get a hang of it, multiplying percentages is fun. Here’s another example. Let’s say that you have a mythical, all-star team shipping bug-free code 98% of the time. That means, on average, that with a weekly release cycle, they will ship bugs more than once a year. And if your company has 25 teams like that, all 98% bug free, you’re going to have a problem every other week, again, on average.
+
+In the practice of chaos engineering, it’s important to look at things from this perspective - a calculated risk - and to plan accordingly. Now, with these well-defined values and elementary school-level multiplication, we can estimate a lot of things and make informed decisions. But what happens if the data is not readily available, and it’s harder to put a number to it?
+
+13.1.2   Failing early vs failing late
+
+One common mindset blocker when starting with chaos engineering is that we might cause an outage that we would otherwise most likely get away with. We discussed how to minimize this risk in the chapter on testing in production, so now I’d like to focus on the mental part of the equation. The reasoning tends to be like this: “It’s currently working, its lifespan is X years, so chances are that even if it has bugs that would be uncovered by chaos engineering, we might not run into them within this lifespan.”
+
+There are many reasons why a person might think this. The company culture could be punitive for mistakes. They might have had software running in production for years, and bugs were found only when it was being decommissioned. Or simply because they have low confidence in their (or someone else’s) code. And there may be plenty of other reasons.
+
+A universal reason, though, is that we have a hard time comparing two probabilities we don’t know how to estimate. Because an outage is an unpleasant experience, we’re wired to overestimate how likely it is to happen. It’s the same mechanism that makes people scared of dying of shark attack. In 2019 two people died of shark attacks in the entire world (https://www.floridamuseum.ufl.edu/shark-attacks/trends/location/world/.) Given the estimated population of 7.5B people in June 2019 (https://www.census.gov/popclock/world) the likelihood of any given person dying from a shark attack that year was 1 in 3,250,000,000. But because people watched the movie Jaws, if interviewed in the street, they will estimate that likelihood very high.
+
+Unfortunately, this just seems to be how we are. So instead of trying to convince people to swim more in shark waters, let’s change the conversation. Let’s talk about the cost of failing early versus the cost of failing late. In the best-case scenario (from the perspective of possible outages, not learning), chaos engineering doesn’t find any issues, and all is good. In the worst-case scenario the software is faulty. If we experiment on it now, we might cause the system to fail and affect users within our blast radius. We call this failing early. If we don’t experiment on it, it’s still likely to fail, but possibly much later on (failing late).
+
+Failing early has a number of advantages:
+
+There are engineers actively looking for bugs, with tools at the ready to diagnose the issue and help fix it as soon as possible. Failing late might happen at a much less convenient time.
+The same applies to the development team. The further in the future from the code being written, the bigger the context switch the person fixing the bug will have to execute.
+As a product (or company) matures, usually the users expect to see increased stability and decreased number of issues over time.
+Over time, the number of dependent systems tends to increase.
+But because you’re reading this book, chances are you’re already aware of the advantages of doing chaos engineering and failing early. The next hurdle is to get the people around you to see the light too. Let’s take a look at how to achieve that in the most effective manner.
+
+
+13.2 Getting the buy-in
+Jn erdor kr uor pthv osmr tmlk vtsx vr soahc neniigrgeen yvtx, gqe xnkb ormg rx denurnatds krg eitesfnb rj bginsr. Cpn nj oedrr ltk rqmo er ardnuedtns seoht teifsben, eyq vynv rv qk fkzu re oeiumtamccn kmdr llarcey. Xbtkx tks capytlily vwr oupsgr vl opepel ugx’tk inggo kr xh tinpcghi xr: thkh t/reempase mrsebem uzn dbxt ntnmaemgae. Prk’c srtat qu kglnoio rc kpw er xrzf kr xqr rttale.
+
+13.2.1   Management
+Put yourself in your manager’s shoes. The more projects you’re responsible for, the more likely you are to be risk-averse. After all, what you want is to minimize the number of fires to extinguish, while achieving your long-term goals. And chaos engineering can help with that.
+
+So in order to play some music to your manager's ears, perhaps don’t start with breaking things on purpose in production. Here are some elements they are much more likely to react well to:
+
+Good return on investment (ROI): chaos engineering can be a relatively cheap investment (even a single engineer can experiment on a complex system in a single-digit number of days if the system is well documented) with a big potential pay off. The result is a win-win situation:
+If the experiments don’t uncover anything, the output is twofold. First increased confidence in the system. Second, a set of automated tests which can be re-run to detect any regressions later.
+If the experiments uncover a problem, it can be fixed.
+Controlled blast radius: it’s good to remind them again, that this is not going to be randomly breaking things, but a well-controlled experiment, with a defined blast radius. Obviously, things can still go sideways, but the idea is not to set the world on fire and see what happens. Rather, it’s to take a calculated risk for a large potential pay off.
+Failing early:
+Cost of resolving an issue found earlier is generally lower than if the same issue was found later.
+Faster response time to an issue found on purpose, rather than at an inconvenient time.
+
+Better-quality software:
+Your engineers knowing the software will get experimented are more likely to think about the failure scenarios early in the process and write more resilient software.
+Team building: the increased awareness of the importance of interaction and knowledge sharing has the potential to make teams stronger. More on this later in this chapter.
+Increased hiring potential:
+A real-life proof of building solid software. All companies talk about the quality of their product. Only a subset puts their money where their mouth is when it comes to funding engineering efforts in testing.
+Solid software means fewer calls outside of working hours, which means happier engineers.
+Shininess factor. Using the latest techniques helps attract engineers who want to learn them and have them on their CVs.
+
+If delivered correctly, the tailored message should be an easy sell. It has the potential to make your manager’s life easier, make the team stronger, the software better quality, and hiring easier. Why would you not do chaos engineering?!
+
+How about your team members?
+
+13.2.2   Team members
+When speaking to your team members, many of the arguments we just covered apply in an equal measure. Failing early is less painful than failing later, thinking about corner cases and designing all software with failure in mind is often interesting and rewarding. Oh and office games (we’ll get to them in just a minute) are fun.
+
+But often what really resonates with the team is simply the potential of getting called less. If you’re on an on-call rotation, everything that minimizes the number of times you’re called in the midst of a night is helpful. So framing the conversation around this angle can really help with getting them onboard. Here are some ideas of how to approach that conversation:
+
+Failing early and during work hours: If there is an issue, it’s better to trigger it before you’re about to go pick up your kids from school or go to sleep in the comfort of your own home.
+Destigmatising failure: Even for a rock-star team, failure is inevitable. Thinking about it and actively seeking problems can remove or minimize the social pressure of not failing. Learning from failure always trumps avoiding and hiding failure. Conversely, for a poorly performing team, the failure is likely a common occurrence. Chaos engineering can be used in pre-production stages as an extra layer of testing, allowing the unexpected failures to be more rare.
+Chaos engineering is a new skill, and one that’s not that hard to pick up: Personal improvement will be a reward in itself for some. And it’s a new item on a CV.
+With that, you should be well-equipped to evangelize chaos engineering within your teams and to your bosses. You can now go and spread the good word! But before you go, let me give you one more tool. Let’s talk about game days.
+
+13.2.3   Game days
+You might have heard of teams running game days. Game days are a good tool for getting the buy-in from the team. They are a little bit like those events at your local car dealership. Big, colorful balloons, free cookies, plenty of test drives and miniature cars for your kid, and boom--all of a sudden you need a new car. It’s like a gateway drug, really.
+
+Game days can take any form. The form is not important. The goal is to get the entire team to interact, brainstorm some ideas of where the weaknesses of the system might lie, and have some fun with chaos engineering. It’s both the balloons and the test drives that make you want to use a new chaos engineering tool.
+
+You can set up recurring game days. You can start your team off with a single event to introduce them to the idea. You can buy some fancy cards for writing down chaos experiment ideas, or you can use sticky notes. Whatever you think will get your team to appreciate the benefits, without feeling like it’s forced upon them, will do. Make them feel they’re not wasting their time. Don’t waste their time.
+
+That’s all I have for the buy-in -- time to dive a level deeper. Let’s see what happens if you apply chaos engineering to a team itself.
+
+13.3 Teams as distributed systems
+What’s a distributed system? Wikipedia defines it as “a system whose components are located on different networked computers, which communicate and coordinate their actions by passing messages to one another” (https://en.wikipedia.org/wiki/Distributed_computing). If you think about it, a team of people behaves like a distributed system, but instead of computers we have individual humans doing things and passing messages to one another.
+
+Let’s imagine a team responsible for running customer-facing ticket-purchasing software for an airline. The team will need varied skills to succeed and because it’s a part of a larger organization, some of the technical decisions will be made for them. Let’s take a look at a concrete example of the core competences required for this team:
+
+Microsoft SQL database cluster management. That’s where all the purchase data lands and that’s why it is crucial to the operation of the ticket sales. This also includes installing and configuring Windows OS on VMs.
+Full-stack Python development. For the backend receiving the queries about available tickets as well as the purchase orders, this also includes packaging the software and deploying it on Linux VMs. Basic Linux administration skills are therefore required.
+Front-end, JavaScript-based development.
+Design. Providing artwork to be integrated into the software by the front-end developers.
+Integration with third-party software. Often, the airline can sell a flight operated by another airline, so the team needs to maintain integration with other airlines’ systems. What it entails varies from case to case.
+
+
+Now, the team is made of individuals, all of whom have accumulated a mix of various skills over time as a function of their personal choices. Let’s say that some of our Windows DB admins are also responsible for integrating with third-parties (the Windows-based systems, for example). Similarly, some of the full stack developers also handle the integrations with Linux-based third-parties. Finally, some of the front-end developers can also do some design work. Take a look at figure 13.1, which shows a Venn diagram of these skills overlaps.
+
+Figure 13.1 Venn diagram of skills overlap in our example team
+
+The team is also lean. In fact, there are only six people on the team. Alice and Bob are both Windows and Microsoft SQL experts. Alice also supports some integrations. Caroline and David are both full stack developers, and both work on integrations. Esther is a front-end developer who can also do some design work. Franklin is the designer. Figure 13.2 places these individuals onto the Venn diagram of the skills overlaps.
+
+Figure 13.2 Individuals on the Venn diagram of skills’ overlap
+
+Can you see where I’m going with this? Just like with any other distributed system, we can identify the weak links by looking at the architecture diagram. Do you see any weak links? For example, if Esther has a large backlog, there is no one else on the team who can pick it up, because no one else has the skills. She’s a single point of failure. By contrast, if one of Caroline or David is distracted with something else, the other one can cover: they have redundancy between them. People need holidays, they get sick, and they change teams and companies, so in order for the team to be successful long term, identifying and fixing single points of failure is very important. It’s pretty convenient we had a Venn diagram ready!
+
+One problem with real life is that it’s messy. Another is that teams rarely come nicely packaged with a Venn diagram attached to the box. Hundreds of different skills (hard and soft), constantly shifting technological landscape, evolving requirements, personnel turnaround and a sheer scale of some organizations are all factors in how hard it can be to ensure no single points of failure. If only there was a methodology to uncover systemic problems in a distributed system... Oh wait!
+
+In order to discover systemic problems within a team, let’s do some chaos experiments! The following experiments are heavily inspired by Dave Rensin who described them in his talk, “Chaos Engineering for People Systems” (https://youtu.be/sn6wokyCZSA). I strongly recommend watching that talk. They are also best sold to the team as “games” rather than experiments. Not everyone wants to be a guinea pig, but a game sounds like a lot of fun and can be a team-building exercise if done right. You could even have prizes!
+
+Let’s start with identifying single points of failure within a team.
+
+13.3.1   Finding knowledge single points of failure: “Staycation”
+To see what happens to a team in the absence of a person, the chaos engineering way of verifying it is to simulate the event and observe how they cope. The most lightweight variant is to just nominate a person and ask them to not answer any queries related to their responsibilities and work on something different than they had scheduled for the day. Hence, the name staycation. Of course, it’s a game, and should an actual emergency arise, it’s called off and all hands are on deck.
+
+If the team continues working fine at full (remaining) capacity, that’s great. It means the team is doing a really good job of spreading knowledge. But chances are that there will be occasions where other team members need to wait for the person on staycation to come back, because some knowledge wasn’t replicated sufficiently. It could be some work in progress that wasn’t documented well enough, some area of expertise that suddenly became relevant, some tribal knowledge the newer people on the team don’t have yet, or any number of other reasons. If that’s the case, congratulations: you’ve just discovered how to make your team stronger as a system!
+
+People are different, and some will enjoy games like this much more than others. You’ll need to find something that works for the individuals on your team. There is not a single best way of doing this; whatever works is fair game. Here are some other knobs to tweak in order to create an experience better tailored for your team:
+
+Unlike a regular vacation, where the other team members can predict problems and execute some knowledge transfer to avoid them, it might be interesting to run this game by surprise. It will simulate someone falling sick, rather than taking a holiday.
+
+You can tell the other team members about the experiment... or not. Telling them will have an advantage that they can proactively think about things they won’t be able to resolve without the person on staycation. Telling them only after the fact is closer to a real-life situation, but might be seen as distraction. You know your team, suggest what you think will work best.
+Choose your timing wisely. If the team is working hard to meet a deadline, they might not enjoy playing games that eat up their time. Or, if they are very competitive, they might like that, and with the higher number of things going on there might be more potential for knowledge sharing issues to arise.
+Whichever way works for your team, this can be a really inexpensive investment with a large potential payout. Make sure you take the time to discuss the findings with the team, lest they might find the game unhelpful. Everyone involved is an adult and should recognize when there is a real emergency. But even if the game went too far, failing early is most likely better than failing late, just like with the chaos experiments we run in computer systems.
+
+Let’s take a look at another variant, this time focusing not on absence, but on false information.
+
+13.3.2   Misinformation and trust within the team: “Liar, liar”
+In a team, information flows from one team member to another. There needs to be a certain amount of trust between the members for effective cooperation and communication, but also a certain amount of distrust, so that we double-check and verify things, instead of just taking them at face value. After all, to err is human.
+
+We’re also complex human beings, and we can trust the same person more on one topic than a different one. That’s very helpful. You reading this book shows some trust in my chaos engineering expertise, but that doesn’t mean you should trust my carrot cake (the last one didn’t look like a cake, let alone a carrot!) And that’s perfectly fine, these checks should be in place so that wrong information can be eventually weeded out. We want that property of the team, and we want it strong.
+
+“Liar, liar” is a game designed to test how well your team is dealing with false information circulating. The basic rules are simple: nominate a person who’s going to spend the day telling very plausible lies when asked about work-related stuff. Some safety measures: write down the lies, and if they weren’t discovered by others, straighten them out at the end of the day and in general be reasonable with them. Don’t create a massive outage by telling another person to click “delete” on the whole system.
+
+What this has a potential to uncover are situations where other team members skip the mental effort of validating their inputs and just take what they heard at face value. Everyone makes a mistake, and it’s everyone’s job to reality-check what you heard before you implement it. Here are some ideas of how to customize this game:
+
+Choose the liar wisely. The more the team relies on their expertise, the bigger the blast radius, but also the bigger the learning potential.
+The liar’s acting skills are actually pretty useful here. If they can keep it up for the whole day, without spilling the beans, it should have a pretty strong wow effect with other team members.
+
+You might want to have another person on the team know about the liar, to observe and potentially step in if they think the situation might have some consequences they didn’t think of. At a minimum, the team leader should always know about this!
+Take your time to discuss the findings within the team. If people see the value in doing this, it can be good fun. Speaking of fun, do you recall what happened when we injected latency in the communications with the database in chapter 4? Let’s see what happens when you inject latency into a team.
+
+13.3.3   Bottlenecks in the team: “life in the slow lane”
+The next game, “life in the slow lane,” is about finding who’s a bottleneck within the team, in different contexts. In a team, people share their respective expertise to propel the team forward. But everyone has a maximum throughput of what they can process. Bottlenecks form, where some team members need to wait for others before they can continue with their work. In the complex network of social interactions, it’s often difficult to predict and observe these bottlenecks, until they become obvious.
+
+The idea behind this game is to add latency to a designated team member by asking them to take at least X minutes to respond to queries from other team members. By artificially increasing the response time, you will be able to discover bottlenecks more easily: they will be more pronounced, and people might complain about them directly! Here are some tips to ponder:
+
+If possible, working from home might be useful when implementing the extra latency. It limits the amount of social interaction and might make it a bit less weird.
+Going silent when others are asking for help is suspicious, might make you uncomfortable, and can even be seen as rude. Responding to the queries with something along the lines of, “I’ll get back to you on this, sorry I’m really busy with something else right now,” might help greatly.
+Sometimes resolving found bottlenecks might be the tricky bit. There might be policies in place, cultural norms or other constraints to take into account, but even just knowing about the potential bottlenecks can help planning ahead.
+Sometimes, the manager of the team will be a bottleneck in some things. It might require a little bit more of self-reflection and maturity to react to that, but it can provide invaluable insights.
+
+So this one is pretty easy, and you don’t need to remember the syntax of tc to implement it! And since we’re on a roll, let’s cover one more. Let’s see how to use chaos engineering to test out your remediation procedures.
+
+13.3.4   Testing your processes: “inside job”
+Your team, unless it was started earlier today, has a set of rules to deal with problems. These rules might be well-structured and written down; might be tribal knowledge in the collective mind of the team; or like it’s the case for most teams, somewhere in between the two. Whatever they are, these “procedures” of dealing with different types of incidents should be reliable. After all, that’s what you rely on in the stressful times. Given that you’re reading a book on chaos engineering, how do you think we could test them out?
+
+With a gamified chaos experiment, of course! I’m about to encourage you to execute an occasional act of controlled sabotage by secretly breaking some sub-system you reasonably expect the team to be able to fix using the existing procedures, and then sit and watch then fix it.
+
+Now, this is a big gun, so here’s a few caveats:
+
+Be reasonable about what you break. Don’t break anything that would get you in trouble.
+Pick the inside group wisely. You might want to let the stronger people on the team in on the secret, and let them “help out” by letting the other team members follow the procedures to fix the issue.
+It might also be a good idea to send some people to training or a side project, to make sure that the issue can be solved even with some people out.
+Double-check that the existing procedures are up to date before you break the system.
+Take notes while you’re observing the team react to the situation. See what takes up their time, what part of the procedure is prone to mistakes, who might be a single point of failure during the incident.
+It doesn’t have to be a serious outage. It might be a moderate severity issue, which needs to be remediated before it becomes very serious.
+
+If done right, this can be a very useful piece of information. It increases the confidence in the team’s ability to fix an issue of a certain type. And again, it’s much nicer to be dealing with an issue just after lunch, rather than at 2am.
+
+Would you do an inside job in production? The answer will depend on many factors we covered earlier in the chapter on testing in production and on the risk/reward calculation. In the worst-case scenario, you create an issue that the team fails to fix in time, the game needs to be called off, the issue fixed. You learn that your procedures are inadequate and can take action on improving them. In many situations, this might be perfectly good odds.
+
+There are infinite other games you can come up with by applying the chaos engineering principles to the human teams and interaction within them. My goal here was to introduce you to some of them to illustrate that human systems have a lot of the same characteristics as computer systems. I hope that I pricked your interest. Now, go forth and experiment with and on your teams!
+
+13.4 Summary
+Chaos engineering requires a mindset shift from risk averse to risk calculating
+Getting the buy-in from the team and management can be made easier through good communication and tailoring the message
+Teams are distributed systems, and can also be made more reliable through the practice of experiments and office games
+
+
