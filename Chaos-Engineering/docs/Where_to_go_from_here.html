@@ -4,7 +4,7 @@
     <head>
         <meta charset="UTF-8">
         <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
-        <title>10.5 Summary · Chaos Engineering</title>
+        <title>13.5 Where to go from here · Chaos Engineering</title>
         <meta http-equiv="X-UA-Compatible" content="IE=edge" />
         <meta name="description" content="">
         <meta name="generator" content="GitBook 3.2.3">
@@ -65,10 +65,8 @@
     <link rel="shortcut icon" href="../gitbook/images/favicon.ico" type="image/x-icon">
 
     
-    <link rel="next" href="Automating_Kubernetes_experiments.html" />
     
-    
-    <link rel="prev" href="Testing_out_software_running_on_Kubernetes.html" />
+    <link rel="prev" href="Summary_13.html" />
     
 
     </head>
@@ -192,7 +190,7 @@
             
         </li>
     
-        <li class="chapter active" data-level="2.1.5" data-path="Summary_10.html">
+        <li class="chapter " data-level="2.1.5" data-path="Summary_10.html">
             
                 <a href="Summary_10.html">
             
@@ -405,7 +403,7 @@
             
         </li>
     
-        <li class="chapter " data-level="2.4.5" data-path="Where_to_go_from_here.html">
+        <li class="chapter active" data-level="2.4.5" data-path="Where_to_go_from_here.html">
             
                 <a href="Where_to_go_from_here.html">
             
@@ -453,7 +451,7 @@
     <!-- Title -->
     <h1>
         <i class="fa fa-circle-o-notch fa-spin"></i>
-        <a href=".." >10.5 Summary</a>
+        <a href=".." >13.5 Where to go from here</a>
     </h1>
 </div>
 
@@ -468,12 +466,48 @@
     
                                 <section class="normal markdown-section">
                                 
-                                <h1 id="105-summary">10.5 Summary</h1>
+                                <h1 id="135-where-to-go-from-here">13.5 Where to go from here?</h1>
+<p>This is the last section of the last chapter of this book, and I&#x2019;d be lying if I said it didn&#x2019;t feel weird. It really does. For the last year or so, writing this book has been a sort of daily ritual to me. Forcing myself out of bed hours too early to keep pushing was hard, but it made this book possible. And now my Stockholm syndrome is kicking in and I&#x2019;m finding myself wondering what I&apos;m going to do with all this free time!</p>
+<p>With a topic as broad as chaos engineering, choosing what should go into the book and what was left out was objectively tricky. My hope is that the 13 chapters give you just enough information, tools and motivation to help you continue your journey on making better software. At the same time, it&#x2019;s been my goal to remove all fluff and only leave a thin layer of padding in the form of a few jokes and &#x201C;rickrolls&#x201D; (if you don&#x2019;t know what that means, I know you haven&#x2019;t run the code samples!). If you&#x2019;d like to see some things that didn&#x2019;t make it into the main part of the book, see Appendix C. And if you&#x2019;re still hungry for more after that, head straight to Appendix D!</p>
+<p>If you&#x2019;re looking for a resource that&#x2019;s updated more often than a book, check out <a href="https://github.com/dastergon/awesome-chaos-engineering" target="_blank">https://github.com/dastergon/awesome-chaos-engineering</a>. It&#x2019;s a good list of chaos engineering resources in various shapes and forms.</p>
+<p>If you&#x2019;d like to hear more from me, ping me on LinkedIn (I love hearing people&#x2019;s stories with CE) and subscribe to my newsletter at <a href="http://chaosengineering.news" target="_blank">http://chaosengineering.news</a>.</p>
+<p>Like I mentioned before, the line between chaos engineering and other disciplines is a fine one. In my experience colouring outside of these lines from time to time tends to make for better craftsmanship. That&#x2019;s why I&#x2019;d encourage you to take a look at some of these:</p>
 <ul>
-<li>Kubernetes helps manage container orchestration at scale, but in doing that, it also introduces its own complexity that needs to be understood and managed</li>
-<li>Introducing failure by killing pods is easy using kubectl</li>
-<li>Thanks to Kubernetes, it&#x2019;s practical to inject network issues by adding an extra network proxy; by doing so, we can also better control the blast radius</li>
+<li>SRE</li>
+<li>The three books from Google (<a href="https://landing.google.com/sre/books/" target="_blank">https://landing.google.com/sre/books/</a>):<ul>
+<li>&#x201C;Site Reliability Engineering&#x201D; by Betsy Beyer, Chris Jones, Jennifer Petoff and Niall Richard Murphy</li>
+<li>&#x201C;The Site Reliability Workbook&#x201D; by Betsy Beyer, Niall Richard Murphy, David K. Rensin, Kent Kawahara and Stephen Thorne</li>
+<li>&#x201C;Building Secure &amp; Reliable Systems&#x201D; by Heather Adkins, Betsy Beyer, Paul Blankinship, Ana Oprea, Piotr Lewandowski, Adam Stubblefield</li>
 </ul>
+</li>
+<li>System performance<ul>
+<li>&#x201C;Systems Performance: Enterprise and the Cloud&#x201D; by Brendan Gregg</li>
+<li>&#x201C;BPF Performance Tools&#x201D; by Brendan Gregg</li>
+</ul>
+</li>
+<li>Linux kernel<ul>
+<li>&#x201C;Linux Kernel Development&#x201D; by Robert Love</li>
+<li>&#x201C;The Linux Programming Interface: A Linux and UNIX System Programming Handbook&#x201D; by Michael Kerrisk</li>
+<li>&#x201C;Linux System Programming: Talking Directly to the Kernel and C Library&#x201D; by Robert Love</li>
+</ul>
+</li>
+<li>Testing<ul>
+<li>&#x201C;The Art of Software Testing&#x201D; by Glenford J. Myers</li>
+</ul>
+</li>
+<li>Other topics to observe<ul>
+<li>Kubernetes</li>
+<li>Prometheus, Grafana</li>
+</ul>
+</li>
+</ul>
+<p>There are also two chaos engineering conferences worth checking out:</p>
+<ul>
+<li>Conf42.com: Chaos Engineering (<a href="https://www.conf42.com/" target="_blank">https://www.conf42.com/</a>); I&#x2019;m involved in organising it</li>
+<li>Chaos Conf (<a href="https://www.chaosconf.io/" target="_blank">https://www.chaosconf.io/</a>)</li>
+</ul>
+<p>Finally &#x201C;Chaos Engineering: System Resiliency in Practice&#x201D; by Casey Rosenthal and Nora Jones is a good complement to this read. Unlike this book, which is pretty technical, it covers more high-level stuff and also offers first-hand experience from people working at companies in different industries. Give it a read.</p>
+<p>And with that, time to release you into the wild world of chaos engineering. Good luck and have fun!</p>
 
                                 
                                 </section>
@@ -501,14 +535,10 @@
 
             
                 
-                <a href="Testing_out_software_running_on_Kubernetes.html" class="navigation navigation-prev " aria-label="Previous page: 10.4 Testing out software running on Kubernetes">
+                <a href="Summary_13.html" class="navigation navigation-prev navigation-unique" aria-label="Previous page: 13.4 Summary">
                     <i class="fa fa-angle-left"></i>
                 </a>
                 
-                
-                <a href="Automating_Kubernetes_experiments.html" class="navigation navigation-next " aria-label="Next page: 11 Automating Kubernetes experiments">
-                    <i class="fa fa-angle-right"></i>
-                </a>
                 
             
         
@@ -517,7 +547,7 @@
     <script>
         var gitbook = gitbook || [];
         gitbook.push(function() {
-            gitbook.page.hasChanged({"page":{"title":"10.5 Summary","level":"2.1.5","depth":2,"next":{"title":"11 Automating Kubernetes experiments","level":"2.2","depth":1,"path":"docs/Automating_Kubernetes_experiments.md","ref":"docs/Automating_Kubernetes_experiments.md","articles":[{"title":"11.1 Automating chaos with PowerfulSeal","level":"2.2.1","depth":2,"path":"docs/Automating_chaos_with_PowerfulSeal.md","ref":"docs/Automating_chaos_with_PowerfulSeal.md","articles":[]},{"title":"11.2 Ongoing testing & Service Level Objectives (SLOs)","level":"2.2.2","depth":2,"path":"docs/Ongoing_testing_Service_Level_Objectives_SLOs.md","ref":"docs/Ongoing_testing_Service_Level_Objectives_SLOs.md","articles":[]},{"title":"11.3 Cloud layer","level":"2.2.3","depth":2,"path":"docs/Cloud_layer.md","ref":"docs/Cloud_layer.md","articles":[]},{"title":"11.4 Summary","level":"2.2.4","depth":2,"path":"docs/Summary_11.md","ref":"docs/Summary_11.md","articles":[]}]},"previous":{"title":"10.4 Testing out software running on Kubernetes","level":"2.1.4","depth":2,"path":"docs/Testing_out_software_running_on_Kubernetes.md","ref":"docs/Testing_out_software_running_on_Kubernetes.md","articles":[]},"dir":"ltr"},"config":{"plugins":["page-toc-button","cnzz","hints","sitemap-general"],"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"pluginsConfig":{"search":{},"cnzz":{"style":"1","visible":true,"siteid":"1278605528"},"hints":{"danger":"fa fa-bug","info":"fa fa-info-circle","tip":"fa fa-sticky-note","working":"fa fa-cog fa-spin"},"lunr":{"maxIndexSize":1000000,"ignoreSpecialCharacters":false},"sitemap-general":{"prefix":"https://wangwei1237.gitee.io/chaos-engineering"},"fontsettings":{"theme":"white","family":"serif","size":2},"highlight":{},"page-toc-button":{"maxTocDepth":2,"minTocSize":2},"sharing":{"facebook":true,"twitter":true,"google":false,"weibo":false,"instapaper":false,"vk":false,"all":["facebook","google","twitter","weibo","instapaper"]},"theme-default":{"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"showLevel":false}},"theme":"default","author":"wangwei17","pdf":{"pageBreaksBefore":"/","headerTemplate":null,"paperSize":"a4","margin":{"right":62,"left":62,"top":36,"bottom":36},"fontSize":16,"fontFamily":"Arial","footerTemplate":null,"chapterMark":"pagebreak","pageNumbers":true},"structure":{"langs":"LANGS.md","readme":"README.md","glossary":"GLOSSARY.md","summary":"SUMMARY.md"},"isbn":"","variables":{},"title":"Chaos Engineering","links":{"sharing":{"all":null,"facebook":null,"google":null,"twitter":null,"weibo":null},"sidebar":{"17哥的个人网站":"https://wangwei1237.gitee.io/"}},"gitbook":"*","description":"Chaos-Engineering","extension":null},"file":{"path":"docs/Summary_10.md","mtime":"2020-11-29T06:44:52.219Z","type":"markdown"},"gitbook":{"version":"3.2.3","time":"2020-12-09T06:20:02.925Z"},"basePath":"..","book":{"language":""}});
+            gitbook.page.hasChanged({"page":{"title":"13.5 Where to go from here","level":"2.4.5","depth":2,"previous":{"title":"13.4 Summary","level":"2.4.4","depth":2,"path":"docs/Summary_13.md","ref":"docs/Summary_13.md","articles":[]},"dir":"ltr"},"config":{"plugins":["page-toc-button","cnzz","hints","sitemap-general"],"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"pluginsConfig":{"search":{},"cnzz":{"style":"1","visible":true,"siteid":"1278605528"},"hints":{"danger":"fa fa-bug","info":"fa fa-info-circle","tip":"fa fa-sticky-note","working":"fa fa-cog fa-spin"},"lunr":{"maxIndexSize":1000000,"ignoreSpecialCharacters":false},"sitemap-general":{"prefix":"https://wangwei1237.gitee.io/chaos-engineering"},"fontsettings":{"theme":"white","family":"serif","size":2},"highlight":{},"page-toc-button":{"maxTocDepth":2,"minTocSize":2},"sharing":{"facebook":true,"twitter":true,"google":false,"weibo":false,"instapaper":false,"vk":false,"all":["facebook","google","twitter","weibo","instapaper"]},"theme-default":{"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"showLevel":false}},"theme":"default","author":"wangwei17","pdf":{"pageBreaksBefore":"/","headerTemplate":null,"paperSize":"a4","margin":{"right":62,"left":62,"top":36,"bottom":36},"fontSize":16,"fontFamily":"Arial","footerTemplate":null,"chapterMark":"pagebreak","pageNumbers":true},"structure":{"langs":"LANGS.md","readme":"README.md","glossary":"GLOSSARY.md","summary":"SUMMARY.md"},"isbn":"","variables":{},"title":"Chaos Engineering","links":{"sharing":{"all":null,"facebook":null,"google":null,"twitter":null,"weibo":null},"sidebar":{"17哥的个人网站":"https://wangwei1237.gitee.io/"}},"gitbook":"*","description":"Chaos-Engineering","extension":null},"file":{"path":"docs/Where_to_go_from_here.md","mtime":"2020-12-09T06:19:08.562Z","type":"markdown"},"gitbook":{"version":"3.2.3","time":"2020-12-09T06:20:02.925Z"},"basePath":"..","book":{"language":""}});
         });
     </script>
 </div>

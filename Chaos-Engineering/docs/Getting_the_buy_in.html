@@ -4,7 +4,7 @@
     <head>
         <meta charset="UTF-8">
         <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
-        <title>10.5 Summary · Chaos Engineering</title>
+        <title>13.2 Getting the buy-in · Chaos Engineering</title>
         <meta http-equiv="X-UA-Compatible" content="IE=edge" />
         <meta name="description" content="">
         <meta name="generator" content="GitBook 3.2.3">
@@ -65,10 +65,10 @@
     <link rel="shortcut icon" href="../gitbook/images/favicon.ico" type="image/x-icon">
 
     
-    <link rel="next" href="Automating_Kubernetes_experiments.html" />
+    <link rel="next" href="Teams_as_distributed_systems.html" />
     
     
-    <link rel="prev" href="Testing_out_software_running_on_Kubernetes.html" />
+    <link rel="prev" href="Chaos_engineering_mindset.html" />
     
 
     </head>
@@ -192,7 +192,7 @@
             
         </li>
     
-        <li class="chapter active" data-level="2.1.5" data-path="Summary_10.html">
+        <li class="chapter " data-level="2.1.5" data-path="Summary_10.html">
             
                 <a href="Summary_10.html">
             
@@ -366,7 +366,7 @@
             
         </li>
     
-        <li class="chapter " data-level="2.4.2" data-path="Getting_the_buy_in.html">
+        <li class="chapter active" data-level="2.4.2" data-path="Getting_the_buy_in.html">
             
                 <a href="Getting_the_buy_in.html">
             
@@ -453,7 +453,7 @@
     <!-- Title -->
     <h1>
         <i class="fa fa-circle-o-notch fa-spin"></i>
-        <a href=".." >10.5 Summary</a>
+        <a href=".." >13.2 Getting the buy-in</a>
     </h1>
 </div>
 
@@ -468,12 +468,51 @@
     
                                 <section class="normal markdown-section">
                                 
-                                <h1 id="105-summary">10.5 Summary</h1>
+                                <h1 id="132-getting-the-buy-in">13.2 Getting the buy-in</h1>
+<p>In order to get your team from zero to chaos engineering hero, you need them to understand the benefits it brings. And in order for them to understand those benefits, you need to be able to communicate them clearly. There are typically two groups of people you&#x2019;re going to be pitching to: your peers/team members and your management. Let&#x2019;s start by looking at how to talk to the latter.</p>
+<h2 id="1321-management">13.2.1 Management</h2>
+<p>Put yourself in your manager&#x2019;s shoes. The more projects you&#x2019;re responsible for, the more likely you are to be risk-averse. After all, what you want is to minimize the number of fires to extinguish, while achieving your long-term goals. And chaos engineering can help with that.</p>
+<p>So in order to play some music to your manager&apos;s ears, perhaps don&#x2019;t start with breaking things on purpose in production. Here are some elements they are much more likely to react well to:</p>
 <ul>
-<li>Kubernetes helps manage container orchestration at scale, but in doing that, it also introduces its own complexity that needs to be understood and managed</li>
-<li>Introducing failure by killing pods is easy using kubectl</li>
-<li>Thanks to Kubernetes, it&#x2019;s practical to inject network issues by adding an extra network proxy; by doing so, we can also better control the blast radius</li>
+<li>Good return on investment (ROI): chaos engineering can be a relatively cheap investment (even a single engineer can experiment on a complex system in a single-digit number of days if the system is well documented) with a big potential pay off. The result is a win-win situation:<ul>
+<li>If the experiments don&#x2019;t uncover anything, the output is twofold. First increased confidence in the system. Second, a set of automated tests which can be re-run to detect any regressions later.</li>
+<li>If the experiments uncover a problem, it can be fixed.</li>
+<li>Controlled blast radius: it&#x2019;s good to remind them again, that this is not going to be randomly breaking things, but a well-controlled experiment, with a defined blast radius. Obviously, things can still go sideways, but the idea is not to set the world on fire and see what happens. Rather, it&#x2019;s to take a calculated risk for a large potential pay off.</li>
 </ul>
+</li>
+<li>Failing early:<ul>
+<li>Cost of resolving an issue found earlier is generally lower than if the same issue was found later.</li>
+<li>Faster response time to an issue found on purpose, rather than at an inconvenient time.</li>
+</ul>
+</li>
+<li>Better-quality software:<ul>
+<li>Your engineers knowing the software will get experimented are more likely to think about the failure scenarios early in the process and write more resilient software.</li>
+<li>Team building: the increased awareness of the importance of interaction and knowledge sharing has the potential to make teams stronger. More on this later in this chapter.</li>
+</ul>
+</li>
+<li>Increased hiring potential:<ul>
+<li>A real-life proof of building solid software. All companies talk about the quality of their product. Only a subset puts their money where their mouth is when it comes to funding engineering efforts in testing.</li>
+<li>Solid software means fewer calls outside of working hours, which means happier engineers.</li>
+<li>Shininess factor. Using the latest techniques helps attract engineers who want to learn them and have them on their CVs.</li>
+</ul>
+</li>
+</ul>
+<p>If delivered correctly, the tailored message should be an easy sell. It has the potential to make your manager&#x2019;s life easier, make the team stronger, the software better quality, and hiring easier. Why would you not do chaos engineering?!</p>
+<p>How about your team members?</p>
+<h2 id="1322-team-members">13.2.2 Team members</h2>
+<p>When speaking to your team members, many of the arguments we just covered apply in an equal measure. Failing early is less painful than failing later, thinking about corner cases and designing all software with failure in mind is often interesting and rewarding. Oh and office games (we&#x2019;ll get to them in just a minute) are fun.</p>
+<p>But often what really resonates with the team is simply the potential of getting called less. If you&#x2019;re on an on-call rotation, everything that minimizes the number of times you&#x2019;re called in the midst of a night is helpful. So framing the conversation around this angle can really help with getting them onboard. Here are some ideas of how to approach that conversation:</p>
+<ul>
+<li>Failing early and during work hours: If there is an issue, it&#x2019;s better to trigger it before you&#x2019;re about to go pick up your kids from school or go to sleep in the comfort of your own home.</li>
+<li>Destigmatising failure: Even for a rock-star team, failure is inevitable. Thinking about it and actively seeking problems can remove or minimize the social pressure of not failing. Learning from failure always trumps avoiding and hiding failure. Conversely, for a poorly performing team, the failure is likely a common occurrence. Chaos engineering can be used in pre-production stages as an extra layer of testing, allowing the unexpected failures to be more rare.</li>
+<li>Chaos engineering is a new skill, and one that&#x2019;s not that hard to pick up: Personal improvement will be a reward in itself for some. And it&#x2019;s a new item on a CV.</li>
+</ul>
+<p>With that, you should be well-equipped to evangelize chaos engineering within your teams and to your bosses. You can now go and spread the good word! But before you go, let me give you one more tool. Let&#x2019;s talk about game days.</p>
+<h2 id="1323-game-days">13.2.3 Game days</h2>
+<p>You might have heard of teams running game days. Game days are a good tool for getting the buy-in from the team. They are a little bit like those events at your local car dealership. Big, colorful balloons, free cookies, plenty of test drives and miniature cars for your kid, and boom--all of a sudden you need a new car. It&#x2019;s like a gateway drug, really.</p>
+<p>Game days can take any form. The form is not important. The goal is to get the entire team to interact, brainstorm some ideas of where the weaknesses of the system might lie, and have some fun with chaos engineering. It&#x2019;s both the balloons and the test drives that make you want to use a new chaos engineering tool.</p>
+<p>You can set up recurring game days. You can start your team off with a single event to introduce them to the idea. You can buy some fancy cards for writing down chaos experiment ideas, or you can use sticky notes. Whatever you think will get your team to appreciate the benefits, without feeling like it&#x2019;s forced upon them, will do. Make them feel they&#x2019;re not wasting their time. Don&#x2019;t waste their time.</p>
+<p>That&#x2019;s all I have for the buy-in -- time to dive a level deeper. Let&#x2019;s see what happens if you apply chaos engineering to a team itself.</p>
 
                                 
                                 </section>
@@ -501,12 +540,12 @@
 
             
                 
-                <a href="Testing_out_software_running_on_Kubernetes.html" class="navigation navigation-prev " aria-label="Previous page: 10.4 Testing out software running on Kubernetes">
+                <a href="Chaos_engineering_mindset.html" class="navigation navigation-prev " aria-label="Previous page: 13.1 Chaos engineering mindset">
                     <i class="fa fa-angle-left"></i>
                 </a>
                 
                 
-                <a href="Automating_Kubernetes_experiments.html" class="navigation navigation-next " aria-label="Next page: 11 Automating Kubernetes experiments">
+                <a href="Teams_as_distributed_systems.html" class="navigation navigation-next " aria-label="Next page: 13.3 Teams as distributed systems">
                     <i class="fa fa-angle-right"></i>
                 </a>
                 
@@ -517,7 +556,7 @@
     <script>
         var gitbook = gitbook || [];
         gitbook.push(function() {
-            gitbook.page.hasChanged({"page":{"title":"10.5 Summary","level":"2.1.5","depth":2,"next":{"title":"11 Automating Kubernetes experiments","level":"2.2","depth":1,"path":"docs/Automating_Kubernetes_experiments.md","ref":"docs/Automating_Kubernetes_experiments.md","articles":[{"title":"11.1 Automating chaos with PowerfulSeal","level":"2.2.1","depth":2,"path":"docs/Automating_chaos_with_PowerfulSeal.md","ref":"docs/Automating_chaos_with_PowerfulSeal.md","articles":[]},{"title":"11.2 Ongoing testing & Service Level Objectives (SLOs)","level":"2.2.2","depth":2,"path":"docs/Ongoing_testing_Service_Level_Objectives_SLOs.md","ref":"docs/Ongoing_testing_Service_Level_Objectives_SLOs.md","articles":[]},{"title":"11.3 Cloud layer","level":"2.2.3","depth":2,"path":"docs/Cloud_layer.md","ref":"docs/Cloud_layer.md","articles":[]},{"title":"11.4 Summary","level":"2.2.4","depth":2,"path":"docs/Summary_11.md","ref":"docs/Summary_11.md","articles":[]}]},"previous":{"title":"10.4 Testing out software running on Kubernetes","level":"2.1.4","depth":2,"path":"docs/Testing_out_software_running_on_Kubernetes.md","ref":"docs/Testing_out_software_running_on_Kubernetes.md","articles":[]},"dir":"ltr"},"config":{"plugins":["page-toc-button","cnzz","hints","sitemap-general"],"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"pluginsConfig":{"search":{},"cnzz":{"style":"1","visible":true,"siteid":"1278605528"},"hints":{"danger":"fa fa-bug","info":"fa fa-info-circle","tip":"fa fa-sticky-note","working":"fa fa-cog fa-spin"},"lunr":{"maxIndexSize":1000000,"ignoreSpecialCharacters":false},"sitemap-general":{"prefix":"https://wangwei1237.gitee.io/chaos-engineering"},"fontsettings":{"theme":"white","family":"serif","size":2},"highlight":{},"page-toc-button":{"maxTocDepth":2,"minTocSize":2},"sharing":{"facebook":true,"twitter":true,"google":false,"weibo":false,"instapaper":false,"vk":false,"all":["facebook","google","twitter","weibo","instapaper"]},"theme-default":{"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"showLevel":false}},"theme":"default","author":"wangwei17","pdf":{"pageBreaksBefore":"/","headerTemplate":null,"paperSize":"a4","margin":{"right":62,"left":62,"top":36,"bottom":36},"fontSize":16,"fontFamily":"Arial","footerTemplate":null,"chapterMark":"pagebreak","pageNumbers":true},"structure":{"langs":"LANGS.md","readme":"README.md","glossary":"GLOSSARY.md","summary":"SUMMARY.md"},"isbn":"","variables":{},"title":"Chaos Engineering","links":{"sharing":{"all":null,"facebook":null,"google":null,"twitter":null,"weibo":null},"sidebar":{"17哥的个人网站":"https://wangwei1237.gitee.io/"}},"gitbook":"*","description":"Chaos-Engineering","extension":null},"file":{"path":"docs/Summary_10.md","mtime":"2020-11-29T06:44:52.219Z","type":"markdown"},"gitbook":{"version":"3.2.3","time":"2020-12-09T06:20:02.925Z"},"basePath":"..","book":{"language":""}});
+            gitbook.page.hasChanged({"page":{"title":"13.2 Getting the buy-in","level":"2.4.2","depth":2,"next":{"title":"13.3 Teams as distributed systems","level":"2.4.3","depth":2,"path":"docs/Teams_as_distributed_systems.md","ref":"docs/Teams_as_distributed_systems.md","articles":[]},"previous":{"title":"13.1 Chaos engineering mindset","level":"2.4.1","depth":2,"path":"docs/Chaos_engineering_mindset.md","ref":"docs/Chaos_engineering_mindset.md","articles":[]},"dir":"ltr"},"config":{"plugins":["page-toc-button","cnzz","hints","sitemap-general"],"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"pluginsConfig":{"search":{},"cnzz":{"style":"1","visible":true,"siteid":"1278605528"},"hints":{"danger":"fa fa-bug","info":"fa fa-info-circle","tip":"fa fa-sticky-note","working":"fa fa-cog fa-spin"},"lunr":{"maxIndexSize":1000000,"ignoreSpecialCharacters":false},"sitemap-general":{"prefix":"https://wangwei1237.gitee.io/chaos-engineering"},"fontsettings":{"theme":"white","family":"serif","size":2},"highlight":{},"page-toc-button":{"maxTocDepth":2,"minTocSize":2},"sharing":{"facebook":true,"twitter":true,"google":false,"weibo":false,"instapaper":false,"vk":false,"all":["facebook","google","twitter","weibo","instapaper"]},"theme-default":{"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"showLevel":false}},"theme":"default","author":"wangwei17","pdf":{"pageBreaksBefore":"/","headerTemplate":null,"paperSize":"a4","margin":{"right":62,"left":62,"top":36,"bottom":36},"fontSize":16,"fontFamily":"Arial","footerTemplate":null,"chapterMark":"pagebreak","pageNumbers":true},"structure":{"langs":"LANGS.md","readme":"README.md","glossary":"GLOSSARY.md","summary":"SUMMARY.md"},"isbn":"","variables":{},"title":"Chaos Engineering","links":{"sharing":{"all":null,"facebook":null,"google":null,"twitter":null,"weibo":null},"sidebar":{"17哥的个人网站":"https://wangwei1237.gitee.io/"}},"gitbook":"*","description":"Chaos-Engineering","extension":null},"file":{"path":"docs/Getting_the_buy_in.md","mtime":"2020-12-09T06:08:02.096Z","type":"markdown"},"gitbook":{"version":"3.2.3","time":"2020-12-09T06:20:02.925Z"},"basePath":"..","book":{"language":""}});
         });
     </script>
 </div>
