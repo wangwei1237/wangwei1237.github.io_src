@@ -72,7 +72,7 @@
         <span class="post-meta-item-icon">
             <i class="ri-quill-pen-line"></i>
             <span class="post-meta-item-text"> 字数统计:</span>
-            <span class="post-count">321</span>
+            <span class="post-count">496</span>
         </span>
     </span>
 
@@ -88,6 +88,8 @@
  
     </div>
       
+    <div class="tocbot"></div>
+
 
 
 
@@ -105,7 +107,37 @@
 <p>尤其是在做大团队横向工作的规划和推动，以及组建视频小组来探索视频相关的技术，更加深了对<code>Trust, but verify</code>的理解。</p>
 <p><code>信任</code>给予我们工作的自由，而<code>核查</code>会给这份自由增加一定的限制。绝对的信任会导致信任的终结，不加限制的信任最终可能会影响团队的可持续发展。信马由缰者，终不能达到目标。</p>
 <p><code>核查</code>机制下的<code>信任</code>，才能在给予工作自由的同时，获得个人和公司的利益最大化。</p>
-<p>待续。。。</p>
+<h2 id="网飞文化中的自由与责任">网飞文化中的自由与责任</h2>
+<p>作为一家传奇的公司，成立于1997年的网飞，在成功应对了娱乐领域和商业领域的四次大规模转型之后，其股价已经从1$一路攀升至350$，如今，其市值已经超过了2000亿美元。</p>
+<div style="width: 90%;margin: 0 auto">
+    <canvas id="chart3000" style="height: 300px"></canvas>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@2.9.3/dist/Chart.min.js"></script>
+<script type="text/javascript">
+    var ctx = document.getElementById('chart3000').getContext('2d');
+    var options =     {
+    type: 'line',
+    data: {
+    labels: ['January', 'February', 'March', 'April', 'May', 'June', 'July'],
+    datasets: [{
+        label: 'My First dataset',
+        backgroundColor: 'rgb(255, 99, 132)',
+        borderColor: 'rgb(255, 99, 132)',
+        data: [0, 10, 5, 2, 20, 30, 45]
+        }]
+    },
+    options: {
+        responsive: true,
+        title: {
+        display: true,
+        text: 'Chart.js Line Chart'
+        }
+    }
+};
+    new Chart(ctx, options);
+</script>
+<p>根据招聘网站<a href="https://hired.com/" target="_blank" rel="noopener">Hired</a>的<a href="https://hired.com/blog/highlights/2020-brand-health-report/" target="_blank" rel="noopener">第4次《全球品牌健康报告》</a>，Netflix已经取代Google，成为人们最想去工作的顶级科技公司。</p>
+<p><img src="/2021/01/11/Trust-but-Verify/2.png" alt></p>
  
       <!-- reward -->
       
