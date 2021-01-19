@@ -76,7 +76,7 @@
         <span class="post-meta-item-icon">
             <i class="ri-quill-pen-line"></i>
             <span class="post-meta-item-text"> 字数统计:</span>
-            <span class="post-count">0</span>
+            <span class="post-count">794</span>
         </span>
     </span>
 
@@ -85,13 +85,15 @@
         <span class="post-meta-item-icon">
             <i class="ri-book-open-line"></i>
             <span class="post-meta-item-text"> 阅读时长≈</span>
-            <span class="post-count">1 分钟</span>
+            <span class="post-count">3 分钟</span>
         </span>
     </span>
 </div>
  
     </div>
       
+    <div class="tocbot"></div>
+
 
 
 
@@ -99,7 +101,57 @@
     <div class="article-entry" itemprop="articleBody">
        
   <p><img src="/2021/01/19/FFMpeg-decode-process-and-lose-frame-in-that-process/1.png" alt></p>
+<p>在优化视频客观全参考算法（主要是<em>PSNR</em>, <em>SSIM</em>, <em>MS-SSIM</em>）时，我们首先利用FFMpeg提供的API（<em><code>avcodec_send_packet()</code></em>，<em><code>avcodec_receive_frame()</code></em>）对输入的两个MP4文件转成对应的YUV格式的数据文件，然后再基于这两份YUV数据文件进行计算，得到对应的结果。</p>
+<p>但是，我们发现，MP4文件转成YUV数据后，总是会发生<strong>丢失视频最后几帧</strong>的现象。</p>
+<p>为了弄清楚这个问题，查阅了FFMpeg的源码，并参考了网络上的资料，然后总结出了这篇文章。</p>
 <a id="more"></a>
+<h2 id="ffmpeg的编解码api">FFMpeg的编解码API</h2>
+<p>从<a href="https://github.com/FFmpeg/FFmpeg/commit/7fc329e2dd6226dfecaa4a1d7adf353bf2773726" target="_blank" rel="noopener">3.1版本</a>开始，FFMpeg提供了<a href="https://github.com/FFmpeg/FFmpeg/blob/release/3.1/libavcodec/avcodec.h" target="_blank" rel="noopener">新的编解码API</a>来对音视频数据进行编解码操作，从而实现对输入和输出的解耦：</p>
+<ul>
+<li>解码API
+<ul>
+<li>avcodec_send_packet()</li>
+<li>avcodec_receive_frame()</li>
+</ul>
+</li>
+<li>编码API
+<ul>
+<li>avcodec_send_frame()</li>
+<li>avcodec_receive_packet()</li>
+</ul>
+</li>
+</ul>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * @ingroup libavc</span></span><br><span class="line"><span class="comment"> * @defgroup lavc_encdec send/receive encoding and decoding API overview</span></span><br><span class="line"><span class="comment"> * @&#123;</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * The avcodec_send_packet()/avcodec_receive_frame()/avcodec_send_frame()/</span></span><br><span class="line"><span class="comment"> * avcodec_receive_packet() functions provide an encode/decode API, which</span></span><br><span class="line"><span class="comment"> * decouples input and output.</span></span><br><span class="line"><span class="comment"> * ...</span></span><br><span class="line"><span class="comment"> */</span></span><br></pre></td></tr></table></figure>
+<p>同时，也正是从3.1版本开始，之前的编解码API也被标注为<code>deprecated</code>：</p>
+<ul>
+<li>解码API
+<ul>
+<li>avcodec_decode_video2()</li>
+<li>avcodec_decode_audio4():</li>
+</ul>
+</li>
+<li>编码API
+<ul>
+<li>avcodec_encode_video2()</li>
+<li>avcodec_encode_audio2()</li>
+</ul>
+</li>
+</ul>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">attribute_deprecated</span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">avcodec_decode_audio4</span><span class="params">(AVCodecContext *avctx, AVFrame *frame,</span></span></span><br><span class="line"><span class="function"><span class="params">                          <span class="keyword">int</span> *got_frame_ptr, <span class="keyword">const</span> AVPacket *avpkt)</span></span>;</span><br></pre></td></tr></table></figure>
+<p>在我们的工具中，我们采用了新的解码API：<code>avcodec_send_packet()</code>和<code>avcodec_receive_frame()</code>，实现视频帧的解码，并将解码后的数据转成YUV数据。具体的代码片段如下，<a href="https://wangwei1237.gitee.io/2021/01/19/FFMpeg-decode-process-and-lose-frame-in-that-process/test_video_parser_1.cpp" target="_blank" rel="noopener">点击可查看完整测试代码</a>。</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">process_frame</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    ......</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//decode operation.</span></span><br><span class="line"><span class="keyword">while</span> (!av_read_frame(fmt_ctx, pkt)) &#123;</span><br><span class="line">    <span class="keyword">if</span> (pkt-&gt;stream_index != video_stream_idx) &#123;</span><br><span class="line">        <span class="keyword">continue</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">int</span> packet_new = <span class="number">1</span>;</span><br><span class="line">    <span class="keyword">while</span> (process_frame(fmt_ctx, dec_ctx, video_stream-&gt;codecpar, </span><br><span class="line">                         frame, pkt, &amp;packet_new) &gt; <span class="number">0</span>) &#123;</span><br><span class="line">        i++;</span><br><span class="line">    &#125;;</span><br><span class="line">    av_packet_unref(pkt);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>从代码可以看出，<code>i</code>是解码帧的总数，但是我们运行之后发现，一个252帧的视频，最终只得到了248帧。</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> g++ --std=c++11 test_video_parser_1.cpp $(pkg-config --cflags --libs libavcodec libavdevice libavformat libavutil)</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> frame count: 248</span></span><br></pre></td></tr></table></figure>
+<h2 id="send-packet-receive-frame">send_packet &amp; receive_frame</h2>
+<p>为了加深对解码API的了解，我们查阅了<a href="https://github.com/FFmpeg/FFmpeg/blob/master/libavcodec/avcodec.h" target="_blank" rel="noopener">FFMpeg的代码</a>，从代码的注释中，我们发现了问题：<strong>我们没有遵循API的使用规范，同时FFMpeg在注释中也说明了为什么会出现我们遇到的问题</strong>。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment">  * ... </span></span><br><span class="line"><span class="comment">  * At the beginning of decoding or encoding, the codec might accept multiple</span></span><br><span class="line"><span class="comment">  * input frames/packets without returning a frame, until its internal buffers</span></span><br><span class="line"><span class="comment">  * are filled. This situation is handled transparently if you follow the steps</span></span><br><span class="line"><span class="comment">  * outlined above.</span></span><br><span class="line"><span class="comment">  * </span></span><br><span class="line"><span class="comment">  * End of stream situations. These require "flushing" (aka draining) the codec,</span></span><br><span class="line"><span class="comment">  * as the codec might buffer multiple frames or packets internally for</span></span><br><span class="line"><span class="comment">  * performance or out of necessity (consider B-frames).</span></span><br><span class="line"><span class="comment">  * ...</span></span><br><span class="line"><span class="comment">  */</span></span><br></pre></td></tr></table></figure>
+<p>也就是说，为了提升性能或出于其他的考虑，解码器会在内部缓存多个<code>frames</code>/<code>packets</code>。因此，当流结束的时候，需要对解码器执行<code>flushing</code>操作，以便获取解码器缓存的<code>frames</code>/<code>packets</code>。</p>
+<p>我们的工具中，在流结束之后，并没有执行<code>flushing</code>操作，因此就出现了解码过程丢帧的现象。按照FFMpeg的指导，我们补充了如下的逻辑，以便获取解码器中缓存的帧，<a href="https://wangwei1237.gitee.io/2021/01/19/FFMpeg-decode-process-and-lose-frame-in-that-process/test_video_parser_2.cpp" target="_blank" rel="noopener">点击可查看完整测试代码</a>。</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//Flush remaining frames that are cached in the decoder</span></span><br><span class="line"><span class="keyword">int</span> packet_new = <span class="number">1</span>;</span><br><span class="line">av_init_packet(pkt);</span><br><span class="line">pkt-&gt;data = <span class="literal">NULL</span>;</span><br><span class="line">pkt-&gt;<span class="built_in">size</span> = <span class="number">0</span>;</span><br><span class="line"><span class="keyword">while</span> (process_frame(fmt_ctx, dec_ctx, video_stream-&gt;codecpar, </span><br><span class="line">                     frame, pkt, &amp;packet_new) &gt; <span class="number">0</span>) &#123;</span><br><span class="line">    i++;</span><br><span class="line">    packet_new = <span class="number">1</span>;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<p>再次运行，我们发现，丢帧问题消失了。</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> g++ --std=c++11 test_video_parser_1.cpp $(pkg-config --cflags --libs libavcodec libavdevice libavformat libavutil)</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> frame count: 252</span></span><br></pre></td></tr></table></figure>
+<h2 id="ffmpeg解码api状态机">FFMPeg解码API状态机</h2>
+<h2 id="思考">思考</h2>
  
       <!-- reward -->
       

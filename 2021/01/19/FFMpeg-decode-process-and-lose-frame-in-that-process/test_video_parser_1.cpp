@@ -15,8 +15,8 @@ int process_frame(AVFormatContext *fmt_ctx,
                   AVCodecContext *dec_ctx, 
                   AVCodecParameters *par, 
                   AVFrame *frame, 
-				  AVPacket *pkt, 
-				  int *packet_new) {
+                  AVPacket *pkt, 
+                  int *packet_new) {
     int ret = 0, got_frame = 0;
 
     if (dec_ctx && dec_ctx->codec) {
@@ -127,7 +127,7 @@ int main() {
     AVPacket *pkt = (AVPacket *)av_malloc(sizeof(AVPacket));
     av_init_packet(pkt);
     AVFrame *pFrame = av_frame_alloc();
-	int i = 0;
+    int i = 0;
 
     while (!av_read_frame(pFmtContext, pkt)) {
         if (pkt->stream_index != video_stream_idx) {
@@ -137,23 +137,12 @@ int main() {
         int packet_new = 1;
         while (process_frame(pFmtContext, pCodecCtx, pFmtContext->streams[video_stream_idx]->codecpar, 
                              pFrame, pkt, &packet_new) > 0) {
-			i++;
-		};
+            i++;
+        };
        av_packet_unref(pkt);
     }
-
-    //Flush remaining frames that are cached in the decoder
-    int packet_new = 1;
-    av_init_packet(pkt);
-    pkt->data = NULL;
-    pkt->size = 0;
-    while (process_frame(pFmtContext, pCodecCtx, pFmtContext->streams[video_stream_idx]->codecpar, 
-                         pFrame, pkt, &packet_new) > 0) {
-		i++;
-        packet_new = 1;
-    };
-	
-	std::cout << "frame count: " << i << std::endl;
+    
+    std::cout << "frame count: " << i << std::endl;
     av_frame_free(&pFrame);
     avcodec_close(pCodecCtx);
     avformat_free_context(pFmtContext);

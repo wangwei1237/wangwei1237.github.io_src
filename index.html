@@ -142,7 +142,10 @@
       
     <div class="article-entry" itemprop="articleBody">
        
-  <p><img src="/2021/01/19/FFMpeg-decode-process-and-lose-frame-in-that-process/1.png" alt></p> 
+  <p><img src="/2021/01/19/FFMpeg-decode-process-and-lose-frame-in-that-process/1.png" alt></p>
+<p>在优化视频客观全参考算法（主要是<em>PSNR</em>, <em>SSIM</em>, <em>MS-SSIM</em>）时，我们首先利用FFMpeg提供的API（<em><code>avcodec_send_packet()</code></em>，<em><code>avcodec_receive_frame()</code></em>）对输入的两个MP4文件转成对应的YUV格式的数据文件，然后再基于这两份YUV数据文件进行计算，得到对应的结果。</p>
+<p>但是，我们发现，MP4文件转成YUV数据后，总是会发生<strong>丢失视频最后几帧</strong>的现象。</p>
+<p>为了弄清楚这个问题，查阅了FFMpeg的源码，并参考了网络上的资料，然后总结出了这篇文章。</p> 
       <a class="article-more-link" href="/2021/01/19/FFMpeg-decode-process-and-lose-frame-in-that-process/"
         >阅读更多...</a
       >
