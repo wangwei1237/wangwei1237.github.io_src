@@ -6,6 +6,10 @@
     pathname = pathname.split('/');
     var id = pathname[pathname.length - 1];
 
+    if (id.length == 0) {
+        id = pathname[pathname.length - 2];
+    }
+
     // handler 1: delete the _ character.
     if (id.length > 50) {
         id = id.split('_').join('')

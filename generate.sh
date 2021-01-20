@@ -12,6 +12,12 @@ rm -rf monolith-to-microservices && \
 cp -r /$HOME/Documents/Project/webroot/book/m2m monolith-to-microservices && \
 rm -rf discovery-the-unpredictable-risk && \
 cp -r /$HOME/Documents/Project/webroot/book/dr discovery-the-unpredictable-risk
+rm -rf Kubernetes-in-Action-Second-Edition && \
+cp -r /$HOME/Documents/Project/webroot/book/k8s Kubernetes-in-Action-Second-Edition && \
+rm -f Kubernetes-in-Action-Second-Edition/sitemap.xml
+rm -rf Chaos-Engineering && \
+cp -r /$HOME/Documents/Project/webroot/book/ce Chaos-Engineering && \
+rm -f Chaos-Engineering.pdf/sitemap.xml
 
 book1="\ \ <url><loc>https://wangwei1237.github.io/digital-video-concept/</loc><lastmod>2020-06-17T02:55:11.212Z</lastmod></url>"
 book2="\ \ <url><loc>https://wangwei1237.github.io/monolith-to-microservices/</loc><lastmod>2020-06-17T02:55:11.212Z</lastmod></url>"
