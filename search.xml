@@ -50,7 +50,7 @@
 </ul>
 <p>对于Auto模式，相机仅在高对比度的情况下才拍摄HDR照片。大多数相机还会在合成HDR照片时，同时捕获普通照片，从而允许我们可以在HDR照片和普通照片之间进行选择。</p>
 <h3 id="dodging-and-burning和tone-mapping">dodging and burning和tone mapping</h3>
-<p>实际上，在胶片时代，摄影师就会拍摄多张不同曝光程度的底片，并在<a href="https://baike.baidu.com/item/%E6%9A%97%E6%88%BF/62291" target="_blank" rel="noopener">暗房</a>中使用一种**<a href="https://en.wikipedia.org/wiki/Dodging_and_burning" target="_blank" rel="noopener">dodging and burning</a>**的手法，把数张底片合成为一张具有高动态范围的照片。随着数码相机的出现，HDR将暗房里的技术引入相机成像传感器，通过对同一个场景进行多种不同的曝光，然后对其进行合成，最终实现增强照片动态范围，达到增加照片层次感的目的。在照片HDR中，这种合成技术称之为<a href="https://en.wikipedia.org/wiki/Tone_mapping" target="_blank" rel="noopener">色调映射（<em>tone mapping</em>）</a>。</p>
+<p>实际上，在胶片时代，摄影师就会拍摄多张不同曝光程度的底片，并在<a href="https://baike.baidu.com/item/%E6%9A%97%E6%88%BF/62291" target="_blank" rel="noopener">暗房</a>中使用一种**<a href="https://en.wikipedia.org/wiki/Dodging_and_burning" target="_blank" rel="noopener">dodging and burning</a>**的手法，把数张底片合成为一张具有高动态范围的照片。随着数码相机的出现，HDR将暗房里的技术引入相机成像传感器，通过对同一个场景进行多种不同的曝光，然后对其进行合成，最终实现增强照片动态范围，达到增加照片层次感的目的。在照片HDR中，这种合成技术称之为<a href="https://en.wikipedia.org/wiki/Tone_mapping" target="_blank" rel="noopener">色调映射（<em>tone mapping</em>）</a>。当然，在接下来的<code>video HDR</code>中也会用到色调映射技术，不同的是，<code>video HDR</code>中的色调映射是用来将HDR内容映射到SDR显示设备，使得SDR设备也能显示HDR内容。</p>
 <h2 id="video-hdr">video HDR</h2>
 <p>HDR视频的捕获方式与HDR照片类似。同时以不同的曝光（或不同的ISO配置）来录制每个镜头。然后把这些镜头融合在一起以生成单个镜头。尽管会产生看起来不真实的灰色效果，但这种方法通常可以使视频更亮。因此，HDR视频通常会在发布之前进行后期处理。</p>
 <p>为了正确的显示HDR视频，显示设备也必须支持HDR。例如，具备HDR功能的电视必须支持特定的视频输出标准。这些标准中会涉及：10-bit色彩和至少覆盖90％的DCI-P3色彩空间。HDR显示器还必须支持特定的HDR格式，例如HDR10，Dolby Vision或Hybrid Log Gamma（HLG）。</p>
@@ -62,6 +62,64 @@
 <li>可以解码，但是因为影片中的高亮部分会按照显示设备的最高亮度来显示而导致影片整体变灰</li>
 </ul>
 <p>这也就是HDR照片和HDR视频的不同之处：HDR视频除了视频捕获之外，对显示设备的能力有较强的依赖。</p>
+<h4 id="pq-hlg">PQ &amp; HLG</h4>
+<p>为了正确显示HDR图像，仅仅提高亮度是不够的，以一种与人类视力相匹配的方式显示色彩和色调至关重要。色彩和色调受伽玛<code>输入-输出</code>特性的影响。在HDR中，伽玛曲线有两种，分别是PQ和HLG。</p>
+<ul>
+<li>PQ伽玛曲线基于人类视觉感知的特征，并且最适合于在互联网上制作电影或串流视频的内容，其中再现准确性是关键。</li>
+<li>HLG伽玛曲线旨在允许在现有的SDR电视上显示而不会看不到位置，并且最适合于广播电视和直播视频馈送。</li>
+</ul>
+<p>PQ和HLG的具体区别如下表所示：</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>PQ (感知量化)</th>
+<th>HLG (混合对数伽玛)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>目标</td>
+<td>互联网视频流，电影</td>
+<td>广播电视，直播视频</td>
+</tr>
+<tr>
+<td>优点</td>
+<td>处理亮度的绝对值高达 10,000 cd/m²，基于人类视觉感知的新伽玛曲线</td>
+<td>将亮度处理为相对值（与现有标准相同）兼容SDR电视</td>
+</tr>
+<tr>
+<td>最大亮度</td>
+<td>1,000 cd/m² 绝对值 一致，不管显示装置</td>
+<td>相对值，因显示设备而异</td>
+</tr>
+<tr>
+<td>黑色等级</td>
+<td>0.005 cd/m2或更低</td>
+<td>0.005 cd/m2 或更低</td>
+</tr>
+<tr>
+<td>提议者</td>
+<td>Dolby</td>
+<td>BBC 和 NHK</td>
+</tr>
+<tr>
+<td>参考标准</td>
+<td>SMPTE ST 2084、ITU-R BT.2100</td>
+<td>ITU-R BT.2100</td>
+</tr>
+<tr>
+<td>在SDR显示设备上的效果</td>
+<td>Poor</td>
+<td>良</td>
+</tr>
+<tr>
+<td>直播效果</td>
+<td>良</td>
+<td>优</td>
+</tr>
+</tbody>
+</table>
 <h2 id="hdr标准">HDR标准</h2>
 <h4 id="hdr10">HDR10</h4>
 <h4 id="dolby-vision">DOLBY VISION</h4>
@@ -69,6 +127,8 @@
 <h4 id="uhd-premium">UHD Premium</h4>
 <h4 id="displayhdr">DisPlayHDR</h4>
 <h4 id="mobile-hdr">Mobile HDR</h4>
+<h4 id="cuva-hdr">CUVA HDR</h4>
+<h4 id="vesa-hdr">VESA HDR</h4>
 <hr>
 ]]></content>
       <categories>
