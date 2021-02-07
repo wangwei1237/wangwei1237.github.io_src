@@ -76,7 +76,7 @@
         <span class="post-meta-item-icon">
             <i class="ri-quill-pen-line"></i>
             <span class="post-meta-item-text"> 字数统计:</span>
-            <span class="post-count">2.3k</span>
+            <span class="post-count">5.8k</span>
         </span>
     </span>
 
@@ -85,7 +85,7 @@
         <span class="post-meta-item-icon">
             <i class="ri-book-open-line"></i>
             <span class="post-meta-item-text"> 阅读时长≈</span>
-            <span class="post-count">8 分钟</span>
+            <span class="post-count">21 分钟</span>
         </span>
     </span>
 </div>
@@ -226,6 +226,87 @@
 <h4 id="mobile-hdr">Mobile HDR</h4>
 <h4 id="cuva-hdr">CUVA HDR</h4>
 <h4 id="vesa-hdr">VESA HDR</h4>
+<h2 id="相关术语">相关术语</h2>
+<h4 id="color-calibration-of-screens-屏幕的色彩校正">Color Calibration of Screens（屏幕的色彩校正）</h4>
+<p>用于确保屏幕上色彩被准确显示的一个过程。一般使用色度计来测量一块显示屏的原生色彩响应，之后计算一个用于修正的指标以确保颜色能正确地显示在该显示器上，最后对经过修正后的响应进行检测。</p>
+<h4 id="color-spaces-色彩空间">Color Spaces（色彩空间）</h4>
+<p>一个色彩空间可以指一种颜色的组织方式，也可以指某个特定范围的色彩。在影院和电视的领域，我们一般使用 RGB（用红、绿、蓝原色分量来表示一个颜色）或者 YUV（用一个颜色的明度（黑白值），以及它的基于色彩成分差值所计算的色度值）色彩空间（译者注：RGB 和 YUV 为色彩模型，非色彩空间，此处原文有错误）。这些色彩空间一般基于特定的显示设备特性，参见 D65-P3 词条。其它的色彩空间，比如 XYZ 或者 Lab 更适用于表示人眼色彩视觉模型。</p>
+<h4 id="contrast-ratio-对比度">Contrast Ratio（对比度）</h4>
+<p>对比度是一个系统所能产生的最亮（白）部分和最暗（黑）部分之间的明度比值，通常用一个 n:1 的比值描述。</p>
+<h4 id="cri-color-remapping-information-色彩重映射信息">CRI Color Remapping Information（色彩重映射信息）</h4>
+<p>一套通过分析相同内容的两份不同母版（如 HDR 和 SDR 母版）所产生的标准元数据。当一份母版（如 HDR）和 CRI 元数据被一同传输时，解码器在面对 HDR 屏幕时可以仅解码 HDR 内容，而在面对 SDR 屏幕时也可以通过利用 CRI 元数据的方式将 HDR 内容变换成 SDR 内容。采用这一方案的主要优势在于对于两个解码后的版本，作者的创作意图得以保留。CRI 是 MPEG（HEVC v2）的标准成分之一，并且对于 Ultra HD Blu-ray 制作是可选功能。</p>
+<h4 id="dci-p3-d65-p3-st-428-1">DCI-P3，D65-P3，ST 428-1</h4>
+<p>一个数字电影色彩空间。DCI-P3 色彩空间是一个 2005 年由数字影院联盟（Digital Cinema Initiatives）引入的 RGB 色彩空间，并由 SMPTE ST428-1 于 2006 年标准化。</p>
+<p>这一色彩空间拥有远比 sRGB（参见 Rec.709）宽广得多的色域。</p>
+<p>所有的数字电影放映机都能完整显示 DCI-P3 色彩空间，D65 P3 指的是其白点的色温由 DCI 白点改为 D65 白点。</p>
+<p>图中的三个三角形展现了：最大的是 Rec.2020 标准，Ultra HD TV 的新标准（目前只有激光显示能完整实现），略小的、用于数字电影的 DCI-P3，以及传统视频监视器、高清广播电视、蓝光、OTT 所采用的最小的 Rec.709 色彩空间。</p>
+<h4 id="edid-扩展显示标识数据">EDID 扩展显示标识数据</h4>
+<p>EDID 是扩展显示标识数据（Extended Display Information Data）的缩写，这个标准由 Consumer Technology Association（CTA）制定。这是由每个 DVI 显示器、HDMI 显示器，或其它支持 DVI HDMI 输入的设备（aka DVI/HDMI Sinks）所提供的。可能每个 DVI/HDMI 输入都有自己的 EDID。EDID 会告诉设备它所连接的显示器的性能特征。</p>
+<p>源设备确认显示器的 DVI 或者 HDMI 接口是否存在 EDID 存储器（EDID memory）并使用其中的信息优化输出的视频（分辨率、帧率、色彩……）和/或音频格式。所有支持 DVI/HDMI 标准输入的设备，即 TMDS 接收端（DVI/HDMI Sinks）必须实现 EDID。</p>
+<h4 id="eotf-电光转换函数">EOTF 电光转换函数</h4>
+<p>EOTF 是 Electro-Optical Transfer Function 的缩写。他是一个映射码值到显示亮度的数学函数。换言之，一个 ETOF 定义了图像中的码值如何被显示器或者投影仪显示为可见光。</p>
+<p>参见 OETF 光电转换函数，ST2084。</p>
+<h4 id="oetf-光电转换函数">OETF 光电转换函数</h4>
+<p>OETF 是 Opto-Electronic Transfer Function 的缩写。它是一个映射场景明度（某个场景的光）与可传输压缩的数字编码值之间的数学函数映射关系。这个术语一般用于获取图像的设备，比如数字相机。</p>
+<p>在后期制作中，内容一般在某个拥有特定 EOTF 的屏幕上进行调色，历史上，常用一个OETF 的逆函数作为屏幕的 EOTF。</p>
+<h4 id="ootf-光光转换函数">OOTF 光光转换函数</h4>
+<p>OOTF 是 Optical-to-Optical Transfer Function 的缩写。它是一个把相机所拍摄的场景亮度映射到显示器亮度的数学函数。</p>
+<h4 id="flicker-闪烁">Flicker 闪烁</h4>
+<p>部分特定种类的显示器的特征，比如老的阴极射线管显示器（CRT），或者调教得很糟糕的平板显示器，甚至电影（motion picture film）放映机这一不受欢迎的亮度改变主要在频率低于 50 帧每秒时可见。对于亮度更高的显示器来说，人眼能感受到更高频率的闪烁。</p>
+<h4 id="f-stop-of-dynamic-range-动态范围的-f-制光圈档数">f-stop of Dynamic Range 动态范围的 f 制光圈档数</h4>
+<p>在摄影中，一档 f 制光圈的改变对应双倍（或减半）捕获图像时所捕捉的光。</p>
+<p>一张图片中所包含的 f 制光圈数量描述了这张图片的对比度（2^N 标记）比如一台相机可以输出 10 档的图像，这意味着对比度可以高达 2^10（1024：1），即白色部分会比黑色部分亮 1024 倍。相比之下，人眼可以达到 18-20 档（这是一个很高的动态范围 HDR，一般的 SDR 视频图像是 6-7 档）</p>
+<h4 id="gamut-or-color-gamut-色域">Gamut or Color Gamut 色域</h4>
+<p>在包括但不限于计算机图形和摄影领域的色彩还原过程中，色域是某个特定的色彩的子集。</p>
+<p>色域一词最常见的用途是指某个范围内可以被准确反应的色彩子集，这个前提可能是某个特定的显示设备或某个给定的色彩空间。色域一般使用 CIE 1931 色度图上的面积来表示，CIE 1931 曲线的边缘代表可见光光谱颜色的范围。</p>
+<h4 id="gamut-mapping-色域映射">Gamut Mapping 色域映射</h4>
+<p>在几乎所有的转译过程（指的是对于某个特定颜色的表示，在不同色彩空间中的转换过程）中，我们必须面对不同设备的色域所覆盖的范围是有所不同的现实，这使得准确还原色彩是不可能的。</p>
+<p>因此，对于靠近色域边缘的部分是有必要进行一些处理的。有些颜色必须被移入色域中，不然它们在输出设备上无法被显示，它们会被粗暴地舍弃（clipped）掉。这就是所谓的色域不匹配，比如说当我们将更广的 RGB 色彩空间转换到 CMYK 色彩空间的时候就会出现。</p>
+<p>色彩管理系统可以使用多种方法来实现所需的结果并且给予有经验的用户控制色域映射的的方式。</p>
+<h4 id="imf-可交互母版文件">IMF 可交互母版文件</h4>
+<p>Interoperable Master Format（IMF）是一个由 SMPTE 提供的标准，用于实现一个单文件的、可交换使用的母版文件格式和结构，用于全球范围内的商业内容分发。它是由 Digital Cinema Package（DCP）架构进化而来的，DCP 为分发渠道提供了一个完整的文件可交换单元。IMF 可以说是一个革命性的进步，IMF 提供了一个真正的基于文件的最终母版。DCP 针对的是影院内容分发，而 IMF 为商用环境提供了一个可以基于同一内容为不同的观众创建多种剪辑版本的母版格式。</p>
+<h4 id="inverse-tone-mapping-itm-逆影调映射-反向影调映射">Inverse Tone Mapping (ITM) 逆影调映射/反向影调映射</h4>
+<p>对于 SDR 内容的母版重制从而实现 HDR 内容。</p>
+<p>ITM 使用 SDR 内容并且扩展其明度和色彩空间，使其匹配 HDR 显示器的能力，并且保留原本内容创作者的意图。</p>
+<h4 id="lut-查找表">LUT 查找表</h4>
+<p>是 Look Up Table 的缩写。LUT 提供了一种对输入的数据施加复杂数学运算的高效方式———如果不使用 LUT 则会耗费许多的计算资源。因此，它们是一种将图像从一个色彩空间映射到零一个色彩空间的理想实现方法。</p>
+<p>存在以下的 LUTs：</p>
+<p>3D LUTs，每个像素的输出 R’、G’、B’ 值是由输入像素的 R、G、B 值共同计算的。</p>
+<p>1D LUTs，输出的 R’ 只由输入的 R 值计算，G’、B’ 同理。它们一般被用于 gamma 函数和其它 EOTF 的施加矫正，一般在消费级电子设备的芯片组中出现。</p>
+<p>3D LUT 相较于 1D LUT 而言，它支持更加强大的数学转换，但在芯片组里部署起来更复杂且更昂贵。一般 3D LUT 被用于在后期制作过程中施加创造性的“风格”以及色彩空间的转换。</p>
+<h4 id="maxcll-metadata-maxcll-元数据">MaxCLL Metadata MaxCLL 元数据</h4>
+<p>Maximum Content Light Level（MaxCLL）是一个整数类型的元数据值，用于定义某个编码的 HDR 视频流或者文件中，任意一个像素的最高亮度，单位是 nits。MaxCLL 可以在母版制作过程中或者制作过程后来测量，但是为了保证 HDR 显示器在 MaxCLL HDR 范围里的色彩过渡，并且在显示器的最大亮度外施加一个硬 clip，显示器的 MaxCLL 也可以被用作 MaxCLL 元数据。</p>
+<h4 id="maxfall-metadata-maxfall-元数据">MaxFALL Metadata MaxFALL 元数据</h4>
+<p>Maximum Frame Average Light Level（MaxFALL）是一个整数类型的元数据值，用于定义某个编码的 HDR 视频流或者文件中，任意一帧画面的最高的平均亮度，单位是 nits。MaxFALL 是通过计算每一帧画面解码后的所有像素的亮度的平均值来获取的。</p>
+<h4 id="peak-code-value-峰值编码值">Peak Code Value 峰值编码值</h4>
+<p>Peak Code Value 指的是通过某一个系统组件而不产生硬剪（clip）的最大数字编码值。</p>
+<h4 id="peak-display-luminance-峰值显示亮度">Peak Display Luminance 峰值显示亮度</h4>
+<p>一个显示器所能产生的最高亮度。</p>
+<h4 id="perceptual-quantizer-感官量化曲线">Perceptual Quantizer 感官量化曲线</h4>
+<p>Perceptual Quantizer 的缩写，它是一个 EOTF。</p>
+<p>MovieLabs 提出了一条基于 Barton Curve，并可被用于高动态范围（HDR）的数学曲线，于 2014 年由 SMPTE 制定了 ST2084 标准。</p>
+<p>Perceptual Quantization 是一个高效率的编码 HDR 明度信息的方式。在整个动态范围中，每一对相邻的编码值区别都比可感知的区别略小，使得码值利用率极高。</p>
+<p>但是，这一 EOTF 并不兼容传统显示器（legacy display），PQ 编码的信号只能在新的、支持 HDR 的设备上被解码。</p>
+<p>PQ 为 10bit 或者 12bit 内容所设计，且根据 SMPTE ST2084 标准，不推荐在实时广播时使用它。</p>
+<h4 id="quantum-dot-qd-displays-量子点显示器">Quantum Dot（QD）Displays 量子点显示器</h4>
+<p>量子点显示器使用了纳米尺度（2nm-10nm）的晶体“点”。每一个点会发出一个不同的纯色，而它们所发出的颜色取决于它的尺寸。</p>
+<p>在 LCD 背光前加入一张带有量子点的薄膜（film），图像的色彩还原和总体的亮度可以被显著提高。</p>
+<p>这些微小的纳米晶体可以在背光到达红、绿、蓝子像素前改变背光的光谱，实现高达 20-30% 的色域提升，使得显示设备的色彩可以更接近 Rec.2020 目标色域。</p>
+<h4 id="st2084">ST2084</h4>
+<p>SMPTE 标准中定义的用于制作 HDR 内容母版所用的 EOTF。该 EOTF 又被称为 PQ，主要用于制作非广播内容的母版。</p>
+<h4 id="st2086">ST2086</h4>
+<p>SMPTE 标准中定义的用于描述制作视频母版所使用的显示器的绝对色彩空间的元数据（基色坐标、白点、亮度范围）。</p>
+<h4 id="tone-mapping-tone-mapping-operator-tmo-色调映射-色调映射运算符">Tone Mapping/Tone Mapping Operator（TMO） 色调映射/色调映射运算符</h4>
+<p>色调映射是一种用于图像处理和计算机图形的技术，它被用于将一组颜色映射到另一组颜色，从而在具有更有限动态范围的介质中实现逼近高动态范围（HDR）图像的观感。 打印输出，CRT或标准动态范围（SDR）监视器和投影仪都具有较低的动态范围，不足以再现HDR图像中存在的全部光强。色调映射解决了从记录范围到可显示范围的对比度剧烈降低的问题，同时保留了图像细节和色彩表现，这对于欣赏原始场景内容和保留创作意图是重要的。一般使用色调映射运算符（Tone Mapping Operator）执行该色调映射过程，通常为“S”形曲线以实现高光和阴影细节的柔和过渡。参见 Inverse Tone Mapping（ITM）。</p>
+<h4 id="wide-color-gamut-wcg-广色域">Wide Color Gamut（WCG） 广色域</h4>
+<p>Wide Color Gamut 的缩写，意为广色域。广色域包括了比 Recommendation ITU-R BT.709 更饱和的色彩，比如说被 Rec.2020 所定义的色彩空间就属于广色域。</p>
+<h4 id="white-point-白点">White Point 白点</h4>
+<p>白点（通常在技术文档中被称为参考白 reference white 或目标白 target white）是一组用于定义图像采集，编码或再现中的“白色”颜色的色度坐标。根据应用，需要不同的“白色”定义以提供可接受的结果。例如，在室内拍摄的照片可能用白炽灯照明，白炽灯比日光相对偏橙。 因此，大多数专业相机拥有在白炽灯照明与日光下拍摄所用的不同设置。同样，为 D65 白点显示器所生产的图像在具有不同白点的显示器上将无法被正确显示。</p>
+<p>CIE 定义 D65 常被用来定义视频显示器的白点。</p>
+<p>D55 曾是胶片投影的标准白点，DCI 白点（译者注：接近 D63，但更绿）和 D60 白点这两个白点均被数字电影广泛使用。</p>
+<blockquote>
+<p>更多术语可以参考：<a href="/shares/hdr-field-guide-final-web.pdf"><strong>Quick Reference HDR Glossary</strong></a></p>
+</blockquote>
 <hr>
  
       <!-- reward -->
