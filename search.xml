@@ -16,7 +16,7 @@
 <li>在对比度、灰度分辨率等维度上对影像质量上进行了整体提升</li>
 </ul>
 <p>从而，HDR可以给用户带来更具沉浸式的感受。</p>
-<p>HDR技术可以应用于拍照（<em>photography</em>）和视频（<em>video</em>），但是需要注意的是：虽然<code>photo HDR</code>和<code>video HDR</code>的目标都是让我们所看到的数字内容更逼近人眼的真实体验，但是这两者确实是完全不同的两个概念。本质上讲，<code>photo HDR</code>是一个相机捕获照片（<em>capture</em>）的过程，而<code>video HDR</code>则是一个显示(<em>display</em>)的过程。<a href="https://www.cnet.com/news/hdr-for-cameras-vs-hdr-for-tvs-whats-the-difference/" target="_blank" rel="noopener">^1</a></p>
+<p>HDR技术可以应用于拍照（<em>photography</em>）和视频（<em>video</em>），但是需要注意的是：虽然<code>photo HDR</code>和<code>video HDR</code>的目标都是让我们所看到的数字内容更逼近人眼的真实体验，但是这两者确实是完全不同的两个概念。本质上讲，<code>photo HDR</code>是一个相机捕获照片（<em>capture</em>）的过程，而<code>video HDR</code>则是一个显示(<em>display</em>)的过程。[^1]</p>
 <h2 id="光度学概念及单位">光度学概念及单位</h2>
 <p>在进一步介绍HDR之前，我们需要先了解一些<a href="http://openstd.samr.gov.cn/bzgk/gb/newGbInfo?hcno=AB4FAB66987D97573EA90F4DD56ABA36" target="_blank" rel="noopener">光度学</a>的相关概念，以便能够能够对HDR有更好的理解和认识。</p>
 <ul>
@@ -39,7 +39,7 @@
 <h2 id="photography-hdr">photography HDR</h2>
 <p>可以通过同时捕获不同曝光度的多张图像的方法来生成HDR照片。相机会使用不同的曝光值快速拍摄三张或更多的照片，然后对其进行处理，以生成一张HDR照片。</p>
 <p>在拍摄高对比度场景的照片时，HDR图像处理非常有用。</p>
-<p>如下图的夜景所示，例如，曝光度太低时，会让后面的景色显得暗淡。如果调整曝光以显示后面的景色，则前面的景色又会太亮，甚至可能会完全变白。通过组合多次曝光，则可以平均这些不同的曝光，使的后面的景色可以出现在照片上，而又不会过度曝光前面的景色。<a href="https://en.wikipedia.org/wiki/High-dynamic-range_imaging" target="_blank" rel="noopener">^2</a></p>
+<p>如下图的夜景所示，例如，曝光度太低时，会让后面的景色显得暗淡。如果调整曝光以显示后面的景色，则前面的景色又会太亮，甚至可能会完全变白。通过组合多次曝光，则可以平均这些不同的曝光，使的后面的景色可以出现在照片上，而又不会过度曝光前面的景色。[^2]</p>
 <p><img src="/2021/01/26/HDR-introduction/EVDifferent.png" alt></p>
 <p><img src="/2021/01/26/HDR-introduction/EVToneMapping.png" alt></p>
 <p>目前，很多智能手机（例如iPhone）的相机都具有HDR选项。我们可以选择让相机：</p>
@@ -56,7 +56,7 @@
 <p>为了正确的显示HDR视频，显示设备也必须支持HDR。例如，具备HDR功能的电视必须支持特定的视频输出标准。这些标准中会涉及：10-bit色彩和至少覆盖90％的DCI-P3色彩空间。HDR显示器还必须支持特定的HDR格式，例如HDR10，Dolby Vision或Hybrid Log Gamma（HLG）。</p>
 <p><img src="/2021/01/26/HDR-introduction/color_space.jpg" alt></p>
 <p>CIE 1931 xy 中各个色彩空间的对比</p>
-<p>以HDR10为例，因为HDR10标准使用广色域<code>Rec.2020</code>，10-bit色深以及<code>SMTPE ST 2084</code>PQ转换函数，因此在一台非HDR显示设备上去显示HDR10的内容，则会出现两种情况<a href="https://en.wikipedia.org/wiki/High-dynamic-range_video" target="_blank" rel="noopener">^3</a>,<a href="https://www.zhihu.com/question/19774840/answer/998271233" target="_blank" rel="noopener">^4</a>：</p>
+<p>以HDR10为例，因为HDR10标准使用广色域<code>Rec.2020</code>，10-bit色深以及<code>SMTPE ST 2084</code>PQ转换函数，因此在一台非HDR显示设备上去显示HDR10的内容，则会出现两种情况[^3],[^4]：</p>
 <ul>
 <li>无法解码导致花屏</li>
 <li>可以解码，但是因为影片中的高亮部分会按照显示设备的最高亮度来显示而导致影片整体变灰</li>
@@ -129,6 +129,39 @@
 <h4 id="mobile-hdr">Mobile HDR</h4>
 <h4 id="cuva-hdr">CUVA HDR</h4>
 <h4 id="vesa-hdr">VESA HDR</h4>
+<h2 id="ffmpeg分析hdr内容">FFMpeg分析HDR内容</h2>
+<h4 id="ffprobe分析hdr内容的元数据">ffprobe分析HDR内容的元数据</h4>
+<p>可以使用ffprobe命令来提取<code>Mastering Display</code>和<code>Content Light Level</code>的元数据。我们只需要提取第一帧的相关数据即可，因此，在分析时，可以使用<a href="http://ffmpeg.org/ffprobe.html#Main-options" target="_blank" rel="noopener"><code>-read_intervals &quot;%+#1&quot;</code></a>选项，让ffprobe只提取第一帧的元数据。具体分析名利如下所示：</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">ffprobe \</span><br><span class="line">-hide_banner \</span><br><span class="line">-loglevel warning \</span><br><span class="line">-select_streams v \</span><br><span class="line">-print_format json \</span><br><span class="line">-show_frames \</span><br><span class="line">-read_intervals "%+#1" \</span><br><span class="line">-show_entries "frame=color_space,color_primaries,color_transfer,side_data_list,pix_fmt" \</span><br><span class="line">HDR.mp4</span><br></pre></td></tr></table></figure>
+<p>各选项的含义如下：</p>
+<ul>
+<li>-hide_banner -loglevel warning：不显示我们不需要的信息</li>
+<li>-select_streams v：只选择视频流来分析</li>
+<li>-print_format json：以json格式输出分析结果</li>
+<li>-read_intervals “%+#1”：只分析第一帧中的数据</li>
+<li>-show_entries … ：只输出我们指定的数据</li>
+</ul>
+<p>命令执行后，会显示如下的分析结果：</p>
+<figure class="highlight json"><table><tr><td class="code"><pre><span class="line">&#123;</span><br><span class="line">    <span class="attr">"frames"</span>: [</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="attr">"pix_fmt"</span>: <span class="string">"yuv420p10le"</span>,</span><br><span class="line">            <span class="attr">"color_space"</span>: <span class="string">"bt2020nc"</span>,</span><br><span class="line">            <span class="attr">"color_primaries"</span>: <span class="string">"bt2020"</span>,</span><br><span class="line">            <span class="attr">"color_transfer"</span>: <span class="string">"smpte2084"</span>,</span><br><span class="line">            <span class="attr">"side_data_list"</span>: [</span><br><span class="line">                &#123;</span><br><span class="line">                    <span class="attr">"side_data_type"</span>: <span class="string">"Mastering display metadata"</span>,</span><br><span class="line">                    <span class="attr">"red_x"</span>: <span class="string">"34000/50000"</span>,</span><br><span class="line">                    <span class="attr">"red_y"</span>: <span class="string">"16000/50000"</span>,</span><br><span class="line">                    <span class="attr">"green_x"</span>: <span class="string">"13250/50000"</span>,</span><br><span class="line">                    <span class="attr">"green_y"</span>: <span class="string">"34500/50000"</span>,</span><br><span class="line">                    <span class="attr">"blue_x"</span>: <span class="string">"7500/50000"</span>,</span><br><span class="line">                    <span class="attr">"blue_y"</span>: <span class="string">"3000/50000"</span>,</span><br><span class="line">                    <span class="attr">"white_point_x"</span>: <span class="string">"15635/50000"</span>,</span><br><span class="line">                    <span class="attr">"white_point_y"</span>: <span class="string">"16450/50000"</span>,</span><br><span class="line">                    <span class="attr">"min_luminance"</span>: <span class="string">"40/10000"</span>,</span><br><span class="line">                    <span class="attr">"max_luminance"</span>: <span class="string">"11000000/10000"</span></span><br><span class="line">                &#125;</span><br><span class="line">            ]</span><br><span class="line">        &#125;</span><br><span class="line">    ]</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>如上所示，ffprobe分析结果中的颜色值以及最大/小亮度值均为一个比值，颜色值的最终结果会确定母版内容所用的颜色空间，而最大/小亮度值则确定了母版内容的动态范围。</p>
+<p>根据如上的结果，我们可以知道，在CIE坐标上，红色，绿色，蓝色以及白点的坐标分别是：</p>
+<ul>
+<li>red: (0.68, 0.32)</li>
+<li>green: (0.265, 0.69)</li>
+<li>blue: (0.15, 0.06)</li>
+<li>white point: (0.3127, 0.329)</li>
+</ul>
+<p>从<a href="https://en.wikipedia.org/wiki/DCI-P3" target="_blank" rel="noopener">DCI-P3</a>的相关信息可知，该视频的母版内容在制作的时候采用的是<code>P3-D65 (Display)</code>颜色空间，其最小亮度为0.004尼特，最大亮度为1100尼特，对比度为275000。</p>
+<h4 id="ffmpeg转码hdr内容">FFMpeg转码HDR内容</h4>
+<p>对于HDR视频的转码时，需要将<code>Mastering Display</code>和<code>Content Light Level</code>元数据的内容传递给编码器（注意，不是传递给FFMpeg），否则，在转码的过程中会丢失这些信息，进而导致转码对画面内容的影响。具体的方式如下所示：</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">ffmpeg  -i hdr.mp4 \</span><br><span class="line">-map 0 -c:v libx265 \</span><br><span class="line">-x265-params hdr-opt=1:repeat-headers=1:colorprim=bt2020:transfer=smpte2084:colormatrix=bt2020nc:master-display=G(13250,34500)B(7500,3000)R(34000,16000)WP(15635,16450)L(11000000,40) \</span><br><span class="line">-crf 20 \</span><br><span class="line">-preset veryfast \</span><br><span class="line">-pix_fmt yuv420p10le \</span><br><span class="line">test.mp4</span><br></pre></td></tr></table></figure>
+<p>其中，</p>
+<ul>
+<li>hdr-opt=1: 表示我们要启用HDR</li>
+<li>repeat-headers=1: 表示每一帧都需要这些数据</li>
+<li>colorprim, transfer and colormatrix: 和ffprobe保持一致</li>
+<li>master-display: 根据ffprobe的结果来构造的颜色字符串</li>
+</ul>
 <h2 id="相关术语">相关术语</h2>
 <h4 id="color-calibration-of-screens-屏幕的色彩校正">Color Calibration of Screens（屏幕的色彩校正）</h4>
 <p>用于确保屏幕上色彩被准确显示的一个过程。一般使用色度计来测量一块显示屏的原生色彩响应，之后计算一个用于修正的指标以确保颜色能正确地显示在该显示器上，最后对经过修正后的响应进行检测。</p>
@@ -210,7 +243,15 @@
 <blockquote>
 <p>更多术语可以参考：<a href="/shares/hdr-field-guide-final-web.pdf"><strong>Quick Reference HDR Glossary</strong></a></p>
 </blockquote>
-<hr>
+<h2 id="参考资料">参考资料</h2>
+<p>1: <a href="https://www.cnet.com/news/hdr-for-cameras-vs-hdr-for-tvs-whats-the-difference/" target="_blank" rel="noopener">https://www.cnet.com/news/hdr-for-cameras-vs-hdr-for-tvs-whats-the-difference/</a><br>
+2: <a href="https://en.wikipedia.org/wiki/High-dynamic-range_imaging" target="_blank" rel="noopener">https://en.wikipedia.org/wiki/High-dynamic-range_imaging</a><br>
+3: <a href="https://en.wikipedia.org/wiki/High-dynamic-range_video" target="_blank" rel="noopener">https://en.wikipedia.org/wiki/High-dynamic-range_video</a><br>
+4: <a href="https://www.zhihu.com/question/19774840/answer/998271233" target="_blank" rel="noopener">https://www.zhihu.com/question/19774840/answer/998271233</a><br>
+5: <a href="https://alliance.experienceuhd.com/uhd-premium-features" target="_blank" rel="noopener">https://alliance.experienceuhd.com/uhd-premium-features</a><br>
+6: <a href="https://www.experienceuhd.com/uhd-mobile-hdr-premium-features" target="_blank" rel="noopener">https://www.experienceuhd.com/uhd-mobile-hdr-premium-features</a><br>
+7: <a href="http://openstd.samr.gov.cn/bzgk/gb/newGbInfo?hcno=AB4FAB66987D97573EA90F4DD56ABA36" target="_blank" rel="noopener">http://openstd.samr.gov.cn/bzgk/gb/newGbInfo?hcno=AB4FAB66987D97573EA90F4DD56ABA36</a><br>
+8: <a href="http://www.cuva.org.cn/ueditor/php/upload/file/20200904/1599186578364054.pdf" target="_blank" rel="noopener">http://www.cuva.org.cn/ueditor/php/upload/file/20200904/1599186578364054.pdf</a></p>
 ]]></content>
       <categories>
         <category>视频技术</category>
