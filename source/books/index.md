@@ -13,3 +13,4 @@ date: 2020-06-17 16:50:12
 * [**Math for Programmers 3D graphics, machine learning, and simulations with Python** *Version 11*](/Math-for-Programmers/)
 * [**Chaos Engineering: Site reliability through controlled disruption**](/Chaos-Engineering/)
 * [**Quick Reference HDR Glossary**](/shares/hdr-field-guide-final-web.pdf)
+* [**Kubernetes in Action, Second Edition**](/Kubernetes-in-Action-Second-Edition/)
