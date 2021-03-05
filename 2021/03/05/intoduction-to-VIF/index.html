@@ -72,7 +72,7 @@
         <span class="post-meta-item-icon">
             <i class="ri-quill-pen-line"></i>
             <span class="post-meta-item-text"> 字数统计:</span>
-            <span class="post-count">615</span>
+            <span class="post-count">854</span>
         </span>
     </span>
 
@@ -81,13 +81,15 @@
         <span class="post-meta-item-icon">
             <i class="ri-book-open-line"></i>
             <span class="post-meta-item-text"> 阅读时长≈</span>
-            <span class="post-count">2 分钟</span>
+            <span class="post-count">3 分钟</span>
         </span>
     </span>
 </div>
  
     </div>
       
+    <div class="tocbot"></div>
+
 
 
 
@@ -98,26 +100,32 @@
 <p>2006年，Hamid R Sheikh和Alan Bovik在德克萨斯大学奥斯汀分校的图像和视频工程实验室（<em>LIVE: Laboratory for Image and Video Engineering</em>）提出了<a href="https://live.ece.utexas.edu/research/Quality/VIF.htm" target="_blank" rel="noopener">VIF算法</a>。</p>
 <p><img src="/2021/03/05/intoduction-to-VIF/1.gif" alt></p>
 <a id="more"></a>
-<blockquote>
-<p><strong><div align="center">自然场景统计（<em>NSS: natural scene statistics</em>）</div></strong></p>
-<p>场景统计是感知领域中的一门学科。场景统计涉及到与场景有关的统计规律，并基于如下的前提：设计一个感知系统来解释场景。</p>
-<p>生物感知系统会根据自然环境的物理特性而进化。因此，自然场景引起了人们极大的关注。</p>
-<p>结合信号检测理论（<em>signal detection theory</em>），信息论（<em>information theory</em>）或估计理论（<em>estimation theory.</em>），自然场景统计可用于定义观察者的行为。</p>
-<p>目前，自然场景统计模型最成功的应用之一就是图片和视频的可感知的质量预测。之所以可以如此应用，其基本的前提是：</p>
+<h2 id="背景知识">背景知识</h2>
+<h4 id="自然场景统计-nss-natural-scene-statistics">自然场景统计（<em>NSS: natural scene statistics</em>）</h4>
+<p>使用可以在光谱范围内进行操作的高质量的<strong>捕获设备</strong>（红外拍摄仪、相机等）而获取到的<strong>视觉环境</strong>的图像和视频，我们称之为自然场景。因此，当我们提到术语<code>自然场景(NS:natural scene)</code>的时候，我们一般指的就是我们所拍摄的，我们所处的，这个世界的照片或视频。这与其他类型的信息完全不同，例如：</p>
+<ul>
+<li>文本</li>
+<li>计算机生成的图形</li>
+<li>卡通或者动画</li>
+<li>绘画或者绘图</li>
+<li>随机噪声</li>
+<li>利用<code>nonvisual stimuli</code>生成的图像或者视频，例如雷达、声呐、X-rays、超声成像技术等</li>
+</ul>
+<p><code>自然场景</code>构成了所有类型的图像集合中的极小的子集。</p>
+<p><code>场景统计</code>是感知领域中的一门学科。场景统计涉及到与场景有关的统计规律，并基于如下的前提：设计一个感知系统来解释场景。</p>
+<p>很多研究者试图通过研究<a href="https://link.springer.com/article/10.1023/A:1021889010444" target="_blank" rel="noopener"><code>自然场景</code>的统计信息来了解其结构</a>。研究人员认为，自然环境产生的视觉刺激促进了HVS的进化，并且，自然场景建模和HVS建模在本质上是一个<a href="https://baike.baidu.com/item/%E5%AF%B9%E5%81%B6%E7%90%86%E8%AE%BA/9582786" target="_blank" rel="noopener">对偶问题</a>。</p>
+<p>结合信号检测理论（<em>signal detection theory</em>），信息论（<em>information theory</em>）或估计理论（<em>estimation theory.</em>），自然场景统计可用于定义观察者的行为。目前，自然场景统计模型最成功的应用之一就是图片和视频的可感知的质量预测。之所以可以如此应用，其基本的前提是：</p>
 <ul>
 <li>图像、视频通常会涉及自然场景</li>
-<li>图像、视频的失真会改变场景的统计信息</li>
-<li>人类视觉系统对场景统计信息的变化非常敏感</li>
+<li>图像、视频的失真会改变自然场景的统计信息</li>
+<li>人类视觉系统对自然场景统计信息的变化非常敏感</li>
 </ul>
-</blockquote>
+<h4 id="vmaf">VMAF</h4>
 <p>以VIF为基础，Netflix开发了到目前为止，视频质量评估领域的最优秀的全参考评估算法：<a href="https://netflixtechblog.com/toward-a-practical-perceptual-video-quality-metric-653f208b9652" target="_blank" rel="noopener">VMAF（<em>Video Multimethod Assessment Fusion</em>）</a>。</p>
-<blockquote>
-<p><strong><div align="center">VMAF</div></strong></p>
 <p>VMAF认为每个基本测量指标都在视频特征、失真类型和失真度上有不同的表现，通过机器学习算法可以将基础的测量指标融合得到最终的结果。当前，VMAF算法使用VIF、DLM（<em>细节损失指标</em>）、运动（<em>相邻帧差异</em>）作为基本测量指标，并使用SVM算法对测量指标进行融合来预测最终结果。VMAF基本原理如下图所示：</p>
 <p><img src="/2021/03/05/intoduction-to-VIF/2.jpg" alt></p>
 <p>虽然，VMAF的效果比PSNR和SSIM要好，但是其运行速度却较慢，在部分机器上甚至小于1帧/秒。</p>
 <p>同时，虽然开源的VMAF也可以得到较好的得分，但是与Netflix公布的分值相比仍然稍有逊色。或许是因为VMAF未开源的部分中包含了更多的数据集训练模型和GPU的支持。</p>
-</blockquote>
 <p>待续》》》</p>
  
       <!-- reward -->
