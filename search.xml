@@ -1,6 +1,36 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title>VIF质量评估方法简介</title>
+    <url>/2021/03/05/intoduction-to-VIF/</url>
+    <content><![CDATA[<p>视觉信息保真度（VIF）是基于<a href="https://en.wikipedia.org/wiki/Scene_statistics" target="_blank" rel="noopener">自然场景统计（<em>natural scene statistics</em>）</a>和<a href="https://wangwei1237.gitee.io/digital-video-concept/docs/2_2_0_TheHumanVisualSystem.html" target="_blank" rel="noopener">人类视觉系统（<em>human visual system</em>）</a>提取图像信息的一种全参考的图像质量评估指标，并且与人类对视觉质量的判断具有良好的相关性。</p>
+<p>2006年，Hamid R Sheikh和Alan Bovik在德克萨斯大学奥斯汀分校的图像和视频工程实验室（<em>LIVE: Laboratory for Image and Video Engineering</em>）提出了<a href="https://live.ece.utexas.edu/research/Quality/VIF.htm" target="_blank" rel="noopener">VIF算法</a>。</p>
+<p><img src="/2021/03/05/intoduction-to-VIF/1.gif" alt></p>
+<a id="more"></a>
+<blockquote>
+<p><strong><div align="center">自然场景统计（<em>NSS: natural scene statistics</em>）</div></strong></p>
+<p>场景统计是感知领域中的一门学科。场景统计涉及到与场景有关的统计规律，并基于如下的前提：设计一个感知系统来解释场景。</p>
+<p>生物感知系统会根据自然环境的物理特性而进化。因此，自然场景引起了人们极大的关注。</p>
+<p>结合信号检测理论（<em>signal detection theory</em>），信息论（<em>information theory</em>）或估计理论（<em>estimation theory.</em>），自然场景统计可用于定义观察者的行为。</p>
+<p>目前，自然场景统计模型最成功的应用之一就是图片和视频的可感知的质量预测。之所以可以如此应用，其基本的前提是：</p>
+<ul>
+<li>图像、视频通常会涉及自然场景</li>
+<li>图像、视频的失真会改变场景的统计信息</li>
+<li>人类视觉系统对场景统计信息的变化非常敏感</li>
+</ul>
+</blockquote>
+<p>以VIF为基础，Netflix开发了到目前为止，视频质量评估领域的最优秀的全参考评估算法：<a href="https://netflixtechblog.com/toward-a-practical-perceptual-video-quality-metric-653f208b9652" target="_blank" rel="noopener">VMAF（<em>Video Multimethod Assessment Fusion</em>）</a>。</p>
+<blockquote>
+<p><strong><div align="center">VMAF</div></strong></p>
+<p>VMAF认为每个基本测量指标都在视频特征、失真类型和失真度上有不同的表现，通过机器学习算法可以将基础的测量指标融合得到最终的结果。当前，VMAF算法使用VIF、DLM（<em>细节损失指标</em>）、运动（<em>相邻帧差异</em>）作为基本测量指标，并使用SVM算法对测量指标进行融合来预测最终结果。VMAF基本原理如下图所示：</p>
+<p><img src="/2021/03/05/intoduction-to-VIF/2.jpg" alt></p>
+<p>虽然，VMAF的效果比PSNR和SSIM要好，但是其运行速度却较慢，在部分机器上甚至小于1帧/秒。</p>
+<p>同时，虽然开源的VMAF也可以得到较好的得分，但是与Netflix公布的分值相比仍然稍有逊色。或许是因为VMAF未开源的部分中包含了更多的数据集训练模型和GPU的支持。</p>
+</blockquote>
+<p>待续》》》</p>
+]]></content>
+  </entry>
+  <entry>
     <title>怎样更好的汇报自己的工作</title>
     <url>/2021/02/25/how-to-report-ourselves-work/</url>
     <content><![CDATA[<p>今年的职称评定工作比以往来的要早一点，好多的同学不得不在春节假期就准备自己的材料。每一次review别人的材料后，总会有一些感想，一直也没有时间整理出来，趁着这次机会，也结合自己过去的实践做一个简单的总结。</p>
