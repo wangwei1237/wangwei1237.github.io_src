@@ -29,6 +29,13 @@
 </blockquote>
 <p>待续》》》</p>
 ]]></content>
+      <categories>
+        <category>IQA</category>
+      </categories>
+      <tags>
+        <tag>VIF</tag>
+        <tag>FR</tag>
+      </tags>
   </entry>
   <entry>
     <title>怎样更好的汇报自己的工作</title>
@@ -2529,7 +2536,7 @@
 <p>分析过程离不开和贤杰(github: <a href="https://github.com/bodhisatan" target="_blank" rel="noopener">@bodhisatan</a>)的不断讨论和交流，感谢@贤杰在繁忙的工作之余抽出时间来一起分析FFMpeg中SSIM算法的实现原理。</p>
 ]]></content>
       <categories>
-        <category>视频技术</category>
+        <category>IVQA</category>
       </categories>
       <tags>
         <tag>FFMpeg</tag>
