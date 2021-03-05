@@ -4,16 +4,30 @@
   <url><loc>https://wangwei1237.gitee.io/monolith-to-microservices/</loc><lastmod>2020-06-17T02:55:11.212Z</lastmod></url> 
   <url><loc>https://wangwei1237.gitee.io/digital-video-concept/</loc><lastmod>2020-06-17T02:55:11.212Z</lastmod></url> 
   <url>
-    <loc>https://wangwei1237.gitee.io/2020/02/15/how-to-calculate-the-SSIM-in-FFMpeg/</loc>
+    <loc>https://wangwei1237.gitee.io/2020/02/18/the-proof-of-the-SSIM-in-FFMpeg/</loc>
     
-    <lastmod>2021-03-05T05:34:15.806Z</lastmod>
+    <lastmod>2021-03-05T05:39:50.229Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://wangwei1237.gitee.io/2020/02/25/how-to-calculate-the-MS-SSIM/</loc>
+    
+    <lastmod>2021-03-05T05:38:46.043Z</lastmod>
     
   </url>
   
   <url>
     <loc>https://wangwei1237.gitee.io/2021/03/05/intoduction-to-VIF/</loc>
     
-    <lastmod>2021-03-05T05:33:20.791Z</lastmod>
+    <lastmod>2021-03-05T05:38:46.042Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://wangwei1237.gitee.io/2020/02/15/how-to-calculate-the-SSIM-in-FFMpeg/</loc>
+    
+    <lastmod>2021-03-05T05:34:15.806Z</lastmod>
     
   </url>
   
@@ -144,13 +158,6 @@
   </url>
   
   <url>
-    <loc>https://wangwei1237.gitee.io/2020/02/25/how-to-calculate-the-MS-SSIM/</loc>
-    
-    <lastmod>2020-06-06T11:37:22.372Z</lastmod>
-    
-  </url>
-  
-  <url>
     <loc>https://wangwei1237.gitee.io/2020/03/18/introduction-to-image-pyramid/</loc>
     
     <lastmod>2020-06-06T11:29:54.527Z</lastmod>
@@ -196,13 +203,6 @@
     <loc>https://wangwei1237.gitee.io/2020/02/05/use-hexo-and-gitee-for-blog/</loc>
     
     <lastmod>2020-02-29T07:19:54.069Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>https://wangwei1237.gitee.io/2020/02/18/the-proof-of-the-SSIM-in-FFMpeg/</loc>
-    
-    <lastmod>2020-02-18T02:32:41.736Z</lastmod>
     
   </url>
   
