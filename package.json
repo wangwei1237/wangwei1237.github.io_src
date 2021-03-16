@@ -32,6 +32,7 @@
     "hexo-tag-bilibili": "^0.3.1",
     "hexo-tag-chart": "^1.0.8",
     "hexo-tag-echarts": "^1.0.0",
-    "hexo-tag-echarts3": "^1.1.2"
+    "hexo-tag-echarts3": "^1.1.2",
+    "katex": "^0.13.0"
   }
 }

@@ -2,7 +2,8 @@
 title: The Proof of the ssim_end1() in FFMpeg
 reward: false
 date: 2020-02-18 09:41:36
-categories: 
+categories:
+  - IVQA
 tags: 
   - FFMpeg
   - SSIM

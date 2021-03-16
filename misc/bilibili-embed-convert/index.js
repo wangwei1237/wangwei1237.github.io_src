@@ -61,7 +61,7 @@ Bili_video.prototype.embedAddr = function(){
       + '&page='
       + this.page
       + '" scrolling="no" border="0" frameborder="no" framespacing="0"'
-      + '" allowfullscreen="true"' 
+      + ' allowfullscreen="true"' 
       + ' style="position: absolute; width: 100%; height: 100%; left: 0; top: 0;"'
       +'> </iframe>'
       + '</div>';

@@ -2,7 +2,8 @@
 title: 如何计算MS-SSIM
 reward: false
 date: 2020-02-25 15:08:40
-categories: 视频技术
+categories:
+  - IVQA
 tags:
   - SSIM
   - MS-SSIM

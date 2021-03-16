@@ -106,6 +106,14 @@ PQ和HLG的具体区别如下表所示：
 #### CUVA HDR
 #### VESA HDR
 
+## 手机对HDR的支持
+#### iPhone
+iPhone 12 Pro对于杜比视界的全方位支持，可以说是凭借着一己之力，将一项最先进，最前卫的HDR技术，带到了普罗大众的眼前。作为第一部支持HDR拍摄的手机，iPhone 12的Dolby Vision HDR拍摄是如何实现的？真的如宣传所说的那么牛吗？
+
+或许我们能够从这位拥有5年HDR调色和教学经验的专家Samuel Bilodeau撰写的这篇评测中找到答案。作者在评测的最后说：我特别兴奋和开心的看到iPhone和其他具有HDR拍摄功能的消费级相机的出现，并推动着HDR向前迈了一步。
+
+{% bilibili 289414701 %}
+
 ## FFMpeg分析HDR内容
 #### ffprobe分析HDR内容的元数据
 可以使用ffprobe命令来提取`Mastering Display`和`Content Light Level`的元数据。我们只需要提取第一帧的相关数据即可，因此，在分析时，可以使用[`-read_intervals "%+#1"`](http://ffmpeg.org/ffprobe.html#Main-options)选项，让ffprobe只提取第一帧的元数据。具体分析名利如下所示：
@@ -327,3 +335,4 @@ D55 曾是胶片投影的标准白点，DCI 白点（译者注：接近 D63，�
 6: https://www.experienceuhd.com/uhd-mobile-hdr-premium-features
 7: http://openstd.samr.gov.cn/bzgk/gb/newGbInfo?hcno=AB4FAB66987D97573EA90F4DD56ABA36
 8: http://www.cuva.org.cn/ueditor/php/upload/file/20200904/1599186578364054.pdf
+9: https://zhuanlan.zhihu.com/p/345169019

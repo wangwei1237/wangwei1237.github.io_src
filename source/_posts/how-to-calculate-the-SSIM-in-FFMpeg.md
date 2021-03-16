@@ -2,7 +2,8 @@
 title: FFMpeg如何计算图像的SSIM
 reward: false
 date: 2020-02-15 15:08:41
-categories: 视频技术
+categories:
+  - IVQA
 tags:
   - SSIM
   - FFMpeg
