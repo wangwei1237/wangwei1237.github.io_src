@@ -33,6 +33,7 @@
     "hexo-tag-chart": "^1.0.8",
     "hexo-tag-echarts": "^1.0.0",
     "hexo-tag-echarts3": "^1.1.2",
+    "hexo-valkyr-url": "^1.1.0",
     "katex": "^0.13.0"
   }
 }
