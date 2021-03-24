@@ -1,6 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title>如何在MacOS下编译vmaf并训练自己的模型</title>
+    <url>/2021/03/24/how-to-complie-VMAF-for-the-MacOS/</url>
+    <content><![CDATA[<p><a href="https://github.com/Netflix/vmaf" target="_blank" rel="noopener">VMAF</a>是Netflix开发的、用于评估视频感知质量的算法。VMAF包括一个独立的C语言库libvmaf及其对该库的Python包装。在Python库中，还提供了一组工具，以方便用户可以训练和测试自定义的VMAF模型。目前为止，在工业实践中，VMAF是视频质量评估领域中最优秀的全参考评估算法。</p>
+<p>但是，在MacOS上编译并使用VMAF的过程中，发现会有一些问题导致无法编译成功，并且和模型训练相关的python代码也存在某些小的冲突，导致在整个模型训练的过程会出现某些异常。</p>
+<p>本文就是对自己在调试过程中遇到的问题的总结。</p>
+<p><img src="/2021/03/24/how-to-complie-VMAF-for-the-MacOS/1.jpeg" alt></p>
+<a id="more"></a>
+<p>待续》》》</p>
+]]></content>
+      <categories>
+        <category>IVQA</category>
+      </categories>
+      <tags>
+        <tag>VMAF</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>VIF质量评估方法简介</title>
     <url>/2021/03/05/intoduction-to-VIF/</url>
     <content><![CDATA[<p>视觉信息保真度（VIF）是基于<a href="https://en.wikipedia.org/wiki/Scene_statistics" target="_blank" rel="noopener">自然场景统计（<em>natural scene statistics</em>）</a>和<a href="https://wangwei1237.gitee.io/digital-video-concept/docs/2_2_0_TheHumanVisualSystem.html" target="_blank" rel="noopener">人类视觉系统（<em>human visual system</em>）</a>提取图像信息的一种全参考的图像质量评估指标，并且与人类对视觉质量的判断具有良好的相关性。</p>
