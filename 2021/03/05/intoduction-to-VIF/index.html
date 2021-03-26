@@ -123,7 +123,7 @@
 <h4 id="vmaf">VMAF</h4>
 <p>以VIF为基础，Netflix开发了到目前为止，视频质量评估领域的最优秀的全参考评估算法：<a href="https://netflixtechblog.com/toward-a-practimathcal-perceptual-video-quality-metric-653f208b9652" target="_blank" rel="noopener">VMAF（<em>Video Multimethod Assessment Fusion</em>）</a>。</p>
 <p>VMAF认为每个基本测量指标都在视频特征、失真类型和失真度上有不同的表现，通过机器学习算法可以将基础的测量指标融合得到最终的结果。当前，VMAF算法使用VIF、DLM（<em>细节损失指标</em>）、运动（<em>相邻帧差异</em>）作为基本测量指标，并使用SVM算法对测量指标进行融合来预测最终结果。VMAF基本原理如下图所示：</p>
-<p><img src="/2021/03/05/intoduction-to-VIF/2.jpg" alt></p>
+<p><img src="/2021/03/05/intoduction-to-VIF/2.png" alt></p>
 <p>虽然，VMAF的效果比PSNR和SSIM要好，但是其运行速度却较慢，在部分机器上甚至小于1帧/秒。</p>
 <p>同时，虽然开源的VMAF也可以得到较好的得分，但是与Netflix公布的分值相比仍然稍有逊色。或许是因为VMAF未开源的部分中包含了更多的数据集训练模型和GPU的支持。</p>
 <h2 id="vif算法">VIF算法</h2>
