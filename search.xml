@@ -8,7 +8,31 @@
 <p>本文就是对自己在调试过程中遇到的问题的总结。</p>
 <p><img src="/2021/03/24/how-to-complie-VMAF-for-the-MacOS/1.jpeg" alt></p>
 <a id="more"></a>
-<p>待续》》》</p>
+<p>我所使用的VMAF的版本为commit id为<a href="https://github.com/Netflix/vmaf/commit/6f1f0c98845e4e9c34ae0bdfa00aee5c91fa6e0c" target="_blank" rel="noopener">6f1f0c98</a>的这次提交。遇到的所有问题也都是基于这次提交，这一点要额外注意。主要解决的问题和具体的解决方法可以参考文章接下来的部分。</p>
+<h2 id="libvmaf-test-tools链接问题">libvmaf test/tools链接问题</h2>
+<p>在编译libvmaf的<code>C</code>库的时候，发现当编译<code>test</code>和<code>tools</code>目录下的文件时，会出现异常。</p>
+<p>经过排查以后，发现是对应的编译产出的链接库出现了异常。在编译时，如果配置<code>default_library</code>为<code>both</code>，则会产出libvmaf的静态链接库和动态链接库，并且在产出<code>test</code>和<code>tools</code>相关对象时，会优先选择采用静态链接库进行链编。具体如下所示：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">vmaf &#x3D; executable(</span><br><span class="line">    &#39;vmaf&#39;,</span><br><span class="line">    ...</span><br><span class="line">    link_with : get_option(&#39;default_library&#39;) &#x3D;&#x3D; &#39;both&#39; ? libvmaf.get_static_lib() : libvmaf,</span><br><span class="line">    ...</span><br><span class="line">)</span><br></pre></td></tr></table></figure>
+<p>不确定为什么这里采用静态链接库时会出现异常，但是把静态链接库改成动态链接库之后，整个工程就可以成功编译了。至于原因，等有时间再仔细定位一下。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">vmaf &#x3D; executable(</span><br><span class="line">    &#39;vmaf&#39;,</span><br><span class="line">    ...</span><br><span class="line">    link_with : libvmaf,</span><br><span class="line">    ...</span><br><span class="line">)</span><br></pre></td></tr></table></figure>
+<h2 id="libsvm库的路径设置问题">libsvm库的路径设置问题</h2>
+<p>在使用python目录下提供的相关工具进行模型训练的时候，最终会使用<code>python/vmaf/svmutil.py</code>来实现对<code>libsvm</code>库的调用，进而根据训练数据产出<code>SVM</code>的模型文件。</p>
+<p>但是，在<code>svmutil.py</code>中会配置<code>libsvm</code>库的路径，默认情况下，这个路径的配置如下：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">libsvm_path &#x3D; VmafConfig.root_path(&#39;third_party&#39;, &#39;libsvm&#39;, &#39;python&#39;)</span><br></pre></td></tr></table></figure>
+<p>而实际上，在我所编译的机器上，使用<code>pip3 install libsvm</code>之后，<code>libsvm</code>的路径并非是如上指定的路径，因此会导致在调用<code>libsvm</code>时出现异常，根据自己编译机器的具体情况，修改<code>libsvm_path</code>的路径即可解决问题，具体如下：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">libsvm_path &#x3D; VmafConfig.root_path(&#39;site-packages&#39;, &#39;libsvm&#39;)</span><br></pre></td></tr></table></figure>
+<h2 id="matplotlib中设置backend为agg带来的问题">Matplotlib中设置backend为agg带来的问题</h2>
+<p>关于Matplotlib中的backend相关的问题，此处不再详细展开，具体可以参见<a href="/2020/04/28/Matplotlib-s-backends-and-non-interactive-backends-for-rendering/">matplotlib的backends以及非交互式绘图</a>。</p>
+<p>默认情况下，在vmaf中，Matplotlib的backend会设置为agg模式。例如，在<a href="https://github.com/Netflix/vmaf/blob/master/python/vmaf/script/run_vmaf_training.py" target="_blank" rel="noopener">python/vmaf/script/run_vmaf_training.py</a>中，就进行了相关的配置：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">#!&#x2F;usr&#x2F;bin&#x2F;env python3</span><br><span class="line"></span><br><span class="line">import matplotlib</span><br><span class="line">matplotlib.use(&#39;Agg&#39;)</span><br></pre></td></tr></table></figure>
+<p>在使用<code>libsvm</code>训练完模型之后，会对VMAF的<code>SRCC</code>，<code>PCC</code>等指标进行计算，并利用<code>python/vmaf/config.py</code>中的<code>DisplayConfig.show()</code>最终调用<code>matplotlib</code>来进行结果的可视化展现。但是，在<code>DisplayConfig.show()</code>中，却是使用是否存在参数<code>write_to_dir</code>来判断调用什么<code>backends</code>，这就会和之前的<code>Agg</code>配置出现冲突，因此这里需要做一个简单的升级，如下所示：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">if matplotlib.rcParams[&#39;backend&#39;] &#x3D;&#x3D; &#39;agg&#39;:</span><br><span class="line">    if &#39;write_to_dir&#39; in kwargs:</span><br><span class="line">        format &#x3D; kwargs[&#39;format&#39;] if &#39;format&#39; in kwargs else &#39;png&#39;</span><br><span class="line">        filedir &#x3D; kwargs[&#39;write_to_dir&#39;] if kwargs[&#39;write_to_dir&#39;] is not None else VmafConfig.workspace_path(&#39;output&#39;)</span><br><span class="line">        os.makedirs(filedir, exist_ok&#x3D;True)</span><br><span class="line">        for fignum in plt.get_fignums():</span><br><span class="line">            fig &#x3D; plt.figure(fignum)</span><br><span class="line">            fig.savefig(os.path.join(filedir, str(fignum) + &#39;.&#39; + format), format&#x3D;format)</span><br><span class="line">    else:</span><br><span class="line">        format &#x3D; &#39;png&#39;</span><br><span class="line">        filedir &#x3D; VmafConfig.workspace_path(&#39;output&#39;)</span><br><span class="line">        os.makedirs(filedir, exist_ok&#x3D;True)</span><br><span class="line">        for fignum in plt.get_fignums():</span><br><span class="line">            fig &#x3D; plt.figure(fignum)</span><br><span class="line">            fig.savefig(os.path.join(filedir, str(fignum) + &#39;.&#39; + format), format&#x3D;format)</span><br><span class="line">else:</span><br><span class="line">    plt.show()</span><br></pre></td></tr></table></figure>
+<h2 id="libvmaf的特征和python中使用的特征的差异">libvmaf的特征和python中使用的特征的差异</h2>
+<p>默认情况下，编译出来的libvmaf库使用的是integer类型的特征，具体如<code>meson_option.txt</code>所示：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">option(&#39;enable_float&#39;,</span><br><span class="line">    type: &#39;boolean&#39;,</span><br><span class="line">    value: false,</span><br><span class="line">    description: &#39;Compile floating-point feature extractors into the library&#39;)</span><br></pre></td></tr></table></figure>
+<p>但是，在使用python来训练模型时，默认使用的是float类型的特征，因此这里会存在特征类型的冲突。具体的解决方式就是让二者保持统一即可，例如，可以修改<code>meson_option.txt</code>的配置，让<code>libvmaf</code>的float类型的特征生效。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">option(&#39;enable_float&#39;,</span><br><span class="line">    type: &#39;boolean&#39;,</span><br><span class="line">    value: true,</span><br><span class="line">    description: &#39;Compile floating-point feature extractors into the library&#39;)</span><br></pre></td></tr></table></figure>
+<p>如上的所有改动，可以参考<a href="update.diff">update.diff</a>。</p>
 ]]></content>
       <categories>
         <category>IVQA</category>
@@ -1257,8 +1281,8 @@ c-1 5-5 9-11 9h-2L532 67 19 159h-2c-5 0-9-4-11-9l-5-22c-1-6 2-12 8-13z"/></svg><
         <category>软件理论</category>
       </categories>
       <tags>
-        <tag>荐书</tag>
         <tag>技术债</tag>
+        <tag>荐书</tag>
       </tags>
   </entry>
   <entry>
@@ -1638,10 +1662,10 @@ c-1 5-5 9-11 9h-2L532 67 19 159h-2c-5 0-9-4-11-9l-5-22c-1-6 2-12 8-13z"/></svg><
         <category>视频技术</category>
       </categories>
       <tags>
+        <tag>荐书</tag>
         <tag>数字视频</tag>
         <tag>digital video</tag>
         <tag>视频基础知识</tag>
-        <tag>荐书</tag>
       </tags>
   </entry>
   <entry>
