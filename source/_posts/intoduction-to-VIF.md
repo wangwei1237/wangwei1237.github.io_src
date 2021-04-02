@@ -44,7 +44,7 @@ tags:
 
 VMAF认为每个基本测量指标都在视频特征、失真类型和失真度上有不同的表现，通过机器学习算法可以将基础的测量指标融合得到最终的结果。当前，VMAF算法使用VIF、DLM（*细节损失指标*）、运动（*相邻帧差异*）作为基本测量指标，并使用SVM算法对测量指标进行融合来预测最终结果。VMAF基本原理如下图所示：
 
-![](2.jpg) 
+![](2.png) 
 
 虽然，VMAF的效果比PSNR和SSIM要好，但是其运行速度却较慢，在部分机器上甚至小于1帧/秒。
 
@@ -67,7 +67,7 @@ VIF认为：
 `Source Model`也称为原始图像建模，为了模拟HVS的多通道特性，VIF算法利用[高斯金字塔](/2020/03/18/introduction-to-image-pyramid/)将图像分成四个不同的尺度，然后将每一个尺度分成大小不一的块，每一个块中的所有像素组成一个向量$\overrightarrow{c}$，并使用高斯混合模型对向量进行建模：
 
 $$
-C = S · U = \{ S_i · \overrightarrow{U}_i : i \in I \}
+\mathcal{C} = \mathcal{S} · \mathcal{U} = \{ S_i · \overrightarrow{U}_i : i \in I \}
 $$
 
 对于`Source Model`而言，$block(i)$表示第$i$个块，如下图所示：
@@ -83,7 +83,7 @@ $$
 对于`Distortion Model`而言，为了能够让`Distortion Model`中的计算可以成立，论文采用局部估计的方式来获取`distortion channel`的参数。
 
 $$
-D = GC + V = \{g_i {\overrightarrow{C}}_i+{\overrightarrow{V}}_i:i \in I\}
+\mathcal{D} = \mathcal{GC} + \mathcal{V} = \{g_i {\overrightarrow{C}}_i+{\overrightarrow{V}}_i:i \in I\}
 $$
 
 具体做法为，在如下图所示的小波变换之后的频域图中，对于图中的第$i$个系数而言，我们采用以$i$为中心的$B \times B$的系数块上估计第$i$个系数对应的参数：$g_i$和$\sigma_{v,i}^{2}$。
@@ -110,7 +110,14 @@ Cov(C,D) = [C(n)D(n)] * F(n) - \\
 $$
 
 #### HVS Model
-在VIF算法模型中，对于`HVS Model`而言，其只有一个参数：视觉噪声的方差$\sigma_n^2$，从论文中可以发现，该参数是一个可以调节的参数，需要根据不同的视频数据集来调整以获取最佳的$\sigma_n^2$。
+对于`HVS Model`而言，VIF将其带来的误差整合为一个噪声。具体如下所示：
+
+$$
+\mathcal{E} = \mathcal{C} + \mathcal{N} = \mathcal{S} · \mathcal{U} + \mathcal{N} \\
+\mathcal{F} = \mathcal{D} + \mathcal{N}' = \mathcal{GC} + \mathcal{V} + \mathcal{N}'
+$$
+
+因此，在VIF算法中，`HVS Model`其只有一个参数：视觉噪声的方差$\sigma_n^2$，从论文中可以发现，该参数是一个可以调节的参数，需要根据不同的视频数据集来调整以获取最佳的$\sigma_n^2$。
 
 在VIF提供的小波域下的算法实现中，$\sigma_n^2=0.4$，在VIF提供的[像素域下的算法实现中](vifp_mscale.m)，$\sigma_n^2=2$，在VMAF的integer_vif中，$\sigma_n^2=65536<<1$。
 
@@ -125,8 +132,6 @@ sv_sq = sigma2_sq - g * sigma12;
 最终，结合`Source Model`，`Distortion Model`，`HVS Model`，得到VIF算法：
 
 $$
-E = S · U + N \\
-F = GC + V + N' \\
 VIF = \frac{I(C;F|s)}{I(C;E|s)}
 $$
 
@@ -136,7 +141,7 @@ $$
 ![](6.jpg)
 
 $$
-VIF = \frac{\sum_{i \in all\_smathcales}{num_i}}{\sum_{i \in all\_smathcales}{den_i}}
+VIF = \frac{\displaystyle\sum_{i \in all\_scales}{num_i}}{\displaystyle\sum_{i \in all\_scales}{den_i}}
 $$
 
 ## 利用libvmaf计算VIF
@@ -166,12 +171,16 @@ $$
 ## VIF的优势和局限性
 #### VIF的优势
 * 一个好的`Distortion Model`可以使得折损图像和合成的图像能够有相同的感官质量。`Distortion Model`的目的并不是对图像的所有折损类型进行建模，而是对图像的折损带来的主观感受进行建模。因此，VIF不一定能够捕获所有的图像折损，但是却可以捕获这些图像的折损带来的感知折损。
-* 另外，从`Distortion Model`（$D = GC +V + N'$）可以发现，VIF将图像的折损拆分为三部分：
+* 另外，从`Distortion Model`（$\mathcal{D} = \mathcal{GC} + \mathcal{V}$）可以发现，VIF将图像的折损拆分为三部分：
   * 信号增益$G$
   * 噪声$V$
   * HVS噪声$N'$
   
-  这使得VIF更符合当前的实际应用。例如图像的亮度增强，对比度增强等场景。在这些场景下，图像信号虽然发生了变化，但是这并不是图像处理过程引入的噪声。这也是为什么PSNR，SSIM等算法无法应用于类似场景的原因，而VIF的折损图像模型却可以完美的应用于这些场景。对于亮度增强或对比度增强的场景，$G>1$，从而使得$VIF>1$，从而可以得出增强后的图像在感官质量上要优于参考图像的结论。
+  这使得VIF更符合当前的实际应用。例如图像的亮度增强，对比度增强等场景。在这些场景下，图像信号虽然发生了变化，但是这并不是图像处理过程引入的噪声。这也是为什么PSNR，SSIM等算法无法应用于类似场景的原因，而VIF的折损图像模型却可以完美的应用于这些场景。对于亮度增强或对比度增强的场景，$G>1$，从而使得$VIF>1$，从而可以得出增强后的图像在感官质量上要优于参考图像的结论。我们用VIF计算对比度提升50%的视频视频时，发现参数$G$实际上是>1的，
+  ![](12.jpg)
+  并且得到如下的结果：
+  ![](11.jpg)
+
 * 从VIF的计算可以，VIF的最终得分是失真图像D在参考图像C下的得分。实际上而言，VIF是一种内容自适应的算法。给定的图像折损，对于不同的内容而言，其带来的主观感受是不一样的。利如，某些时候，我们需要利用运动模糊来展现物体的高速运动，但是对于观看羽毛球比赛时，如果出现羽毛球运动模糊的情况，就会令人讨厌了。对于，PSNR和SSIM等算法而言，在计算过程中是没有做类似的考虑的。
   ![](7.jpeg)
 

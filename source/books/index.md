@@ -18,13 +18,14 @@ date: 2020-06-17 16:50:12
 %}
 
 {% valkyrurl
-[url=/discovery-the-unpredictable-risk/]
-[title="遇见未知的风险"]
+[url=/shares/nginx-insight.pdf]
+[title="nginx沉思录"]
+[avatar=/books/index/ruminations_on_nginx.png]
 %}
 
 {% valkyrurl
-[url=/shares/nginx-insight.pdf]
-[title="nginx沉思录"]
+[url=/discovery-the-unpredictable-risk/]
+[title="遇见未知的风险"]
 %}
 
 ## 转载
