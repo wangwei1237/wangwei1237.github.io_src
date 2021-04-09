@@ -3,6 +3,7 @@ title: 如何在MacOS下编译vmaf并训练自己的模型
 reward: false
 top: false
 date: 2021-03-24 14:51:28
+authors:
 categories:
   - IVQA
 tags:

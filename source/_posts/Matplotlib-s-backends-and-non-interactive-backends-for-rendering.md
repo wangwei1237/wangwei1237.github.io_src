@@ -3,6 +3,9 @@ title: matplotlib的backends以及非交互式绘图
 reward: false
 top: false
 date: 2020-04-28 18:40:01
+authors:
+  - 王伟
+  - 刘一卓
 categories: 
   - matplotlib
 tags:

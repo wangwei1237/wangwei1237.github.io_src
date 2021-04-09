@@ -28,6 +28,12 @@ date: 2020-06-17 16:50:12
 [title="遇见未知的风险"]
 %}
 
+{% valkyrurl
+[url=/temperature-of-the-idioms/]
+[title="成语的温度"]
+[avatar=/books/index/idioms.jpg]
+%}
+
 ## 转载
 {% valkyrurl
 [url=/WebAssembly-in-Action/]

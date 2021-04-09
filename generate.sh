@@ -17,7 +17,9 @@ cp -r /$HOME/Documents/Project/webroot/book/k8s Kubernetes-in-Action-Second-Edit
 rm -f Kubernetes-in-Action-Second-Edition/sitemap.xml
 rm -rf Chaos-Engineering && \
 cp -r /$HOME/Documents/Project/webroot/book/ce Chaos-Engineering && \
-rm -f Chaos-Engineering.pdf/sitemap.xml
+rm -f Chaos-Engineering.pdf/sitemap.xml && \
+rm -rf temperature-of-the-idioms && \
+cp -r /$HOME/Documents/Project/webroot/book/idioms temperature-of-the-idioms
 
 book1="\ \ <url><loc>https://wangwei1237.github.io/digital-video-concept/</loc><lastmod>2020-06-17T02:55:11.212Z</lastmod></url>"
 book2="\ \ <url><loc>https://wangwei1237.github.io/monolith-to-microservices/</loc><lastmod>2020-06-17T02:55:11.212Z</lastmod></url>"

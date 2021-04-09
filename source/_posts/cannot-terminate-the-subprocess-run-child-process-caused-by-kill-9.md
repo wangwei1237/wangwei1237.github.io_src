@@ -3,6 +3,9 @@ title: kill -9导致subprocess.run启动的子进程无法退出
 reward: false
 top: false
 date: 2020-08-07 12:06:29
+authors:
+  - 王伟
+  - 刘一卓
 categories: 
   - python
 tags:
