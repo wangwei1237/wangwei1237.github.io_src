@@ -14,10 +14,8 @@ rm -rf discovery-the-unpredictable-risk && \
 cp -r /$HOME/Documents/Project/webroot/book/dr discovery-the-unpredictable-risk
 rm -rf Kubernetes-in-Action-Second-Edition && \
 cp -r /$HOME/Documents/Project/webroot/book/k8s Kubernetes-in-Action-Second-Edition && \
-rm -f Kubernetes-in-Action-Second-Edition/sitemap.xml
 rm -rf Chaos-Engineering && \
 cp -r /$HOME/Documents/Project/webroot/book/ce Chaos-Engineering && \
-rm -f Chaos-Engineering.pdf/sitemap.xml && \
 rm -rf temperature-of-the-idioms && \
 cp -r /$HOME/Documents/Project/webroot/book/idioms temperature-of-the-idioms
 
