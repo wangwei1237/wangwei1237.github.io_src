@@ -24,7 +24,16 @@
   .tocbot {
     display: none !important;
   }
-  .content.on {
+  .sidebar {
+    left: 0;
+  }
+  .sidebar.on {
+    left: -8rem;
+  }
+  .content {
     transform: translateX(8rem);
+  }
+  .content.on {
+    transform: translateX(0);
   }
 }
