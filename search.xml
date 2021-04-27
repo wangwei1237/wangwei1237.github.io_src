@@ -22,6 +22,27 @@
 <h4 id="安装openvino-toolkit">安装openvino_toolkit</h4>
 <p>进入<a href="https://software.intel.com/content/www/us/en/develop/tools/openvino-toolkit/download.html">openvino_toolkit的下载页面</a>，根据提示选择对应的版本下载并安装即可。MacOS的openvino_toolkit安装比较简单，下载对应的dmg文件之后，一路点击默认，然后安装就可以。默认会将相关的库文件安装在<code>/opt/intel/openvino_2021</code>目录。</p>
 <h4 id="重新编译ffmpeg">重新编译FFmpeg</h4>
+<ul>
+<li>
+<p>拉取FFmpeg的master分支代码。</p>
+</li>
+<li>
+<p>根据<a href="https://gitee.com/wangwei1237/wangwei1237/blob/master/2021/04/27/object-detection-based-on-dnn-detect-in-FFmpeg/vf_dnn_detect.7a6ea6ce2a.patch">vf_dnn_detect.7a6ea6ce2a.patch</a>修改<code>dnn_detect</code>的代码。</p>
+</li>
+<li>
+<p>设置相关的环境变量，如下所示：</p>
+  <figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:\</span><br><span class="line">/opt/intel/openvino_2021/inference_engine/lib/intel64:\</span><br><span class="line">/opt/intel/openvino_2021/inference_engine/external/tbb/lib:\</span><br><span class="line">/opt/intel/openvino_2021/deployment_tools/ngraph/lib:\</span><br><span class="line">/workspace/tensorflow/lib:\</span><br><span class="line">/workspace/ffmpeg/outputs/lib</span><br><span class="line"></span><br><span class="line">export DYLD_LIBRARY_PATH=$DYLD_LIBRARY_PATH:\</span><br><span class="line">/workspace/ffmpeg/outputs/lib</span><br></pre></td></tr></table></figure>
+</li>
+<li>
+<p>编译FFmpeg</p>
+  <figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">.&#x2F;configure --prefix&#x3D;.&#x2F;outputs \</span><br><span class="line">... \</span><br><span class="line">--enable-libtensorflow \</span><br><span class="line">--enable-libopenvino \</span><br><span class="line">--extra-cflags&#x3D;&quot;-I&#x2F;workspace&#x2F;tensorflow&#x2F;include -I&#x2F;opt&#x2F;intel&#x2F;openvino_2021&#x2F;inference_engine&#x2F;include&quot; \</span><br><span class="line">--extra-ldflags&#x3D;&quot;-L&#x2F;workspace&#x2F;tensorflow&#x2F;lib -L&#x2F;opt&#x2F;intel&#x2F;openvino_2021&#x2F;inference_engine&#x2F;lib&#x2F;intel64&quot;</span><br><span class="line"></span><br><span class="line">make &amp;&amp; make install</span><br></pre></td></tr></table></figure>
+</li>
+<li>
+<p>根据<a href="https://mp.weixin.qq.com/s?__biz=MzI3MjU1MjU1Mw==&amp;mid=2247483828&amp;idx=1&amp;sn=df8fe902868ca2a0ea1cf50fff28ff95"><em>目标检测，FFmpeg中第一个基于深度学习模型的视频分析功能</em></a>中的demo下载对应的模型和相关文件，并使用ffplay播放。</p>
+  <figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">cd outputs &amp;&amp; .&#x2F;bin&#x2F;ffplay -i test.mp4 \</span><br><span class="line">-vf &quot;dnn_detect&#x3D;dnn_backend&#x3D;openvino:model&#x3D;model&#x2F;face-detection-adas-0001.xml:input&#x3D;data:output&#x3D;detection_out:confidence&#x3D;0.6:labels&#x3D;model&#x2F;face-detection-adas-0001.label&quot;</span><br></pre></td></tr></table></figure>
+<p><img src="/2021/04/27/object-detection-based-on-dnn-detect-in-FFmpeg/3.jpg" alt></p>
+</li>
+</ul>
 ]]></content>
       <categories>
         <category>视频技术</category>
