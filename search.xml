@@ -62,7 +62,7 @@
         <category>视频技术</category>
       </categories>
       <tags>
-        <tag>FFmpeg</tag>
+        <tag>FFMpeg</tag>
         <tag>目标检测</tag>
         <tag>dnn_detect</tag>
       </tags>
@@ -960,7 +960,7 @@ c-1 5-5 9-11 9h-2L532 67 19 159h-2c-5 0-9-4-11-9l-5-22c-1-6 2-12 8-13z"/></svg><
         <category>视频技术</category>
       </categories>
       <tags>
-        <tag>FFmpeg</tag>
+        <tag>FFMpeg</tag>
         <tag>视频解码</tag>
         <tag>解码丢帧</tag>
         <tag>avcodec_send_packet</tag>
@@ -1678,7 +1678,7 @@ c-1 5-5 9-11 9h-2L532 67 19 159h-2c-5 0-9-4-11-9l-5-22c-1-6 2-12 8-13z"/></svg><
         <category>视频技术</category>
       </categories>
       <tags>
-        <tag>FFmpeg</tag>
+        <tag>FFMpeg</tag>
         <tag>编译</tag>
         <tag>macOS Catalina</tag>
         <tag>strip</tag>
@@ -2824,7 +2824,7 @@ SSIM(a,b)&amp;=\frac{(2\mu_a\mu_b+C_1)(2\sigma_{ab}+C_2)}{(\mu_a^2+\mu_b^2+C_1)(
         <category>IVQA</category>
       </categories>
       <tags>
-        <tag>FFmpeg</tag>
+        <tag>FFMpeg</tag>
         <tag>SSIM</tag>
       </tags>
   </entry>
@@ -2947,7 +2947,7 @@ SSIM(a,b)&amp;=\frac{(2\mu_a\mu_b+C_1)(2\sigma_{ab}+C_2)}{(\mu_a^2+\mu_b^2+C_1)(
         <category>IVQA</category>
       </categories>
       <tags>
-        <tag>FFmpeg</tag>
+        <tag>FFMpeg</tag>
         <tag>SSIM</tag>
       </tags>
   </entry>
