@@ -461,21 +461,7 @@
   </url>
   
   <url>
-    <loc>https://wangwei1237.github.io/tags/%E6%95%B0%E5%AD%97%E8%A7%86%E9%A2%91/</loc>
-    <lastmod>2021-04-30</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.6</priority>
-  </url>
-  
-  <url>
-    <loc>https://wangwei1237.github.io/tags/digital-video/</loc>
-    <lastmod>2021-04-30</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.6</priority>
-  </url>
-  
-  <url>
-    <loc>https://wangwei1237.github.io/tags/%E8%A7%86%E9%A2%91%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86/</loc>
+    <loc>https://wangwei1237.github.io/tags/libyuv/</loc>
     <lastmod>2021-04-30</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.6</priority>
@@ -503,7 +489,21 @@
   </url>
   
   <url>
-    <loc>https://wangwei1237.github.io/tags/libyuv/</loc>
+    <loc>https://wangwei1237.github.io/tags/%E6%95%B0%E5%AD%97%E8%A7%86%E9%A2%91/</loc>
+    <lastmod>2021-04-30</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://wangwei1237.github.io/tags/digital-video/</loc>
+    <lastmod>2021-04-30</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://wangwei1237.github.io/tags/%E8%A7%86%E9%A2%91%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86/</loc>
     <lastmod>2021-04-30</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.6</priority>
@@ -531,6 +531,13 @@
   </url>
   
   <url>
+    <loc>https://wangwei1237.github.io/tags/hexo/</loc>
+    <lastmod>2021-04-30</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
     <loc>https://wangwei1237.github.io/tags/SSIM/</loc>
     <lastmod>2021-04-30</lastmod>
     <changefreq>daily</changefreq>
@@ -539,13 +546,6 @@
   
   <url>
     <loc>https://wangwei1237.github.io/tags/MS-SSIM/</loc>
-    <lastmod>2021-04-30</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.6</priority>
-  </url>
-  
-  <url>
-    <loc>https://wangwei1237.github.io/tags/hexo/</loc>
     <lastmod>2021-04-30</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.6</priority>
@@ -764,13 +764,6 @@
   </url>
   
   <url>
-    <loc>https://wangwei1237.github.io/categories/%E7%AE%97%E6%B3%95%E4%B8%8E%E6%95%B0%E5%AD%A6/</loc>
-    <lastmod>2021-04-30</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.6</priority>
-  </url>
-  
-  <url>
     <loc>https://wangwei1237.github.io/categories/Android/</loc>
     <lastmod>2021-04-30</lastmod>
     <changefreq>daily</changefreq>
@@ -778,7 +771,7 @@
   </url>
   
   <url>
-    <loc>https://wangwei1237.github.io/categories/IVQA/</loc>
+    <loc>https://wangwei1237.github.io/categories/%E7%AE%97%E6%B3%95%E4%B8%8E%E6%95%B0%E5%AD%A6/</loc>
     <lastmod>2021-04-30</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.6</priority>
@@ -786,6 +779,13 @@
   
   <url>
     <loc>https://wangwei1237.github.io/categories/%E6%8A%80%E6%9C%AF/</loc>
+    <lastmod>2021-04-30</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://wangwei1237.github.io/categories/IVQA/</loc>
     <lastmod>2021-04-30</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.6</priority>
