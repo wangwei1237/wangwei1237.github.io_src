@@ -2,8 +2,8 @@
 <search>
   <entry>
     <title>如何提升工作效率</title>
-    <url>/2021/04/30/how-to-improve-the-work-efficiency/</url>
-    <content><![CDATA[<p><img src="/2021/04/30/how-to-improve-the-work-efficiency/1.jpeg" alt></p>
+    <url>/2021/05/01/how-to-improve-the-work-efficiency/</url>
+    <content><![CDATA[<p><img src="/2021/05/01/how-to-improve-the-work-efficiency/1.jpeg" alt></p>
 <blockquote>
 <div align="right"> 一骑红尘妃子笑，无人知是荔枝来。</div>
 </blockquote>
@@ -126,14 +126,14 @@
 <p>从历史的进程看，工具的水平反应生产力水平，是生产力水平的重要标志。因此要从根本上提升工作效率，首要的还是要<strong>提升工作中所使用的的工具的层级</strong>。</p>
 <p>工具层级不但影响我们的工作效率，有时候甚至会决定我们是否可以完成某项工作。正所谓：没有金刚钻，拦不了瓷器活，说的就是这个道理。</p>
 <p>想想一下，如果现在让我们用如下图所示的“打孔卡”<sup>[1]</sup>来编写程序，我们多长时间能写出一个可以输出<code>hello world</code>的程序呢？而现在，借助更富有表现性的语言和更高级的工具，我们可以在几秒内就实现这个功能，不是吗？</p>
-<p><img src="/2021/04/30/how-to-improve-the-work-efficiency/2.jpeg" alt></p>
+<p><img src="/2021/05/01/how-to-improve-the-work-efficiency/2.jpeg" alt></p>
 <h2 id="工具与具体场景相结合">工具与具体场景相结合</h2>
 <blockquote>
 <p>如我解佛所说义，无有定法，名阿耨多罗三藐三菩提；亦无有定法，如来可说。</p>
 <div align="right">——《金刚经》</div>
 </blockquote>
 <p>法无定法，一切事物都依赖于一定的因缘或条件才能存在，本身没有任何质的规定性。由此观之，一切的技术和工具，都需要依赖一定的场景才能存在，脱离场景的技术和工具也不能发挥应有的作用。同时，法无定法还提醒我们：自己的觉悟无法移植给别人，觉悟需要要靠自证、自修、自观来体验。</p>
-<p><img src="/2021/04/30/how-to-improve-the-work-efficiency/3.jpg" alt></p>
+<p><img src="/2021/05/01/how-to-improve-the-work-efficiency/3.jpg" alt></p>
 <p>在工作中，经常会遇到脱离具体场景而执着于引入最高层级的工具的情况，我称这种行为为：<strong>惟工具论</strong>。</p>
 <p>在《Monolith to Microservices》一书的第<a href="/book/m2m/docs/Understanding_the_Goal.html">2.1节</a>中，作者提到：<em>不了解目标还会让我们面临陷入货物崇拜的风险，此时我们就会假设：“如果微服务对Netflix有好处，那么微服务对我们也有好处！”</em></p>
 <p>以出行效率为例，一般情况下，汽车的出行效率比自行车要高。但是对于早高峰堵车时的短程行程而言，自行车的效率要远远高于汽车。</p>
@@ -164,7 +164,7 @@
 <p>我们总想着只要引入某种新技术，我们所面临的问题就一下都解决了。我们总想着寻找一种“银弹”来解决我们的问题。从大历史理论的观点来看，这怎么可能会实现呢？</p>
 <p>世界上，大江大河，大多弯弯曲曲，即使所处平原之处的河流，也保持蜿蜒之态。</p>
 <p>刘禹锡说：“九曲黄河万里沙，浪淘风簸自天涯。”</p>
-<p><img src="/2021/04/30/how-to-improve-the-work-efficiency/4.jpeg" alt></p>
+<p><img src="/2021/05/01/how-to-improve-the-work-efficiency/4.jpeg" alt></p>
 <p>马克思说：社会发展是前进性和曲折性的统一，事物的发展不是直线式前进而是螺旋式上升的，是一个否定之否定的过程。</p>
 <p>因此，我们必须认识到，短期看，新技术会解决我们当前的问题，但是新技术必然会引入新的问题，我们需要与时俱进，在新的场景下不断解决新技术带来的问题。这有这样，才能不断的提升工作效率。</p>
 <p>我们不能因为堵车，就回退到自行车的时代；我们不能因为有假币，就回退到物物交换的时代；……</p>
@@ -180,6 +180,7 @@
       </categories>
       <tags>
         <tag>方法论</tag>
+        <tag>大历史理论</tag>
       </tags>
   </entry>
   <entry>
