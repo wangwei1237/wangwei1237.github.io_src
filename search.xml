@@ -33,9 +33,9 @@
 <p>关于大历史理论的具体内容，可以参考大卫·克里斯蒂安的著作<a href="https://item.jd.com/44600326697.html">《起源-万物大历史》</a>。</p>
 <div class="douban-card-block">
 	<a class="douban-card" href="https://book.douban.com/subject/30428815">
-		<div class="douban-card-bgimg" style="background-image: url('https://images.weserv.nl/?url=https://img2.doubanio.com/view/subject/s/public/s32278451.jpg');"></div>
+		<div class="douban-card-bgimg" style="background-image: url('https://images.weserv.nl/?url=https://img3.doubanio.com/view/subject/s/public/s32278451.jpg');"></div>
 		<div class="douban-card-left">
-			<div class="douban-card-img" style="background-image: url('https://images.weserv.nl/?url=https://img2.doubanio.com/view/subject/s/public/s32278451.jpg');"></div>
+			<div class="douban-card-img" style="background-image: url('https://images.weserv.nl/?url=https://img3.doubanio.com/view/subject/s/public/s32278451.jpg');"></div>
 		</div>
 		<div class="douban-card-right" style="line-height: 1.7;">
 			<div class="douban-card-item"><span>书名: </span><strong>起源</strong></div>
@@ -128,10 +128,52 @@
 <p>想想一下，如果现在让我们用如下图所示的“打孔卡”<sup>[1]</sup>来编写程序，我们多长时间能写出一个可以输出<code>hello world</code>的程序呢？而现在，借助更富有表现性的语言和更高级的工具，我们可以在几秒内就实现这个功能，不是吗？</p>
 <p><img src="/2021/04/30/how-to-improve-the-work-efficiency/2.jpeg" alt></p>
 <h2 id="工具与具体场景相结合">工具与具体场景相结合</h2>
+<blockquote>
+<p>如我解佛所说义，无有定法，名阿耨多罗三藐三菩提；亦无有定法，如来可说。</p>
+<div align="right">——《金刚经》</div>
+</blockquote>
+<p>法无定法，一切事物都依赖于一定的因缘或条件才能存在，本身没有任何质的规定性。由此观之，一切的技术和工具，都需要依赖一定的场景才能存在，脱离场景的技术和工具也不能发挥应有的作用。同时，法无定法还提醒我们：自己的觉悟无法移植给别人，觉悟需要要靠自证、自修、自观来体验。</p>
+<p><img src="/2021/04/30/how-to-improve-the-work-efficiency/3.jpg" alt></p>
+<p>在工作中，经常会遇到脱离具体场景而执着于引入最高层级的工具的情况，我称这种行为为：<strong>惟工具论</strong>。</p>
+<p>在《Monolith to Microservices》一书的第<a href="/book/m2m/docs/Understanding_the_Goal.html">2.1节</a>中，作者提到：<em>不了解目标还会让我们面临陷入货物崇拜的风险，此时我们就会假设：“如果微服务对Netflix有好处，那么微服务对我们也有好处！”</em></p>
+<p>以出行效率为例，一般情况下，汽车的出行效率比自行车要高。但是对于早高峰堵车时的短程行程而言，自行车的效率要远远高于汽车。</p>
+<p>再以代码版本管理系统而言，目前Git已经成为目前最流行的代码版本管理工具。但是，我们是否有思考过：</p>
+<ul>
+<li>Git是否适用于我们？</li>
+<li>如果让我们为公司选择一款SCM（Source Code Management）工具，我们会如何选择？我们会选择Git吗？</li>
+</ul>
+<p>从<a href="https://zhuanlan.zhihu.com/p/368422885">Google 和 Facebook 为什么不用 git 管理源码？</a>这篇文章中，我们也能发现，虽然Git非常优秀，但是在某些场景下，Git还是有其固有的问题。从我的使用经验而言，Git无法只<code>pull</code>代码库的其中部分path特性经常让我心有烦恼，而Subversion就可以很好的解决这个问题。如果我们的核心点是要保证同一个代码仓库的不同部分分属不同角色（不同角色具有不同权限）来管理时，我们还会选择Git吗？</p>
+<p>因此，在具体工具的使用中，不能惟工具论，需要结合具体的场景，结合我们自己的目标来使用工具。否则，工具不但无法提升效率，反而会成为制约效率的因素。</p>
 <h2 id="没有工具是银弹">没有工具是银弹</h2>
+<blockquote>
+<p>在所有恐怖民间传说的妖怪中，最可怕的是人狼，因为它们可以完全出乎意料地从熟悉的面孔变成可怕的怪物。为了对付人狼，我们在寻找可以消灭它们的银弹。</p>
+<p>大家熟悉的软件项目具有一些人狼的特性（至少在非技术经理看来），常常看似简单明了的东西，却有可能变成一个落后进度、超出预算、存在大量缺陷的怪物。</p>
+<p>因此，我们听到了近乎绝望的寻求银弹的呼唤，寻求一种可以使软件成本像计算机硬件成本一样降低的尚方宝剑。</p>
+<p>但是，我们看看近十年来的情况，没有银弹的踪迹。没有任何技术或管理上的进展，能够独立地许诺在生产率、可靠性或简洁性上取得数量级的提高。</p>
+<div align="right">——《人月神话》第16章</div>
+</blockquote>
+<p>从历史的经验看，没有任何一种技术革新能够百分百的解决所有问题，没有任何一种技术革新能够在没有任何成本的前提下解决所有问题，也没有任何一种技术革新能够在不引入新问题的条件下解决所有问题。正如Sam Newman在<a href="/book/m2m/docs/What_Are_Microservices.html">《Monolith to Microservices》</a>一书中说的那样：</p>
+<blockquote>
+<p>正如我的老同事、老朋友、微服务专家James Lewis所说：“Microservices buy you options”。</p>
+</blockquote>
+<p><code>buy</code>这个词告诫我们，没有任何一种技术革新是免费的，我们都必须付出一定的成本才能换取到技术革新带来的便利。</p>
+<p>但是，实际上，根据我在工作中的观察，大多数人在引入新技术，新工具的时候，都只想捞取新技术的成果，而不想为之付出汗水。</p>
+<p>我们还总是误解“自由软件”的含义。实际上，“自由软件”是关乎自由的问题，与价格无关，软件如何定价并不影响它是否被归类为自由软件。在英文中，我们使用Free Software，Free一词既有自由，也有免费的意思。而Free Software中的Free是指“自由言论”中的自由，而非“免费”。<sup>[3]</sup></p>
+<p>我们免费从“自由软件”获得其便利，但却不想花时间来贡献自己的想法，导致我们所使用的版本和“社区”版本之间的差距越来越大，进而导致无法持续获取新技术的便利。甚至有时候，当发展到一定阶段，最初为了解决问题而引入的“自由软件”，反而成了影响效率的主要因素。</p>
+<p>我们免费引入革新技术，但是却不想花费时间来提升自己的能力、维护新技术。当在使用新技术遇到些许问题的时候，我们的肌肉记忆就开始发挥主导作用，进而开始打退堂鼓，导致在技术革新上出现“反反复复”的情况。我所经历的不同团队对待自动化测试的态度，都有力的证明了这一点。</p>
+<p>我们总想着只要引入某种新技术，我们所面临的问题就一下都解决了。我们总想着寻找一种“银弹”来解决我们的问题。从大历史理论的观点来看，这怎么可能会实现呢？</p>
+<p>世界上，大江大河，大多弯弯曲曲，即使所处平原之处的河流，也保持蜿蜒之态。</p>
+<p>刘禹锡说：“九曲黄河万里沙，浪淘风簸自天涯。”</p>
+<p><img src="/2021/04/30/how-to-improve-the-work-efficiency/4.jpeg" alt></p>
+<p>马克思说：社会发展是前进性和曲折性的统一，事物的发展不是直线式前进而是螺旋式上升的，是一个否定之否定的过程。</p>
+<p>因此，我们必须认识到，短期看，新技术会解决我们当前的问题，但是新技术必然会引入新的问题，我们需要与时俱进，在新的场景下不断解决新技术带来的问题。这有这样，才能不断的提升工作效率。</p>
+<p>我们不能因为堵车，就回退到自行车的时代；我们不能因为有假币，就回退到物物交换的时代；……</p>
 <h2 id="天人合一">天人合一</h2>
 <h2 id="参考文献">参考文献</h2>
-<p>[1]. <a href="https://zhuanlan.zhihu.com/p/53300998">上世纪的老程序员是如何编程的</a></p>
+<p>[1]. <a href="https://zhuanlan.zhihu.com/p/53300998">上世纪的老程序员是如何编程的</a><br>
+[2]. <a href="https://zhuanlan.zhihu.com/p/368422885">Google 和 Facebook 为什么不用 git 管理源码？</a><br>
+[3]. <a href="http://www.gnu.org/philosophy/free-sw.zh-cn.html">什么是自由软件？</a><br>
+[4]. <a href="https://www.zhihu.com/question/27696813/answer/93053445">为什么河流都是弯弯曲曲的？</a></p>
 ]]></content>
       <categories>
         <category>文化</category>
