@@ -440,13 +440,6 @@
   </url>
   
   <url>
-    <loc>https://wangwei1237.gitee.io/tags/libyuv/</loc>
-    <lastmod>2021-05-03</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.6</priority>
-  </url>
-  
-  <url>
     <loc>https://wangwei1237.gitee.io/tags/subprocess/</loc>
     <lastmod>2021-05-03</lastmod>
     <changefreq>daily</changefreq>
@@ -462,6 +455,13 @@
   
   <url>
     <loc>https://wangwei1237.gitee.io/tags/%E5%A4%9A%E7%BA%BF%E7%A8%8B/</loc>
+    <lastmod>2021-05-03</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://wangwei1237.gitee.io/tags/libyuv/</loc>
     <lastmod>2021-05-03</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.6</priority>
@@ -650,20 +650,6 @@
   </url>
   
   <url>
-    <loc>https://wangwei1237.gitee.io/tags/ntp/</loc>
-    <lastmod>2021-05-03</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.6</priority>
-  </url>
-  
-  <url>
-    <loc>https://wangwei1237.gitee.io/tags/%E6%97%B6%E9%97%B4%E6%88%B3%E4%B8%8D%E5%90%8C%E6%AD%A5/</loc>
-    <lastmod>2021-05-03</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.6</priority>
-  </url>
-  
-  <url>
     <loc>https://wangwei1237.gitee.io/tags/%E7%9B%AE%E6%A0%87%E6%A3%80%E6%B5%8B/</loc>
     <lastmod>2021-05-03</lastmod>
     <changefreq>daily</changefreq>
@@ -672,6 +658,20 @@
   
   <url>
     <loc>https://wangwei1237.gitee.io/tags/dnn-detect/</loc>
+    <lastmod>2021-05-03</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://wangwei1237.gitee.io/tags/ntp/</loc>
+    <lastmod>2021-05-03</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://wangwei1237.gitee.io/tags/%E6%97%B6%E9%97%B4%E6%88%B3%E4%B8%8D%E5%90%8C%E6%AD%A5/</loc>
     <lastmod>2021-05-03</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.6</priority>
@@ -764,14 +764,14 @@
   </url>
   
   <url>
-    <loc>https://wangwei1237.gitee.io/categories/Android/</loc>
+    <loc>https://wangwei1237.gitee.io/categories/python/</loc>
     <lastmod>2021-05-03</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.6</priority>
   </url>
   
   <url>
-    <loc>https://wangwei1237.gitee.io/categories/python/</loc>
+    <loc>https://wangwei1237.gitee.io/categories/Android/</loc>
     <lastmod>2021-05-03</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.6</priority>
