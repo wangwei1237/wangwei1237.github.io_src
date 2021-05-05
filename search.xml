@@ -1,6 +1,345 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title>github commit messages中的emoji使用指南</title>
+    <url>/2021/05/05/An-emoji-guide-for-github-commit-messages/</url>
+    <content><![CDATA[<p><img src="/2021/05/05/An-emoji-guide-for-github-commit-messages/1.gif" alt></p>
+<p>在git commit messages中使用emoji表情可以包含很多有用信息，并且能够提升commit message的阅读体验。但是，需要注意的是，在commit message中，emoji不能乱用，否则容易导致误解。为了解释并标准化commit message中的emoji，<a href="https://gitmoji.dev/">Gitmoji项目</a>应运而生。</p>
+<p>我们在commit message中使用emoji的时候，也应该尽量遵循<a href="(https://gitmoji.dev/)">Gitmoji</a>的规范，避免引起不必要的误会。</p>
+<span id="more"></span>
+<p>在commit message中使用emoji可使得我们能够仅通过emoji就可以轻松确定此次代码的提交意图。</p>
+<p><a href="https://gitmoji.dev/">Gitmoji项目</a>中描述的emoji的含义如下表所示。</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:center">表情</th>
+<th style="text-align:left">emoji</th>
+<th style="text-align:left">说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center">🎨</td>
+<td style="text-align:left"><code>:art</code></td>
+<td style="text-align:left">改进结构和代码格式</td>
+</tr>
+<tr>
+<td style="text-align:center">⚡️</td>
+<td style="text-align:left"><code>:zap:</code></td>
+<td style="text-align:left">优化性能</td>
+</tr>
+<tr>
+<td style="text-align:center">🔥</td>
+<td style="text-align:left"><code>:fire:</code></td>
+<td style="text-align:left">移除代码或文件</td>
+</tr>
+<tr>
+<td style="text-align:center">🐛</td>
+<td style="text-align:left"><code>:bug:</code></td>
+<td style="text-align:left">修复 bug</td>
+</tr>
+<tr>
+<td style="text-align:center">🚑</td>
+<td style="text-align:left"><code>:ambulance:</code></td>
+<td style="text-align:left">关键修补程序</td>
+</tr>
+<tr>
+<td style="text-align:center">✨</td>
+<td style="text-align:left"><code>:sparkles:</code></td>
+<td style="text-align:left">引入新功能</td>
+</tr>
+<tr>
+<td style="text-align:center">📝</td>
+<td style="text-align:left"><code>:memo:</code></td>
+<td style="text-align:left">增加或者升级文档</td>
+</tr>
+<tr>
+<td style="text-align:center">🚀</td>
+<td style="text-align:left"><code>:rocket:</code></td>
+<td style="text-align:left">部署新功能</td>
+</tr>
+<tr>
+<td style="text-align:center">💄</td>
+<td style="text-align:left"><code>:lipstick:</code></td>
+<td style="text-align:left">升级 UI 和样式文件</td>
+</tr>
+<tr>
+<td style="text-align:center">🎉</td>
+<td style="text-align:left"><code>:tada</code></td>
+<td style="text-align:left">初次提交</td>
+</tr>
+<tr>
+<td style="text-align:center">✅</td>
+<td style="text-align:left"><code>:white_check_mark:</code></td>
+<td style="text-align:left">增加或升级测试用例</td>
+</tr>
+<tr>
+<td style="text-align:center">🔒</td>
+<td style="text-align:left"><code>:lock:</code></td>
+<td style="text-align:left">修复安全问题</td>
+</tr>
+<tr>
+<td style="text-align:center">🔖</td>
+<td style="text-align:left"><code>:bookmark:</code></td>
+<td style="text-align:left">发版/版本tags</td>
+</tr>
+<tr>
+<td style="text-align:center">🚨</td>
+<td style="text-align:left"><code>:rotating_light:</code></td>
+<td style="text-align:left">修复编译警告或者linter警告</td>
+</tr>
+<tr>
+<td style="text-align:center">🚧</td>
+<td style="text-align:left"><code>:construction:</code></td>
+<td style="text-align:left">工作在进行中</td>
+</tr>
+<tr>
+<td style="text-align:center">💚</td>
+<td style="text-align:left"><code>:green_heart:</code></td>
+<td style="text-align:left">修复 CI 构建问题</td>
+</tr>
+<tr>
+<td style="text-align:center">⬇️</td>
+<td style="text-align:left"><code>:arrow_down:</code></td>
+<td style="text-align:left">降级依赖库</td>
+</tr>
+<tr>
+<td style="text-align:center">⬆️</td>
+<td style="text-align:left"><code>:arrow_up:</code></td>
+<td style="text-align:left">升级依赖库</td>
+</tr>
+<tr>
+<td style="text-align:center">📌</td>
+<td style="text-align:left"><code>:pushpin:</code></td>
+<td style="text-align:left">Pin dependencies to specific versions.</td>
+</tr>
+<tr>
+<td style="text-align:center">👷</td>
+<td style="text-align:left"><code>:construction_worker:</code></td>
+<td style="text-align:left">增加或者升级CI构建系统</td>
+</tr>
+<tr>
+<td style="text-align:center">📈</td>
+<td style="text-align:left"><code>:chart_with_upwards_trend:</code></td>
+<td style="text-align:left">增加或升级分析代码/跟踪代码</td>
+</tr>
+<tr>
+<td style="text-align:center">♻️</td>
+<td style="text-align:left"><code>:recycle:</code></td>
+<td style="text-align:left">重构代码</td>
+</tr>
+<tr>
+<td style="text-align:center">➕</td>
+<td style="text-align:left"><code>:heavy_plus_sign:</code></td>
+<td style="text-align:left">增加依赖项</td>
+</tr>
+<tr>
+<td style="text-align:center">➖</td>
+<td style="text-align:left"><code>:heavy_minus_sign:</code></td>
+<td style="text-align:left">删除依赖项</td>
+</tr>
+<tr>
+<td style="text-align:center">🔧</td>
+<td style="text-align:left"><code>:wrench:</code></td>
+<td style="text-align:left">增加或升级配置文件</td>
+</tr>
+<tr>
+<td style="text-align:center">🔨</td>
+<td style="text-align:left"><code>:hammer:</code></td>
+<td style="text-align:left">增加或更新脚本</td>
+</tr>
+<tr>
+<td style="text-align:center">🌐</td>
+<td style="text-align:left"><code>:globe_with_meridians:</code></td>
+<td style="text-align:left">国际化和本地化</td>
+</tr>
+<tr>
+<td style="text-align:center">✏️</td>
+<td style="text-align:left"><code>:pencil2:</code></td>
+<td style="text-align:left">修复错别字</td>
+</tr>
+<tr>
+<td style="text-align:center">💩</td>
+<td style="text-align:left"><code>:poop:</code></td>
+<td style="text-align:left">编写了需要改进的错误代码</td>
+</tr>
+<tr>
+<td style="text-align:center">⏪</td>
+<td style="text-align:left"><code>:rewind:</code></td>
+<td style="text-align:left">还原变更</td>
+</tr>
+<tr>
+<td style="text-align:center">🔀</td>
+<td style="text-align:left"><code>:twisted_rightwards_arrows:</code></td>
+<td style="text-align:left">合并分支</td>
+</tr>
+<tr>
+<td style="text-align:center">📦</td>
+<td style="text-align:left"><code>:package:</code></td>
+<td style="text-align:left">增加或更新已经编译的文件或package</td>
+</tr>
+<tr>
+<td style="text-align:center">👽</td>
+<td style="text-align:left"><code>:alien:</code></td>
+<td style="text-align:left">因为外部API的更改而更新代码</td>
+</tr>
+<tr>
+<td style="text-align:center">🚚</td>
+<td style="text-align:left"><code>:truck:</code></td>
+<td style="text-align:left">移动或者重命名资源(例如：files, paths, routes)</td>
+</tr>
+<tr>
+<td style="text-align:center">📄</td>
+<td style="text-align:left"><code>:page_facing_up:</code></td>
+<td style="text-align:left">增加或更新许可文件（license）</td>
+</tr>
+<tr>
+<td style="text-align:center">💥</td>
+<td style="text-align:left"><code>:boom:</code></td>
+<td style="text-align:left">引入了破坏性修改</td>
+</tr>
+<tr>
+<td style="text-align:center">🍱</td>
+<td style="text-align:left"><code>:bento:</code></td>
+<td style="text-align:left">增加或更新assets</td>
+</tr>
+<tr>
+<td style="text-align:center">♿️</td>
+<td style="text-align:left"><code>:wheelchair:</code></td>
+<td style="text-align:left">Improve accessibility</td>
+</tr>
+<tr>
+<td style="text-align:center">💡</td>
+<td style="text-align:left"><code>:bulb:</code></td>
+<td style="text-align:left">在源代码中增加或更新注释</td>
+</tr>
+<tr>
+<td style="text-align:center">🍻</td>
+<td style="text-align:left"><code>:beers:</code></td>
+<td style="text-align:left">Write code drunkenly</td>
+</tr>
+<tr>
+<td style="text-align:center">💬</td>
+<td style="text-align:left"><code>:speech_balloon:</code></td>
+<td style="text-align:left">Add or update text and literals</td>
+</tr>
+<tr>
+<td style="text-align:center">🗃</td>
+<td style="text-align:left"><code>:card_file_box:</code></td>
+<td style="text-align:left">执行与数据库相关的更改</td>
+</tr>
+<tr>
+<td style="text-align:center">🔊</td>
+<td style="text-align:left"><code>:loud_sound:</code></td>
+<td style="text-align:left">增加或升级日志</td>
+</tr>
+<tr>
+<td style="text-align:center">🔇</td>
+<td style="text-align:left"><code>:mute:</code></td>
+<td style="text-align:left">删除日志</td>
+</tr>
+<tr>
+<td style="text-align:center">👥</td>
+<td style="text-align:left"><code>:busts_in_silhouette:</code></td>
+<td style="text-align:left">Add or update contributor(s).</td>
+</tr>
+<tr>
+<td style="text-align:center">🚸</td>
+<td style="text-align:left"><code>:children_crossing:</code></td>
+<td style="text-align:left">改善用户体验/可用性。</td>
+</tr>
+<tr>
+<td style="text-align:center">🏗</td>
+<td style="text-align:left"><code>:building_construction:</code></td>
+<td style="text-align:left">进行架构上的修改</td>
+</tr>
+<tr>
+<td style="text-align:center">📱</td>
+<td style="text-align:left"><code>:iphone:</code></td>
+<td style="text-align:left">进行响应式设计</td>
+</tr>
+<tr>
+<td style="text-align:center">🤡</td>
+<td style="text-align:left"><code>:clown_face:</code></td>
+<td style="text-align:left">Mock things</td>
+</tr>
+<tr>
+<td style="text-align:center">🥚</td>
+<td style="text-align:left"><code>:egg:</code></td>
+<td style="text-align:left">增加或更新菜单</td>
+</tr>
+<tr>
+<td style="text-align:center">🙈</td>
+<td style="text-align:left"><code>:see_no_evil:</code></td>
+<td style="text-align:left">增加或更新.gitignore文件</td>
+</tr>
+<tr>
+<td style="text-align:center">📸</td>
+<td style="text-align:left"><code>:camera_flash:</code></td>
+<td style="text-align:left">添加或更新快照</td>
+</tr>
+<tr>
+<td style="text-align:center">⚗️</td>
+<td style="text-align:left"><code>:alembic:</code></td>
+<td style="text-align:left">Perform experiments</td>
+</tr>
+<tr>
+<td style="text-align:center">🔍</td>
+<td style="text-align:left"><code>:mag:</code></td>
+<td style="text-align:left">改善SEO</td>
+</tr>
+<tr>
+<td style="text-align:center">🏷</td>
+<td style="text-align:left"><code>:label:</code></td>
+<td style="text-align:left">增加或更新类型（types）</td>
+</tr>
+<tr>
+<td style="text-align:center">🌱</td>
+<td style="text-align:left"><code>:seedling:</code></td>
+<td style="text-align:left">增加或更新seed files</td>
+</tr>
+<tr>
+<td style="text-align:center">🚩</td>
+<td style="text-align:left"><code>:triangular_flag_on_post:</code></td>
+<td style="text-align:left">Add, update, or remove feature flags</td>
+</tr>
+<tr>
+<td style="text-align:center">🥅</td>
+<td style="text-align:left"><code>:goal_net:</code></td>
+<td style="text-align:left">Catch errors</td>
+</tr>
+<tr>
+<td style="text-align:center">💫</td>
+<td style="text-align:left"><code>:dizzy:</code></td>
+<td style="text-align:left">Add or update animations and transitions</td>
+</tr>
+<tr>
+<td style="text-align:center">🗑</td>
+<td style="text-align:left"><code>:wastebasket:</code></td>
+<td style="text-align:left">Deprecate code that needs to be cleaned up</td>
+</tr>
+<tr>
+<td style="text-align:center">🛂</td>
+<td style="text-align:left"><code>:passport_control:</code></td>
+<td style="text-align:left">处理与授权、角色和权限相关的代码</td>
+</tr>
+<tr>
+<td style="text-align:center">⚰️</td>
+<td style="text-align:left"><code>:coffin:</code></td>
+<td style="text-align:left">删除无效代码</td>
+</tr>
+</tbody>
+</table>
+]]></content>
+      <categories>
+        <category>git</category>
+      </categories>
+      <tags>
+        <tag>emoji</tag>
+        <tag>commit message</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>如何提升工作效率</title>
     <url>/2021/05/01/how-to-improve-the-work-efficiency/</url>
     <content><![CDATA[<p><img src="/2021/05/01/how-to-improve-the-work-efficiency/1.jpeg" alt></p>
