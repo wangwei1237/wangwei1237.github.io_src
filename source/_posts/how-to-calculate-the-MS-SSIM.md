@@ -13,7 +13,7 @@ tags:
 ---
 
 ## SSIM的本质及其缺点
-在[FFMpeg如何计算图像的SSIM](/2020/02/15/how-to-calculate-the-SSIM-in-FFMpeg/)中，详细介绍了$SSIM$的相关概念，并对FFMpeg中的$SSIM$实现做了详细的分析。$SSIM$算法基于HVS更擅长从图像中提取结构信息的事实，并且利用结构相似度来计算图像的感知质量。在Z. Wang等人的论文**Multi-scale structural similarity for image quality assessment**中也提到，$SSIM$算法要好于当时的其它的感知图像质量指标。
+在[FFmpeg如何计算图像的SSIM](/2020/02/15/how-to-calculate-the-SSIM-in-FFmpeg/)中，详细介绍了$SSIM$的相关概念，并对FFmpeg中的$SSIM$实现做了详细的分析。$SSIM$算法基于HVS更擅长从图像中提取结构信息的事实，并且利用结构相似度来计算图像的感知质量。在Z. Wang等人的论文**Multi-scale structural similarity for image quality assessment**中也提到，$SSIM$算法要好于当时的其它的感知图像质量指标。
 
 就其本质而言，$SSIM$是一种单尺度的算法，但是实际上正确的图像尺度取决于用户的观看条件，例如显示设备的分辨率，用户的观看距离等。因此，用单尺度的$SSIM$算法来评估图像的感知质量也存在其缺点。
 
@@ -56,7 +56,7 @@ $$
 * $\alpha_5=0.1333$
 
 ## MS-SSIM算法的实现
-采用FFMpeg中的$SSIM$的实现方式来实现$MS-SSIM$。根据[FFMpeg如何计算图像的SSIM](/2020/02/15/how-to-calculate-the-SSIM-in-FFMpeg/)的介绍：
+采用FFmpeg中的$SSIM$的实现方式来实现$MS-SSIM$。根据[FFmpeg如何计算图像的SSIM](/2020/02/15/how-to-calculate-the-SSIM-in-FFmpeg/)的介绍：
 
 $$
 MS-SSIM(X,Y)=\bigg(\frac{2s1 \cdot s2 + ssimC_{1}}{s1^2+s2^2+ssimC_{1}}\bigg)^{\alpha_{M}} \cdot \prod _{j=1}^{M}\bigg(\frac{2covar + ssimC_2}{vars + ssimC_2}\bigg)^{\alpha_j}

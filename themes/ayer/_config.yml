@@ -147,7 +147,7 @@ google_analytics: ''
 # 百度统计
 baidu_analytics: ''
 
-# 数学公式
+# Mathjax数学公式
 mathjax: false
 
 # Katex数学公式(allpost设置为false时只有头部设置math:true的文章才开启)
@@ -156,6 +156,12 @@ katex:
   enable: true # true
   allpost: true
   copy_tex: true
+
+# mermaid流程图 三个选项缺一不可(https://mermaid-js.github.io/mermaid/)
+mermaid:
+  enable: false
+  cdn: https://cdn.jsdelivr.net/npm/mermaid@8.9.2/dist/mermaid.min.js
+  theme: forest
 
 # 网站成立年份(默认为 2019，若填入年份小于当前年份，则显示为 2018-2019 类似的格式)
 since: 2020

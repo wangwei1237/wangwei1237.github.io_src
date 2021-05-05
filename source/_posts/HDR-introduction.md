@@ -114,7 +114,7 @@ iPhone 12 Pro对于杜比视界的全方位支持，可以说是凭借着一己�
 
 {% bilibili 289414701 %}
 
-## FFMpeg分析HDR内容
+## FFmpeg分析HDR内容
 #### ffprobe分析HDR内容的元数据
 可以使用ffprobe命令来提取`Mastering Display`和`Content Light Level`的元数据。我们只需要提取第一帧的相关数据即可，因此，在分析时，可以使用[`-read_intervals "%+#1"`](http://ffmpeg.org/ffprobe.html#Main-options)选项，让ffprobe只提取第一帧的元数据。具体分析名利如下所示：
 
@@ -175,8 +175,8 @@ HDR.mp4
 
 从[DCI-P3](https://en.wikipedia.org/wiki/DCI-P3)的相关信息可知，该视频的母版内容在制作的时候采用的是`P3-D65 (Display)`颜色空间，其最小亮度为0.004尼特，最大亮度为1100尼特，对比度为275000。
 
-#### FFMpeg转码HDR内容
-对于HDR视频的转码时，需要将`Mastering Display`和`Content Light Level`元数据的内容传递给编码器（注意，不是传递给FFMpeg），否则，在转码的过程中会丢失这些信息，进而导致转码对画面内容的影响。具体的方式如下所示：
+#### FFmpeg转码HDR内容
+对于HDR视频的转码时，需要将`Mastering Display`和`Content Light Level`元数据的内容传递给编码器（注意，不是传递给FFmpeg），否则，在转码的过程中会丢失这些信息，进而导致转码对画面内容的影响。具体的方式如下所示：
 
 ```shell
 ffmpeg  -i hdr.mp4 \

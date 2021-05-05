@@ -11,17 +11,17 @@ tags:
   - 网络协议分析
 ---
 
-[SRT(Secure Reliable Transport)](https://www.haivision.com/products/srt-secure-reliable-transport/)是一种基于[UDT(UDP-based Data Transfer)](https://tools.ietf.org/html/draft-gg-udt-03)的、安全的、可靠的、开源的数据传输协议&技术。SRT在UDP基础之上实现了：智能数据重传机制和AES256加密技术，这使得其成为一种安全、可靠、低延迟的传输技术。利用SRT，可以实现在不可预测的网络环境下（例如互联网）高效、安全的传输数据。[SRT](https://github.com/Haivision/srt/)还做了特殊优化以适合视频实时流数据的传输。根据[SRT Alliance](https://www.srtalliance.org/srt-alliance-announces-the-addition-of-the-srt-low-latency-protocol-to-open-broadcaster-softwares-obs-studio/)在2019-04-04的介绍，目前如下的应用已经集成并支持SRT：[OBS Studio](https://obsproject.com/)，[VideoLAN's VLC](https://www.videolan.org/vlc/)，[FFMpeg](http://ffmpeg.org/)，[Wireshark](https://www.wireshark.org/)。
+[SRT(Secure Reliable Transport)](https://www.haivision.com/products/srt-secure-reliable-transport/)是一种基于[UDT(UDP-based Data Transfer)](https://tools.ietf.org/html/draft-gg-udt-03)的、安全的、可靠的、开源的数据传输协议&技术。SRT在UDP基础之上实现了：智能数据重传机制和AES256加密技术，这使得其成为一种安全、可靠、低延迟的传输技术。利用SRT，可以实现在不可预测的网络环境下（例如互联网）高效、安全的传输数据。[SRT](https://github.com/Haivision/srt/)还做了特殊优化以适合视频实时流数据的传输。根据[SRT Alliance](https://www.srtalliance.org/srt-alliance-announces-the-addition-of-the-srt-low-latency-protocol-to-open-broadcaster-softwares-obs-studio/)在2019-04-04的介绍，目前如下的应用已经集成并支持SRT：[OBS Studio](https://obsproject.com/)，[VideoLAN's VLC](https://www.videolan.org/vlc/)，[FFmpeg](http://ffmpeg.org/)，[Wireshark](https://www.wireshark.org/)。
 
 ![](1.png)
 <!--more-->
 
-本文只介绍：**如何利用FFMpeg生成SRT数据流并利用Wireshark对该SRT数据进行抓包分析**。关于SRT的详细内容，可以参考[SRT Protocol Technical Overview Draft](https://github.com/Haivision/srt/files/2489142/SRT_Protocol_TechnicalOverview_DRAFT_2018-10-17.pdf)。
+本文只介绍：**如何利用FFmpeg生成SRT数据流并利用Wireshark对该SRT数据进行抓包分析**。关于SRT的详细内容，可以参考[SRT Protocol Technical Overview Draft](https://github.com/Haivision/srt/files/2489142/SRT_Protocol_TechnicalOverview_DRAFT_2018-10-17.pdf)。
 
 ## 前期准备
 
 1. 按照[说明](https://github.com/Haivision/srt/blob/master/README.md)安装SRT
-2. 利用`./configure --enable-libsrt`重新编译FFMpeg，让ffmpeg工具集支持SRT协议。重新configure的过程如果遇到`ERROR: srt >= 1.3.0 not found using pkg-config`的错误，可以查看`ffbuild/config.log`的相关信息，一般需要把srt和srt所依赖的openssl的**pkgconfig**路径增加到`PKG_CONFIG_PATH`环境变量中即可。
+2. 利用`./configure --enable-libsrt`重新编译FFmpeg，让ffmpeg工具集支持SRT协议。重新configure的过程如果遇到`ERROR: srt >= 1.3.0 not found using pkg-config`的错误，可以查看`ffbuild/config.log`的相关信息，一般需要把srt和srt所依赖的openssl的**pkgconfig**路径增加到`PKG_CONFIG_PATH`环境变量中即可。
 3. 升级Wireshark到3.0之后的版本，并且设置Wireshark取消Wireshark对UDT协议的支持，具体做法为：点击菜单栏中的`Analyze`->`Enabled Protocols`，然后从弹出的支持协议中找到UDT，并取消UDT前面的选择标记。
 
     ![](2.jpg)

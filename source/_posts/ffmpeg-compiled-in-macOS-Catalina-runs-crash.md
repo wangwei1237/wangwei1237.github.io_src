@@ -1,5 +1,5 @@
 ---
-title: macOS Catalina的strip版本异常导致编译的FFMpeg运行被kill
+title: macOS Catalina的strip版本异常导致编译的FFmpeg运行被kill
 reward: false
 top: false
 date: 2020-04-08 09:23:19
@@ -12,7 +12,7 @@ tags:
   - strip
 ---
 
-因为近期正在调研&了解[SRT协议](https://github.com/Haivision/srt)的相关内容，为了方便，需要打开FFMpeg的`--enable-libsrt`功能并重新编译FFMpeg，从而保证FFMpeg支持SRT协议。但是重新编译之后却发现启动ffmpeg工具就会被内核杀死，具体如下所示。
+因为近期正在调研&了解[SRT协议](https://github.com/Haivision/srt)的相关内容，为了方便，需要打开FFmpeg的`--enable-libsrt`功能并重新编译FFmpeg，从而保证FFmpeg支持SRT协议。但是重新编译之后却发现启动ffmpeg工具就会被内核杀死，具体如下所示。
 
 ![](1.jpg)
 <!--more-->
@@ -25,7 +25,7 @@ tags:
 
 ![](3.jpg)
 
-查阅了[网上的资料](https://trac.ffmpeg.org/ticket/8073)，也查看了[brew编译FFMpeg的指令](https://github.com/Homebrew/homebrew-core/blob/master/Formula/ffmpeg.rb)，原因可能是：**Xcode11下clang默认开启-fstack-check**。
+查阅了[网上的资料](https://trac.ffmpeg.org/ticket/8073)，也查看了[brew编译FFmpeg的指令](https://github.com/Homebrew/homebrew-core/blob/master/Formula/ffmpeg.rb)，原因可能是：**Xcode11下clang默认开启-fstack-check**。
 
 同时，在如下图所示的Xcode 10.3版本的Mac上则可编译成功：
 

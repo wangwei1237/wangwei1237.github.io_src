@@ -95,7 +95,10 @@ else:
     plt.show()
 ```
 
+实际上，只有在MacOS上才会出现该问题，因此更合理的方式是根据系统来设置Matplotlib的backends，而不是直接修改Config类。具体可以参考[这里的讨论](https://github.com/Netflix/vmaf/pull/852)。
+
 ## libvmaf的特征和python中使用的特征的差异
+#### libvmaf种各特征的类型
 默认情况下，编译出来的libvmaf库使用的是integer类型的特征，具体如`meson_option.txt`所示：
 
 ```
@@ -105,13 +108,58 @@ option('enable_float',
     description: 'Compile floating-point feature extractors into the library')
 ```
 
-但是，在使用python来训练模型时，默认使用的是float类型的特征，因此这里会存在特征类型的冲突。具体的解决方式就是让二者保持统一即可，例如，可以修改`meson_option.txt`的配置，让`libvmaf`的float类型的特征生效。
+#### python训练模型时各特征的类型
+在使用python来训练模型时，会根据`run_vmaf_training.py`指定的特征文件来确定是抽取`float`类型的特征还是`integer`类型的特征。
 
-```
-option('enable_float',
-    type: 'boolean',
-    value: true,
-    description: 'Compile floating-point feature extractors into the library')
+当`feature_dict`的key为`VMAF_integer_feature`时，则抽取的是`integer`类型的特征，当key为`VMAF_feature`时，抽取的为`float`类型的特征。具体的判断逻辑位于[feature_assembler.py](https://github.com/Netflix/vmaf/blob/master/python/vmaf/core/feature_assembler.py)中的`FeatureAssembler.run()`。
+
+```python
+''' 抽取各特征的integer类型特征
+feature_dict = {
+    'VMAF_integer_feature': ['vif_scale0', 
+                             'vif_scale1', 
+                             'vif_scale2', 
+                             'vif_scale3', 
+                             'adm2', 
+                             'motion']
+}
+
+''' 抽取各特征的float类型特征
+feature_dict = {
+    'VMAF_feature': ['vif_scale0', 
+                             'vif_scale1', 
+                             'vif_scale2', 
+                             'vif_scale3', 
+                             'adm2', 
+                             'motion']
+}
 ```
 
-如上的所有改动，可以参考[update.diff](update.diff)。
+#### 保持libvmaf和python的对应
+因此，在自己训练模型的时候要特别注意：务必保证libvmaf和python两处的特征类型必须对应起来。
+1. 可以修改`meson_option.txt`的配置，让`libvmaf`的float类型的特征生效，此时需要使用`feature_dict['VMAF_feature']`来训练模型。
+
+    ```
+    option('enable_float',
+        type: 'boolean',
+        value: true,
+        description: 'Compile floating-point feature extractors into the library')
+    ```
+    如上的所有改动，可以参考[update.diff](update.diff)。
+
+2. 当然，也可以在编译的时候使用`-Denable_float=true`来开启float类型的特征支持。
+    ```
+    meson setup build -Denable_float=true
+    ```
+3. 使用`feature_dict['VMAF_integer_feature']`来训练模型，此时不需要修改libvmaf的编译脚本。但是需要修改[feature_extractor.py](https://github.com/Netflix/vmaf/blob/master/python/vmaf/core/feature_extractor.py)，将`VmafIntegerFeatureExtractor`类中的`float_ansnr`特征去掉。具体如下所示：
+
+    ```
+    ExternalProgramCaller.call_vmafexec_multi_features(
+        ['adm', 'vif', 'motion'],
+        yuv_type, ref_path, dis_path, w, h, log_file_path, logger, options={
+            'adm': {'debug': True},
+            'vif': {'debug': True},
+            'motion': {'debug': True},
+        }
+    )
+    ```

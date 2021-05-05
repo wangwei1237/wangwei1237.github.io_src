@@ -63,3 +63,8 @@ date: 2020-06-17 16:50:12
 [url=/shares/hdr-field-guide-final-web.pdf]
 [title="Quick Reference HDR Glossary"]
 %}
+
+{% valkyrurl
+[url=/shares/Algorithms_for_Efficient_Computation_of_Convolution.pdf]
+[title="Algorithms for Efficient Computation of Convolution"]
+%}

@@ -1,5 +1,5 @@
 ---
-title: FFMpeg解码API以及在解码过程中存在的丢帧问题
+title: FFmpeg解码API以及在解码过程中存在的丢帧问题
 reward: false
 top: false
 date: 2021-01-19 14:10:38
@@ -16,15 +16,15 @@ tags:
 ![](1.png)
 
 ## 背景
-在优化视频客观全参考算法（主要是*PSNR*, *SSIM*, *MS-SSIM*）时，我们首先利用FFMpeg提供的API（*`avcodec_send_packet()`*，*`avcodec_receive_frame()`*）对输入的两个MP4文件转成对应的YUV格式的数据文件，然后再基于这两份YUV数据文件进行计算，得到对应的结果。
+在优化视频客观全参考算法（主要是*PSNR*, *SSIM*, *MS-SSIM*）时，我们首先利用FFmpeg提供的API（*`avcodec_send_packet()`*，*`avcodec_receive_frame()`*）对输入的两个MP4文件转成对应的YUV格式的数据文件，然后再基于这两份YUV数据文件进行计算，得到对应的结果。
 
 但是，我们发现，MP4文件转成YUV数据后，总是会发生**丢失视频最后几帧**的现象。
 
-为了弄清楚这个问题，查阅了FFMpeg的源码，并参考了网络上的资料，然后总结出了这篇文章。
+为了弄清楚这个问题，查阅了FFmpeg的源码，并参考了网络上的资料，然后总结出了这篇文章。
 <!--more-->
 
-## FFMpeg的编解码API
-从[3.1版本](https://github.com/FFmpeg/FFmpeg/commit/7fc329e2dd6226dfecaa4a1d7adf353bf2773726)开始，FFMpeg提供了[新的编解码API](https://github.com/FFmpeg/FFmpeg/blob/release/3.1/libavcodec/avcodec.h)来对音视频数据进行编解码操作，从而实现对输入和输出的解耦：
+## FFmpeg的编解码API
+从[3.1版本](https://github.com/FFmpeg/FFmpeg/commit/7fc329e2dd6226dfecaa4a1d7adf353bf2773726)开始，FFmpeg提供了[新的编解码API](https://github.com/FFmpeg/FFmpeg/blob/release/3.1/libavcodec/avcodec.h)来对音视频数据进行编解码操作，从而实现对输入和输出的解耦：
 * 解码API
   * avcodec_send_packet()
   * avcodec_receive_frame()
@@ -59,7 +59,7 @@ int avcodec_decode_audio4(AVCodecContext *avctx, AVFrame *frame,
                           int *got_frame_ptr, const AVPacket *avpkt);
 ```
 
-在我们的工具中，我们采用了新的解码API：`avcodec_send_packet()`和`avcodec_receive_frame()`，实现视频帧的解码，并将解码后的数据转成YUV数据。具体的代码片段如下，[点击可查看完整测试代码](https://wangwei1237.gitee.io/2021/01/19/FFMpeg-decode-process-and-lose-frame-in-that-process/test_video_parser_1.cpp)。
+在我们的工具中，我们采用了新的解码API：`avcodec_send_packet()`和`avcodec_receive_frame()`，实现视频帧的解码，并将解码后的数据转成YUV数据。具体的代码片段如下，[点击可查看完整测试代码](https://wangwei1237.gitee.io/2021/01/19/FFmpeg-decode-process-and-lose-frame-in-that-process/test_video_parser_1.cpp)。
 
 ```c++
 int process_frame() {
@@ -89,7 +89,7 @@ $ frame count: 248
 ```
 
 ## send_packet & receive_frame
-为了加深对解码API的了解，以便能查出问题原因，我们查阅了[FFMpeg的代码](https://github.com/FFmpeg/FFmpeg/blob/master/libavcodec/avcodec.h)，从代码的注释中，我们发现了问题：**我们没有遵循API的使用规范，同时FFMpeg在注释中也说明了为什么会出现我们遇到的问题**。
+为了加深对解码API的了解，以便能查出问题原因，我们查阅了[FFmpeg的代码](https://github.com/FFmpeg/FFmpeg/blob/master/libavcodec/avcodec.h)，从代码的注释中，我们发现了问题：**我们没有遵循API的使用规范，同时FFmpeg在注释中也说明了为什么会出现我们遇到的问题**。
 
 ```c
 /**
@@ -108,7 +108,7 @@ $ frame count: 248
 
 也就是说，为了提升性能或出于其他的考虑，解码器会在内部缓存多个`frames`/`packets`。因此，当流结束的时候，需要对解码器执行`flushing`操作，以便获取解码器缓存的`frames`/`packets`。
 
-我们的工具中，在流结束之后，并没有执行`flushing`操作，因此就出现了解码过程丢帧的现象。按照FFMpeg的指导，我们补充了如下的逻辑，以便获取解码器中缓存的帧，[点击可查看完整测试代码](https://wangwei1237.gitee.io/2021/01/19/FFMpeg-decode-process-and-lose-frame-in-that-process/test_video_parser_2.cpp)。
+我们的工具中，在流结束之后，并没有执行`flushing`操作，因此就出现了解码过程丢帧的现象。按照FFmpeg的指导，我们补充了如下的逻辑，以便获取解码器中缓存的帧，[点击可查看完整测试代码](https://wangwei1237.gitee.io/2021/01/19/FFmpeg-decode-process-and-lose-frame-in-that-process/test_video_parser_2.cpp)。
 
 ```c++
 //Flush remaining frames that are cached in the decoder
@@ -132,7 +132,7 @@ $ frame count: 252
 
 ## FFMPeg解码API状态机
 ### avcodec_send_packet返回值
-从FFMpeg的源码中，我们会发现，正常情况下，`avcodec_send_packet()`函数的返回值主要有以下三种：
+从FFmpeg的源码中，我们会发现，正常情况下，`avcodec_send_packet()`函数的返回值主要有以下三种：
 * `0`: on success.
 * `EAGAIN`: input is not accepted in the current state - user must read output with avcodec_receive_frame() (once all output is read, the packet should be resent, and the call will not fail with EAGAIN). 
 * `EOF`: the decoder has been flushed, and no new packets can be sent to it (also returned if more than 1 flush packet is sent).
@@ -154,7 +154,7 @@ $ frame count: 252
 
 在图中，`节点`代表状态（API的返回值），`箭头`代表API的调用。蓝色表示和`avcodec_send_packet()`相关，红色表示和`avcodec_receive_frame()`相关。
 
-[我们修复版本的解码实现](https://wangwei1237.gitee.io/2021/01/19/FFMpeg-decode-process-and-lose-frame-in-that-process/test_video_parser_2.cpp)实际上就是对如上图所示的状态机的实现。
+[我们修复版本的解码实现](https://wangwei1237.gitee.io/2021/01/19/FFmpeg-decode-process-and-lose-frame-in-that-process/test_video_parser_2.cpp)实际上就是对如上图所示的状态机的实现。
 
 而如果在实现的时候，没有处理如下图所示的状态，则会导致无法获取视频最后几帧的问题。
 
