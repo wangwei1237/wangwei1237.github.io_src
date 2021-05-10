@@ -4,6 +4,13 @@
   <url><loc>https://wangwei1237.gitee.io/monolith-to-microservices/</loc><lastmod>2020-06-17T02:55:11.212Z</lastmod></url> 
   <url><loc>https://wangwei1237.gitee.io/digital-video-concept/</loc><lastmod>2020-06-17T02:55:11.212Z</lastmod></url> 
   <url>
+    <loc>https://wangwei1237.gitee.io/2021/04/14/convolution-and-the-gaussian-convolution-kernel/</loc>
+    
+    <lastmod>2021-05-10</lastmod>
+    
+  </url>
+  
+  <url>
     <loc>https://wangwei1237.gitee.io/2021/05/01/how-to-improve-the-work-efficiency/</loc>
     
     <lastmod>2021-05-10</lastmod>
@@ -84,13 +91,6 @@
     <loc>https://wangwei1237.gitee.io/2021/03/24/how-to-complie-VMAF-for-the-MacOS/</loc>
     
     <lastmod>2021-04-21</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>https://wangwei1237.gitee.io/2021/04/14/convolution-and-the-gaussian-convolution-kernel/</loc>
-    
-    <lastmod>2021-04-17</lastmod>
     
   </url>
   
@@ -461,13 +461,6 @@
   </url>
   
   <url>
-    <loc>https://wangwei1237.gitee.io/tags/libyuv/</loc>
-    <lastmod>2021-05-10</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.6</priority>
-  </url>
-  
-  <url>
     <loc>https://wangwei1237.gitee.io/tags/subprocess/</loc>
     <lastmod>2021-05-10</lastmod>
     <changefreq>daily</changefreq>
@@ -483,6 +476,13 @@
   
   <url>
     <loc>https://wangwei1237.gitee.io/tags/%E5%A4%9A%E7%BA%BF%E7%A8%8B/</loc>
+    <lastmod>2021-05-10</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://wangwei1237.gitee.io/tags/libyuv/</loc>
     <lastmod>2021-05-10</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.6</priority>
@@ -552,6 +552,13 @@
   </url>
   
   <url>
+    <loc>https://wangwei1237.gitee.io/tags/hexo/</loc>
+    <lastmod>2021-05-10</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
     <loc>https://wangwei1237.gitee.io/tags/SSIM/</loc>
     <lastmod>2021-05-10</lastmod>
     <changefreq>daily</changefreq>
@@ -560,13 +567,6 @@
   
   <url>
     <loc>https://wangwei1237.gitee.io/tags/MS-SSIM/</loc>
-    <lastmod>2021-05-10</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.6</priority>
-  </url>
-  
-  <url>
-    <loc>https://wangwei1237.gitee.io/tags/hexo/</loc>
     <lastmod>2021-05-10</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.6</priority>
@@ -601,6 +601,20 @@
   </url>
   
   <url>
+    <loc>https://wangwei1237.gitee.io/tags/VIF/</loc>
+    <lastmod>2021-05-10</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://wangwei1237.gitee.io/tags/FR/</loc>
+    <lastmod>2021-05-10</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
     <loc>https://wangwei1237.gitee.io/tags/%E5%9B%BE%E5%83%8F%E9%87%91%E5%AD%97%E5%A1%94/</loc>
     <lastmod>2021-05-10</lastmod>
     <changefreq>daily</changefreq>
@@ -623,20 +637,6 @@
   
   <url>
     <loc>https://wangwei1237.gitee.io/tags/image-pyramid/</loc>
-    <lastmod>2021-05-10</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.6</priority>
-  </url>
-  
-  <url>
-    <loc>https://wangwei1237.gitee.io/tags/VIF/</loc>
-    <lastmod>2021-05-10</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.6</priority>
-  </url>
-  
-  <url>
-    <loc>https://wangwei1237.gitee.io/tags/FR/</loc>
     <lastmod>2021-05-10</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.6</priority>
@@ -792,14 +792,14 @@
   </url>
   
   <url>
-    <loc>https://wangwei1237.gitee.io/categories/Android/</loc>
+    <loc>https://wangwei1237.gitee.io/categories/python/</loc>
     <lastmod>2021-05-10</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.6</priority>
   </url>
   
   <url>
-    <loc>https://wangwei1237.gitee.io/categories/python/</loc>
+    <loc>https://wangwei1237.gitee.io/categories/Android/</loc>
     <lastmod>2021-05-10</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.6</priority>
@@ -813,14 +813,14 @@
   </url>
   
   <url>
-    <loc>https://wangwei1237.gitee.io/categories/IVQA/</loc>
+    <loc>https://wangwei1237.gitee.io/categories/%E6%8A%80%E6%9C%AF/</loc>
     <lastmod>2021-05-10</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.6</priority>
   </url>
   
   <url>
-    <loc>https://wangwei1237.gitee.io/categories/%E6%8A%80%E6%9C%AF/</loc>
+    <loc>https://wangwei1237.gitee.io/categories/IVQA/</loc>
     <lastmod>2021-05-10</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.6</priority>
