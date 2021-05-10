@@ -109,7 +109,7 @@
 <li>Python <a target="_blank" rel="noopener" href="https://github.com/Julian/jsonschema">jsonschema</a>支持<a target="_blank" rel="noopener" href="https://tools.ietf.org/html/draft-handrews-json-schema-validation-01">Draft 7</a></li>
 </ul>
 <span id="more"></span>
-<p>目前大多数语言，例如：Java, Golang, Php, Python, Lua等都支持C/C++的扩展。因此，可以用C/C++来为其他语言提供统一的扩展库支持，本文就是介绍怎么利用<code>Boost::Python</code>库提供<a target="_blank" rel="noopener" href="https://github.com/pboettch/json-schema-validator"><code>json-schema-validator</code></a>的Python支持，并介绍如何利用<code>distutils</code>来编译&amp;分发Python库。</p>
+<p>目前大多数语言，例如：Java, Golang, Php, Python, Lua等都支持C/C<ins>的扩展。因此，可以用C/C</ins>来为其他语言提供统一的扩展库支持，本文就是介绍怎么利用<code>Boost::Python</code>库提供<a target="_blank" rel="noopener" href="https://github.com/pboettch/json-schema-validator"><code>json-schema-validator</code></a>的Python支持，并介绍如何利用<code>distutils</code>来编译&amp;分发Python库。</p>
 <p><img src="/2020/06/13/write-python-library-using-c-with-boost-python/1.png" alt></p>
 <h2 id="python调用c-c-的方式">Python调用C/C++的方式</h2>
 <p>有两种方式可以实现Python调用C/C++编写的库：</p>
@@ -130,7 +130,7 @@
 <li>……</li>
 </ul>
 <p>该方式的具体使用此处也不再做过多介绍，具体信息可以直接参考Python的官方文档<a target="_blank" rel="noopener" href="https://docs.python.org/3/extending/building.html"><strong>Building C and C++ Extensions</strong></a>来了解。接下来要讲的例子就是利用了<code>可以实现代码复用</code>的优点。</p>
-<p>如<a target="_blank" rel="noopener" href="https://docs.python.org/3/extending/building.html"><strong>Building C and C++ Extensions</strong></a>所示，Python提供了<code>Python/C++ API</code>用来实现Python和C++的交互。然而，直接使用这些API来完成Python和C/C++的交互还是会存在很多重复工作的。<code>Boost::Python</code>则对<code>Python/C++ API</code>进行了抽象和包装，从而使得Python和C++的交互更加方便。</p>
+<p>如<a target="_blank" rel="noopener" href="https://docs.python.org/3/extending/building.html"><strong>Building C and C++ Extensions</strong></a>所示，Python提供了<code>Python/C++ API</code>用来实现Python和C<ins>的交互。然而，直接使用这些API来完成Python和C/C</ins>的交互还是会存在很多重复工作的。<code>Boost::Python</code>则对<code>Python/C++ API</code>进行了抽象和包装，从而使得Python和C++的交互更加方便。</p>
 <h2 id="boost-python封装c-c-扩展">Boost::Python封装C/C++扩展</h2>
 <p>接下来我们介绍我们是如何利用Boost::Python来为<a target="_blank" rel="noopener" href="https://github.com/pboettch/json-schema-validator">nlohmann_json_schema_validator</a>增加Python扩展。</p>
 <p><code>nlohmann_json_schema_validator</code> is a C++ library for validating JSON documents based on a <strong>JSON Schema</strong> which itself should validate with <strong>draft-7 of JSON Schema Validation</strong>.</p>
