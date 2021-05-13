@@ -38,5 +38,5 @@ jobs:
         working-directory: ${{ github.workspace }}/../
         run: | 
           cp wangwei1237.github.io_src/build_books.sh .
-          sh ./build_books.sh "${{ github.workspace }}/../"
+          /bin/bash ./build_books.sh "${{ github.workspace }}/../"
           ls -R ${{ github.workspace }}/../books
