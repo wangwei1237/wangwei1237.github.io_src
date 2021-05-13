@@ -47,11 +47,11 @@ jobs:
           ls -lR public
       - name: deploy the website
         id: deploy
-      uses: sma11black/hexo-action@v1.0.3
-      with:
-        deploy_key: ${{ secrets.DEPLOY_KEY }}
-        user_name: Wang Wei
-        user_email: wangwei1237@gmail.com
-        commit_msg: ${{ github.event.head_commit.message }}
+        uses: sma11black/hexo-action@v1.0.3
+        with:
+          deploy_key: ${{ secrets.DEPLOY_KEY }}
+          user_name: Wang Wei
+          user_email: wangwei1237@gmail.com
+          commit_msg: ${{ github.event.head_commit.message }}
 
           
