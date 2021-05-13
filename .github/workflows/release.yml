@@ -19,7 +19,7 @@ jobs:
         uses: actions/checkout@v2
       
       - name: Checkout all books source
-        working-directory: ${{ github.workspace }}
+        working-directory: ${{ github.workspace }}/../
         run: |
           /usr/bin/git clone https://github.com/wangwei1237/chaos-engineering.git --depth 1
           /usr/bin/git clone https://github.com/wangwei1237/digital_video_concepts.git --depth 1
@@ -31,11 +31,12 @@ jobs:
       - name: build the main website
         working-directory: ${{ github.workspace }}
         run: |
-          cd wangwei1237.github.io_src && npm install && hexo clean && hexo generate
+          npm install && /bin/cp -rf misc/bilibili-embed-convert/* node_modules/bilibili-embed-convert/ 
+          hexo clean && hexo generate
 
       - name: build the books
-        working-directory: ${{ github.workspace }}
+        working-directory: ${{ github.workspace }}/../
         run: | 
           cp wangwei1237.github.io_src/build_books.sh .
-          sh ./build_books.sh ${{ github.workspace }} 
-          ls -R ${{ github.workspace }}/books
+          sh ./build_books.sh "${{ github.workspace }}/../"
+          ls -R ${{ github.workspace }}/../books

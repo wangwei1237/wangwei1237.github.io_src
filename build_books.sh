@@ -11,16 +11,17 @@ ROOT_PATH=$1
 mkdir -p ${ROOT_PATH}/books
 
 BOOKS=('chaos-engineering' 
-'digital_video_concepts' 
-'temperature-of-the-idioms' 
-'monolith-to-microservices' 
-'discovery-the-unpredictable-risk' 
-'Kubernetes-in-Action-Second-Edition')
+       'digital_video_concepts' 
+       'temperature-of-the-idioms' 
+        'monolith-to-microservices' 
+        'discovery-the-unpredictable-risk' 
+        'Kubernetes-in-Action-Second-Edition')
 
 for ((i=0; i <${#BOOKS[@]}; i++))
 do
     echo build book: ${BOOKS[i]}
     
+    continue
     cd $ROOT_PATH/${BOOKS[i]}
     
     gitbook install 
