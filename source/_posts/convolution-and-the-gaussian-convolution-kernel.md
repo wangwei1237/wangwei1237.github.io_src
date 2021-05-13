@@ -15,7 +15,10 @@ tags:
 在图像分析和图像处理中，**卷积**(*convolution*)是一种非常重要的运算。卷积是一个积分运算，其反应的是函数$f(x)$在另一个函数$h(x)$上移动时所叠加的量。函数$f$和$h$在有限域$[0,t]$上的一维卷积为：
 
 $$
-(f*h)(t) = \int^{t}_{0}f(\tau)h(t-\tau)\mathrm{d}\tau = \int^{t}_{0}f(t - \tau)h(\tau)\mathrm{d}\tau
+\begin{aligned}
+(f*h)(t) &= \int^{t}_{0}f(\tau)h(t-\tau)\mathrm{d}\tau \\
+&= \int^{t}_{0}f(t - \tau)h(\tau)\mathrm{d}\tau
+\end{aligned}
 $$
 
 需要注意的是，卷积积分的上下限实际为$(-\infty, +\infty)$，但是此处我们假设负坐标部分的值为0，因此这里可以限定在区间$[0,t]$中。<sup>[1]</sup>

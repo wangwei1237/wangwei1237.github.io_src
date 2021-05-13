@@ -36,4 +36,3 @@ cp m2m_sitemap.xml m2m_e_sitemap.xml && sed -i '' 's/gitee/github/g' m2m_e_sitem
 
 cd .. 
 cp -r docs/* public/shares
-
