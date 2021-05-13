@@ -52,6 +52,6 @@ jobs:
         deploy_key: ${{ secrets.DEPLOY_KEY }}
         user_name: Wang Wei
         user_email: wangwei1237@gmail.com
-        commit_msg: update 
+        commit_msg: ${{ github.event.head_commit.message }}
 
           
