@@ -4,9 +4,9 @@ date: 2020-06-17 16:50:12
 ---
 ## 原创
 {% valkyrurl
-[url=/digital-video-concept/]
+[url=/digital_video_concepts/]
 [title="数字视频概念，方法和测量指标"]
-[avatar=/digital-video-concept/images/cover_0.jpg]
+[avatar=/digital_video_concepts/images/cover_0.jpg]
 [desc="质量，压缩，性能和电量等的权衡分析（中文版）"]
 %}
 
@@ -48,9 +48,9 @@ date: 2020-06-17 16:50:12
 %}
 
 {% valkyrurl
-[url=/Chaos-Engineering/]
+[url=/chaos-engineering/]
 [title="Chaos Engineering: Site reliability through controlled disruption"]
-[avatar=/Chaos-Engineering/images/cover.png]
+[avatar=/chaos-engineering/images/cover.png]
 %}
 
 {% valkyrurl
