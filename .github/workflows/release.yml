@@ -3,7 +3,7 @@ on: [push]
 jobs:
   release the 17g website:
     runs-on: ubuntu-latest
-    name: build and release for the 17g website
+    name: build_and_release_for_the_17g_website
     steps:
       - name: Install hexo and gitbook
         run: |
