@@ -38,8 +38,3 @@ cp m2m_sitemap.xml m2m_e_sitemap.xml && sed -i 's/gitee/github/g' m2m_e_sitemap.
 
 cd .. 
 cp -r docs/* public/shares
-
-git config --global user.email "wangwei1237@gmail.com"
-git config --global user.name "Wang Wei"
-
-hexo deploy
