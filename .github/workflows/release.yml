@@ -5,6 +5,11 @@ jobs:
     runs-on: ubuntu-latest
     name: build and release for the 17g website
     steps:
+      - name: Setup Node.js 10.x 
+        uses: actions/setup-node@v2
+        with:
+          node-version: "14" 
+        
       - name: Install hexo and gitbook
         run: |
           npm install hexo-cli -g
