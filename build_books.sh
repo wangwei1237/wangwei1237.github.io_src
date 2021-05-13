@@ -10,12 +10,12 @@ ROOT_PATH=$1
 
 mkdir -p ${ROOT_PATH}/books
 
-BOOKS=('chaos-engineering' 
-       'digital_video_concepts' 
-       'temperature-of-the-idioms' 
-        'monolith-to-microservices' 
-        'discovery-the-unpredictable-risk' 
-        'Kubernetes-in-Action-Second-Edition')
+BOOKS[0]='chaos-engineering'
+BOOKS[1]='digital_video_concepts'
+BOOKS[2]='temperature-of-the-idioms'
+BOOKS[3]='monolith-to-microservices'
+BOOKS[4]='discovery-the-unpredictable-risk'
+BOOKS[5]='Kubernetes-in-Action-Second-Edition'
 
 for ((i=0; i <${#BOOKS[@]}; i++))
 do
