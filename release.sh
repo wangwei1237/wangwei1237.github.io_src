@@ -18,7 +18,7 @@ BOOKS=('chaos-engineering'
 cd public
 for ((i=0; i <${#BOOKS[@]}; i++))
 do
-    rm -rf ${#BOOKS[i]} && /bin/cp -rf $ROOT_PATH/books/${#BOOKS[i]} ${#BOOKS[i]}
+    rm -rf ${BOOKS[i]} && /bin/cp -rf $ROOT_PATH/books/${BOOKS[i]} ${BOOKS[i]}
 done
 
 book1="\ \ <url><loc>https://wangwei1237.github.io/digital-video-concept/</loc><lastmod>2020-06-17T02:55:11.212Z</lastmod></url>"
