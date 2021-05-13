@@ -17,6 +17,8 @@ BOOKS=('chaos-engineering'
 'discovery-the-unpredictable-risk' 
 'Kubernetes-in-Action-Second-Edition')
 
+cd /opt/hostedtoolcache/node/14.16.1/x64/lib/node_modules/gitbook-cli/node_modules/npm/node_modules && npm install graceful-fs@latest --save
+
 for ((i=0; i <${#BOOKS[@]}; i++))
 do
     echo build book: ${BOOKS[i]}
