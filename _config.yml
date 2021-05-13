@@ -107,7 +107,7 @@ deploy:
   type: git
   repo: 
     github: git@github.com:wangwei1237/wangwei1237.github.io.git
-    gitee: https://gitee.com/wangwei1237/wangwei1237
+    gitee: git@gitee.com:wangwei1237/wangwei1237.git
 
 markdown:
   plugins:
