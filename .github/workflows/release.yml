@@ -31,7 +31,9 @@ jobs:
       - name: build the main website
         working-directory: ${{ github.workspace }}
         run: |
-          npm install && /bin/cp -rf misc/bilibili-embed-convert/* node_modules/bilibili-embed-convert/ 
+          npm install 
+          /bin/cp -rf misc/bilibili-embed-convert/* node_modules/bilibili-embed-convert/
+          /bin/cp -rf misc/hexo-asset-image_index.js node_modules/hexo-asset-image/index.js
           hexo clean && hexo generate
 
       - name: build the books
