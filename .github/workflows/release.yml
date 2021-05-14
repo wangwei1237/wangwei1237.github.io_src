@@ -47,6 +47,12 @@ jobs:
         run: |
           /bin/bash ./release.sh "${{ github.workspace }}/../"
           ls -lR public
+      - name: deploy the key
+        run: |
+          mkdir -p ~/.ssh/
+          echo "${{ secrets.DEPLOY_KEY }}" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+          ssh-keyscan -t rsa github.com >> ~/.ssh/known_hosts
       - name: deploy the website
         uses: sma11black/hexo-action@v1.0.4
         with:
