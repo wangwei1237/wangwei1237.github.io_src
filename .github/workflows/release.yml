@@ -57,7 +57,7 @@ jobs:
       - name: deploy the website
         working-directory: ${{ github.workspace }}
         run: |
-          mkdir -p .deploy && cd .deploy && git init && cp public/* .
+          mkdir -p .deploy && cd .deploy && git init && cp -r ${{ github.workspace }}/public/* .
           git add . && git commit -m "${{ github.event.head_commit.message }}"
           git push -f  https://wangwei1237:${{ secrets.DEPLOY_GITEE_TOKEN }}@gitee.com/wangwei1237/wangwei1237.git master
           git push -f  https://wangwei1237:${{ secrets.DEPLOY_GITHUB_TOKEN }}@github.com/wangwei1237/wangwei1237.github.io_src.git master
