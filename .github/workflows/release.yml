@@ -46,17 +46,21 @@ jobs:
         working-directory: ${{ github.workspace }}
         run: |
           /bin/bash ./release.sh "${{ github.workspace }}/../"
-          ls -lR public
-      - name: deploy the key
-        run: |
-          mkdir -p ~/.ssh/
-          echo "${{ secrets.DEPLOY_KEY }}" > ~/.ssh/id_rsa
-          chmod 600 ~/.ssh/id_rsa
-          ssh-keyscan -t rsa github.com >> ~/.ssh/known_hosts
+
+      #- name: deploy the website
+      #  uses: sma11black/hexo-action@v1.0.4
+      #  with:
+      #    deploy_key: ${{ secrets.DEPLOY_KEY }}
+      #    user_name: Wang Wei
+      #    user_email: wangwei1237@gmail.com
+      #    commit_msg: ${{ github.event.head_commit.message }}
       - name: deploy the website
-        uses: sma11black/hexo-action@v1.0.4
-        with:
-          deploy_key: ${{ secrets.DEPLOY_KEY }}
-          user_name: Wang Wei
-          user_email: wangwei1237@gmail.com
-          commit_msg: ${{ github.event.head_commit.message }}
+        working-directory: ${{ github.workspace }}
+        run: |
+          mkdir -p .deploy && cd .deploy && git init && cp public/* .
+          git add . && git commit -m "${{ github.event.head_commit.message }}"
+          git push -f  https://wangwei1237:${{ secrets.DEPLOY_GITEE_TOKEN }}@gitee.com/wangwei1237/wangwei1237.git master
+          git push -f  https://wangwei1237:${{ secrets.DEPLOY_GITHUB_TOKEN }}@github.com/wangwei1237/wangwei1237.github.io_src.git master
+
+
+

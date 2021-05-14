@@ -106,8 +106,8 @@ theme: ayer
 deploy:
   type: git
   repo: 
-    #github: git@github.com:wangwei1237/wangwei1237.github.io.git
-    gitee: git@gitee.com:wangwei1237/wangwei1237.git
+    github: https://github.com/wangwei1237/wangwei1237.github.io_src.git
+    gitee: https://gitee.com/wangwei1237/wangwei1237.git
 
 markdown:
   plugins:
