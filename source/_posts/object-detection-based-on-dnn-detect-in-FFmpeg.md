@@ -104,3 +104,10 @@ tar xzvf libtensorflow-cpu-darwin-x86_64-2.4.1.tar.gz
 ./bin/ffplay -i test.mp4 \
     -vf "dnn_detect=dnn_backend=openvino:model=model/face-detection-adas-0001.xml:input=data:output=detection_out:confidence=0.6:labels=model/face-detection-adas-0001.label:async=0"
 ```
+
+## dnn_detect的其他模型
+在如上的例子中，我们用人脸检测模型作为例子演示了FFmpeg中的DNN目标检测。实际上，作为一个通用的滤镜，替换模型之后，我们也可以用来进行其他类型的目标检测。
+
+在[openvinotoolkit/open_model_zoo](https://github.com/openvinotoolkit/open_model_zoo)中，介绍了很多预训练好的模型，我们可以拿来直接用。各预训练模型可以从[download.01.org/opencv/](https://download.01.org/opencv/)下载。选择模型的时候，务必保证下载和所使用的OpenVINO版本对应的模型，否则，可能会导致加载模型失败的问题。
+
+![](4.jpg)
