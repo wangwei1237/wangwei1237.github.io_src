@@ -230,7 +230,7 @@
 <h4 id="iphone">iPhone</h4>
 <p>iPhone 12 Pro对于杜比视界的全方位支持，可以说是凭借着一己之力，将一项最先进，最前卫的HDR技术，带到了普罗大众的眼前。作为第一部支持HDR拍摄的手机，iPhone 12的Dolby Vision HDR拍摄是如何实现的？真的如宣传所说的那么牛吗？</p>
 <p>或许我们能够从这位拥有5年HDR调色和教学经验的专家Samuel Bilodeau撰写的这篇评测中找到答案。作者在评测的最后说：我特别兴奋和开心的看到iPhone和其他具有HDR拍摄功能的消费级相机的出现，并推动着HDR向前迈了一步。</p>
-<div class="bili_video"><div style="position: relative; width: 100%; height: 0; padding-bottom: 75%;"><iframe src="https://player.bilibili.com/player.html?aid=289414701&page=1&danmaku=0" scrolling="no" border="0" frameborder="no" framespacing="0" allowfullscreen="true" style="position: absolute; width: 100%; height: 100%; left: 0; top: 0;"> </iframe></div></div>
+<div class="bili_video"><div style="position: relative; width: 100%; height: 0; padding-bottom: 75%;"><iframe src="https://player.bilibili.com/player.html?aid=289414701&page=1" scrolling="no" border="0" frameborder="no" framespacing="0" allowfullscreen="true" style="position: absolute; width: 100%; height: 100%; left: 0; top: 0;"> </iframe></div></div>
 <h2 id="ffmpeg分析hdr内容">FFmpeg分析HDR内容</h2>
 <h4 id="ffprobe分析hdr内容的元数据">ffprobe分析HDR内容的元数据</h4>
 <p>可以使用ffprobe命令来提取<code>Mastering Display</code>和<code>Content Light Level</code>的元数据。我们只需要提取第一帧的相关数据即可，因此，在分析时，可以使用<a target="_blank" rel="noopener" href="http://ffmpeg.org/ffprobe.html#Main-options"><code>-read_intervals &quot;%+#1&quot;</code></a>选项，让ffprobe只提取第一帧的元数据。具体分析名利如下所示：</p>
