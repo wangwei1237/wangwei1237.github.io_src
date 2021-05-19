@@ -68,8 +68,6 @@ jobs:
       - name: deploy the website for gitee
         working-directory: ${{ github.workspace }}
         run: |
-          git config --global http.postBuffer 1048576000
-          sudo -E apt-get -yq install ccache gnutls-bin
           /usr/bin/git clone https://oauth2:${{ secrets.DEPLOY_GITEE_TOKEN }}@gitee.com/wangwei1237/wangwei1237.git --depth 1
           cd wangwei1237 && cp -r ${{ github.workspace }}/public/* .
           git config --global user.email "wangwei1237@gmail.com"
