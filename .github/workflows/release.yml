@@ -17,6 +17,7 @@ jobs:
         
       - name: Install hexo
         run: |
+          echo ${{ github.event.action }}
           npm install hexo-cli -g
 
       - name: Checkout main source
