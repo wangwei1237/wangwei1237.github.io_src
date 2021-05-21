@@ -1,4 +1,9 @@
-on: [push]
+on: 
+  push:
+    branches:
+      - main
+  repository_dispatch:
+    types: [update]
 
 jobs:
   release_the_17g_website:
