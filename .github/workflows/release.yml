@@ -20,7 +20,7 @@ jobs:
       - name: Checkout all books source
         working-directory: ${{ github.workspace }}/../
         run: |
-          /usr/bin/git clone https://oauth2:${{ secrets.DEPLOY_GITEE_TOKEN }}@gitee.com/wangwei1237/wangwei1237.git --depth 1
+          #/usr/bin/git clone https://oauth2:${{ secrets.DEPLOY_GITEE_TOKEN }}@gitee.com/wangwei1237/wangwei1237.git --depth 1
           /usr/bin/git clone https://github.com/wangwei1237/chaos-engineering.git --depth 1
           /usr/bin/git clone https://github.com/wangwei1237/digital_video_concepts.git --depth 1
           /usr/bin/git clone https://github.com/wangwei1237/temperature-of-the-idioms.git --depth 1  
