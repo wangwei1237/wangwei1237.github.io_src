@@ -10,10 +10,9 @@ jobs:
         with:
           node-version: "14" 
         
-      - name: Install hexo and gitbook
+      - name: Install hexo
         run: |
           npm install hexo-cli -g
-          npm install -g gitbook-cli
 
       - name: Checkout main source
         uses: actions/checkout@v2
@@ -21,6 +20,7 @@ jobs:
       - name: Checkout all books source
         working-directory: ${{ github.workspace }}/../
         run: |
+          /usr/bin/git clone https://oauth2:${{ secrets.DEPLOY_GITEE_TOKEN }}@gitee.com/wangwei1237/wangwei1237.git --depth 1
           /usr/bin/git clone https://github.com/wangwei1237/chaos-engineering.git --depth 1
           /usr/bin/git clone https://github.com/wangwei1237/digital_video_concepts.git --depth 1
           /usr/bin/git clone https://github.com/wangwei1237/temperature-of-the-idioms.git --depth 1  
