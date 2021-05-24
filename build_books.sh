@@ -22,7 +22,7 @@ DOWNLOAD_URL=""
 for ((i=0; i <${#BOOKS[@]}; i++))
 do
     echo build book: ${BOOKS[i]}
-    if [ "${BOOKS[i]}" = "monolith-to-microservices" -o "${BOOKS[i]}" = "temperature-of-the-idioms"]
+    if [ "${BOOKS[i]}" = "monolith-to-microservices" -o "${BOOKS[i]}" = "temperature-of-the-idioms" ]
     then
         URL="https://api.github.com/repos/wangwei1237/${BOOKS[i]}/releases/latest"
         DOWNLOAD_URL=$(curl -H "Accept: application/vnd.github.v3+json" $URL | grep "${BOOKS[i]}.tar.gz" | grep 'browser_download_url' | cut -d'"' -f4)
