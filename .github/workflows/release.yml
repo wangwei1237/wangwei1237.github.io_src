@@ -17,7 +17,6 @@ jobs:
         
       - name: Install hexo
         run: |
-          /usr/bin/git clone https://oauth2:${{ secrets.DEPLOY_GITEE_TOKEN }}@gitee.com/wangwei1237/wangwei1237.git --depth 1
           npm install hexo-cli -g
 
       - name: Checkout main source
@@ -60,15 +59,15 @@ jobs:
           git add . && git commit -m "${{ github.event.head_commit.message }} ${{ github.event.action }} from ${{ github.event.client_payload.from }}: ${{ github.event.client_payload.msg }}"
           git push https://wangwei1237:${{ secrets.DEPLOY_GITHUB_TOKEN }}@github.com/wangwei1237/wangwei1237.github.io.git master
 
-      #- name: deploy the website for gitee
-        #working-directory: ${{ github.workspace }}
-        #run: |
-          #/usr/bin/git clone https://oauth2:${{ secrets.DEPLOY_GITEE_TOKEN }}@gitee.com/wangwei1237/wangwei1237.git --depth 1
-          #cd wangwei1237 && cp -r ${{ github.workspace }}/public/* .
-          #git config --global user.email "wangwei1237@gmail.com"
-          #git config --global user.name "Wang Wei"
-          #git add . && git commit -m "${{ github.event.head_commit.message }}"
-          #git push https://wangwei1237:${{ secrets.DEPLOY_GITEE_TOKEN }}@gitee.com/wangwei1237/wangwei1237.git master
+      - name: deploy the website for gitee
+        working-directory: ${{ github.workspace }}
+        run: |
+          /usr/bin/git clone https://oauth2:${{ secrets.DEPLOY_GITEE_TOKEN }}@gitee.com/wangwei1237/wangwei1237.git --depth 1
+          cd wangwei1237 && cp -r ${{ github.workspace }}/public/* .
+          git config --global user.email "wangwei1237@gmail.com"
+          git config --global user.name "Wang Wei"
+          git add . && git commit -m "${{ github.event.head_commit.message }} ${{ github.event.action }} from ${{ github.event.client_payload.from }}: ${{ github.event.client_payload.msg }}"
+          git push https://wangwei1237:${{ secrets.DEPLOY_GITEE_TOKEN }}@gitee.com/wangwei1237/wangwei1237.git master
 
 
 
