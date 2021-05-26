@@ -17,6 +17,7 @@ jobs:
         
       - name: Install hexo
         run: |
+          /usr/bin/git clone https://oauth2:${{ secrets.DEPLOY_GITEE_TOKEN }}@gitee.com/wangwei1237/wangwei1237.git --depth 1
           npm install hexo-cli -g
 
       - name: Checkout main source
