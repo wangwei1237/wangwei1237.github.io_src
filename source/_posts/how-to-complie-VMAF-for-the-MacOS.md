@@ -75,7 +75,7 @@ matplotlib.use('Agg')
 
 在使用`libsvm`训练完模型之后，会对VMAF的`SRCC`，`PCC`等指标进行计算，并利用`python/vmaf/config.py`中的`DisplayConfig.show()`最终调用`matplotlib`来进行结果的可视化展现。但是，在`DisplayConfig.show()`中，却是使用是否存在参数`write_to_dir`来判断调用什么`backends`，这就会和之前的`Agg`配置出现冲突，因此这里需要做一个简单的升级，如下所示：
 
-```
+```python
 if matplotlib.rcParams['backend'] == 'agg':
     if 'write_to_dir' in kwargs:
         format = kwargs['format'] if 'format' in kwargs else 'png'

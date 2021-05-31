@@ -40,3 +40,6 @@ authors:
 ```
 
 然后完成新文章，直接提交一个Pull Request即可。
+
+## 文章排版指南
+文章的排版参考：[中文文案排版指北](https://github.com/sparanoid/chinese-copywriting-guidelines/blob/master/README.zh-CN.md)。
