@@ -36,6 +36,12 @@ date: 2020-06-17 16:50:12
 
 ## 转载
 {% valkyrurl
+[url=/shares/GraphQL_in_Action.pdf]
+[title="GraphQL in Action"]
+[avatar=/books/index/Buna-GraphQL.png]
+%}
+
+{% valkyrurl
 [url=/WebAssembly-in-Action/]
 [title="WebAssembly in Action"]
 [avatar=/books/index/Gallant-WA-HI.png]
