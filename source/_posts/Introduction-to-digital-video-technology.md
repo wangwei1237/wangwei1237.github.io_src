@@ -695,6 +695,11 @@ SPS NAL 的第 2 位 (`binary=01100100, hex=0x64, dec=100`) 是 **profile_idc** 
 >
 > ![Intel® Video Pro Analyzer h264 比特流的详情](i/intel-video-pro-analyzer.png "Intel® Video Pro Analyzer h264 比特流的详情")
 
+> ### 关于H264，我们还需要了解什么？
+> 
+> 除了如上对H264码流的介绍外，H264还有很多其他的内容需要了解，例如：X264和H264之间的关系是什么？H264未来会被其他的新型编解码器所代替吗？……关于这些信息可以参考：[https://www.videoproc.com/resource/h264-codec.htm](https://www.videoproc.com/resource/h264-codec.htm)。
+> 
+
 ## 回顾
 
 我们可以看到我们学了许多**使用相同模型的现代编解码器**。事实上，让我们看看 Thor 视频编解码器框图，它包含所有我们学过的步骤。你现在应该能更好地理解数字视频领域内的创新和论文。
@@ -914,3 +919,6 @@ DRM 指的是数字版权管理，是一种**为数字媒体提供版权保护**
 * [https://www.youtube.com/watch?v=Lto-ajuqW3w&list=PLzH6n4zXuckpKAj1_88VS-8Z6yn9zX_P6](https://www.youtube.com/watch?v=Lto-ajuqW3w&list=PLzH6n4zXuckpKAj1_88VS-8Z6yn9zX_P6)
 * [https://www.youtube.com/watch?v=LWxu4rkZBLw](https://www.youtube.com/watch?v=LWxu4rkZBLw)
 
+其他资源：
+
+* [https://www.videoproc.com/resource/h264-codec.htm](https://www.videoproc.com/resource/h264-codec.htm)
