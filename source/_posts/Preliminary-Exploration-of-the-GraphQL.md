@@ -213,7 +213,7 @@ type NumbersInRange {
 
 如果所提供服务的下游消费者较少并且范围也较少，那么还是推荐使用 REST Api。但是如果提供的服务是类似 Github Open Api 这样的规模较大的服务，或者使用该服务的下游消费者范围较大、数量较多，我认为采用 GraphQL 确实是上上之选。
 
-总之，越是涉及到团队交互多、团队协作多的服务，我越是建议采用 GraphQL。因为协作最复杂的地方在于 `communication`，而 GraphQL 就是革新多方协作的一种新技术。
+总之，越是涉及到团队交互多、团队协作多的服务，我越是建议采用 GraphQL。因为协作最复杂的地方在于 `communication`，而 GraphQL 就是革新多方协作的一种新技术。就像万维网彻底改变了人类世界的交流方式一样，我想，GraphQL 正在彻底改变 Api 的交流方式，尤其是在微服务架构中。
 
 ## 学习资源
 * https://spec.graphql.cn/
