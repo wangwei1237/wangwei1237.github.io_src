@@ -1,5 +1,5 @@
 ---
-title: GraphQL初探
+title: GraphQL 初探
 reward: false
 top: false
 date: 2021-06-15 13:55:38
@@ -14,7 +14,7 @@ tags:
 
 对于 API 而言，GraphQL 被视为一种革命性的新思路、新技术。GraphQL 改变了前后端团队的交互方式、颠覆了前后端团队的通信方式，使得他们可以更顺畅而高效地协作。
 
-正如Samer Buna在其著作《GraphQL in Action》中的序言中所说的那样[^1]：
+正如Samer Buna在其著作 [《GraphQL in Action》](https://wangwei1237.gitee.io/shares/GraphQL_in_Action.pdf) 中的序言中所说的那样[^1]：
 
 > 早在 2015 年，Facebook 首次宣布 GraphQL 项目时，我第一次听说了 GraphQL，那个时候 GraphQL 就深深的吸引了我。并且，学习 GraphQL 是我做过的最好的时间投资之一。
 
@@ -22,13 +22,16 @@ tags:
 
 <!--more-->
 
-## GraphQL简介[^2] [^3]
-
+## GraphQL简介
+关于 GraphQL 的介绍，网上已经有非常多的资料了，这里不再过多描述，具体可以参考 [GraphQL.org](https://graphql.cn/)[^2]，[GitHub GraphQL Docs](https://docs.github.com/en/graphql)[^3]，以及 [GraphQL in Action](https://wangwei1237.gitee.io/shares/GraphQL_in_Action.pdf)。
 
 ## GraphQL vs. REST
-关于 GraphQL 和 REST 之间的详细对比，我认为可以参考 *GraphQL vs. REST*，此处不再赘述了[^4] [^5]。
+关于 GraphQL 和 REST 之间的详细对比，我认为可以参考 [GraphQL vs. REST](https://www.apollographql.com/blog/graphql/basics/graphql-vs-rest/) 以及 [GraphQL is the better REST](https://www.howtographql.com/basics/1-graphql-is-the-better-rest/)，此处不再赘述了[^4] [^5]。
 
 ## GraphQL 的优势
+在  [《GraphQL in Action》](https://wangwei1237.gitee.io/shares/GraphQL_in_Action.pdf) 中，作者对 GraphQL 的优缺点做了很全面的介绍；在 [GraphQL 的社区网站](https://graphql.org/) 上，也对 GraphQL 的优点做了全面的介绍；甚至，可以用搜索引擎搜索出一堆 GraphQL 相关的文章和资源……
+
+但是，作为一个刚接触 GraphQL 的门外汉，我还是希望写一写自己学习 GraphQL 之后的感想，尤其是我觉的 GraphQL 那些能让我激动无比的特性。
 
 #### GraphQL 的强类型系统
 在 GraphQL 中，类型系统用于描述 GraphQL Server 的能力并用于判断一个查询是否有效。类型系统还描述了查询参数的输入类型，并在 GraphQL Runtime 中检查参数值的有效性。
@@ -162,6 +165,55 @@ latestRelease: Release
 ```
 
 #### GraphQL API 的版本控制
+对于 Api 的版本控制而言，GraphQL 借鉴了其他语言中的 `@deprecated注解`。如果经受过 REST Api 的版本控制之痛，经受过那些 v1，v2，……，那么你也会像我一样，喜欢 GraphQL 提供的这一特性。
+
+摘录Samer Buna在 [《GraphQL in Action》](https://wangwei1237.gitee.io/shares/GraphQL_in_Action.pdf) 中的例子如下：
+
+```javascript
+type Query {
+  hello: String
+  currentTime: String
+  sumNumbersInRange(begin: Int!, end: Int!): Int! @deprecated(reason: "use new fields numbersInRange")
+  numbersInRange(begin: Int!, end: Int!): NumbersInRange!
+  taskMainList: [Task!]
+  taskInfo(taskId: ID!): Task!
+}
+
+"""Aggregate info on a range numbers"""
+type NumbersInRange {
+  sum: Int!
+  count: Int!
+  avg: Float!
+}
+```
+
+对于 `sumNumbersInRange` 字段，使用 `@deprecated` 标志该字段是废弃字段，并且利用 `reason` 参数来将该废弃字段和推荐的新字段关联起来。如果配合 IDE 的代码扫描能力，当在接口中请求 `sumNumbersInRange` 的时候，IDE 给出对应的废弃提示和原因，那么经过一段时间的迭代，标记为 `@deprecated` 的字段就会慢慢消失在产品代码中。这会使得 Api 的版本管理更加容易，也使得客户端更加容易理解 Api 的进化和向后兼容。
+
+而使用 REST Api 的时候，在没有这种类似机制的帮助下，我经常会使用了上游服务准备 `deprecated` 的字段，因此，在这种情况下，准备废弃的字段不得不为了兼容而永久的保留在了服务之中。
+
+我见过一个 REST Api，这个 Api 经过好几年的发展，每次请求都会返回 10K+ 的数据，并且里面有很多字段的含义基本一致，只不过是有些字段为了兼容某个特定的需求而增加。这个 Api 中的字段谁也不敢动，能做的只能是随着需求的增加而不断的增加该 Api 的规模。开发这个 Api 是一件非常可怕的事情。
+
+## 客观看待 GraphQL 的缺点
+新生之物，其貌必丑。虽然 GraphQL 已经发展了几年，但是实际上而言 GraphQL 还算是一个比较新颖的技术。根据 [《GraphQL in Action》](https://wangwei1237.gitee.io/shares/GraphQL_in_Action.pdf) 中的第 1.3 节的介绍，到目前为止，GraphQL 仍然有很多的问题需要解决，例如：
+* 安全性问题
+* 缓存问题
+* 学习门槛问题
+* ……
+
+虽然如此，我还是认为 GraphQL 开创了 Api 交互的新天地，代表着新的技术的发展方向。并且我也发现，目前整个 GraphQL 社区也在做很多的工作来解决目前的一些问题。例如 Facebook 为了解决缓存问题而开发的 dataloader 库……
+
+正如我在 [如何提升工作效率](/2021/05/01/how-to-improve-the-work-efficiency/) 一文中说的那样：
+
+> 我们必须认识到，短期看，新技术会解决我们当前的问题，但是新技术必然会引入新的问题，我们需要与时俱进，在新的场景下不断解决新技术带来的问题。这有这样，才能不断的提升工作效率。
+> 
+> 我们不能因为堵车，就回退到自行车的时代；我们不能因为有假币，就回退到物物交换的时代；……
+
+## 是否马上使用 GraphQL
+即便如此，在确定是否要使用 GraphQL 技术时，需要做认真的分析，且不可为了追新而采用 GraphQL。
+
+如果所提供服务的下游消费者较少并且范围也较少，那么还是推荐使用 REST Api。但是如果提供的服务是类似 Github Open Api 这样的规模较大的服务，或者使用该服务的下游消费者范围较大、数量较多，我认为采用 GraphQL 确实是上上之选。
+
+总之，越是涉及到团队交互多、团队协作多的服务，我越是建议采用 GraphQL。因为协作最复杂的地方在于 `communication`，而 GraphQL 就是革新多方协作的一种新技术。
 
 ## 学习资源
 * https://spec.graphql.cn/
