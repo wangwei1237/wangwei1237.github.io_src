@@ -30,7 +30,7 @@ sed -i '' "4 i\
 ${book2} 
 " sitemap.xml
 
-cp sitemap.xml bd_sitemap.xml && sed -i '' 's/github/gitee/g' bd_sitemap.xml
+cp sitemap.xml bd_sitemap.xml && sed -i '' 's/github.io/gitee.io/g' bd_sitemap.xml
 cp monolith-to-microservices/sitemap.xml m2m_sitemap.xml
 cp m2m_sitemap.xml m2m_e_sitemap.xml && sed -i '' 's/gitee/github/g' m2m_e_sitemap.xml
 
