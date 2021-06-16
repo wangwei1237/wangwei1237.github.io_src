@@ -29,6 +29,7 @@ tags:
 关于 GraphQL 和 REST 之间的详细对比，我认为可以参考 *GraphQL vs. REST*，此处不再赘述了[^4] [^5]。
 
 ## GraphQL 的优势
+
 #### GraphQL 的强类型系统
 在 GraphQL 中，类型系统用于描述 GraphQL Server 的能力并用于判断一个查询是否有效。类型系统还描述了查询参数的输入类型，并在 GraphQL Runtime 中检查参数值的有效性。
 
