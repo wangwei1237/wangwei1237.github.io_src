@@ -65,16 +65,16 @@ query {
 }
 ```
 
-从如上的例子可以看出，GraphQL 实际上是一种强类型的Api。与使用普通的 REST Api 相比，强类型系统是 GraphQL 最吸引我的地方之一。在我看来，正是 GraphQL 强类型的特性，开创了 Api 的新天地。
+从如上的例子可以看出，GraphQL 实际上是一种强类型的 API。与使用普通的 REST API 相比，强类型系统是 GraphQL 最吸引我的地方之一。在我看来，正是 GraphQL 强类型的特性，开创了 API 的新天地。
 
-在我看来，REST Api 缺乏`类型系统`特性在开发中会引入很多的问题，工作中，我经常会遇到如下的情况：
-* 上游服务修改了 REST Api 的字段类型而未周知下游消费者导致下游服务异常甚至崩溃
+在我看来，REST API 缺乏`类型系统`特性在开发中会引入很多的问题，工作中，我经常会遇到如下的情况：
+* 上游服务修改了 REST API 的字段类型而未周知下游消费者导致下游服务异常甚至崩溃
 * 服务端未返回特定字段导致客户端崩溃
 * 客户端请求参数异常，导致服务端的错误率上升
 * 到处找借口文档，好不容易找到了忽然发现，接口文档和接口的返回并不一致，文档太滞后了
 * ……
 
-如果有一个类型系统进行约束，则情况会变的更好一点。因此，针对于 json 格式的 REST Api 而言，开始出现类似 [Swagger UI](https://swagger.io/tools/swagger-ui/) 这样的工具，利用 [Json Schema](https://json-schema.org/) 来强化其类型系统。虽然如此，但是，在我看来，基于 Json Schema 的 REST Api 类型系统仅仅是一个规范和建议而已，团队中的其他人不使用也没办法。但是，GraphQL 的类型系统是其根基，所有人必须遵守，这就在大家对接口描述形成统一认识上发挥着重要作用。
+如果有一个类型系统进行约束，则情况会变的更好一点。因此，针对于 json 格式的 REST API 而言，开始出现类似 [Swagger UI](https://swagger.io/tools/swagger-ui/) 这样的工具，利用 [Json Schema](https://json-schema.org/) 来强化其类型系统。虽然如此，但是，在我看来，基于 Json Schema 的 REST API 类型系统仅仅是一个规范和建议而已，团队中的其他人不使用也没办法。但是，GraphQL 的类型系统是其根基，所有人必须遵守，这就在大家对接口描述形成统一认识上发挥着重要作用。
 
 同样的道理，对于 [rapidjson](https://github.com/Tencent/rapidjson/) 而言，从 v1.1 版本开始，也加入了 JSON Schema 功能，使其可以在解析或生成 JSON 时进行校验，以避免类型错误的 json 而导致的解析时崩溃问题的发生。
 
@@ -89,13 +89,13 @@ query {
 
 借助于 GraphQL 的类型系统，客户端可以更加自由的根据自己的需求来获得自己的所需，而无需收到 Server 端的限制。
 
-在我的个人博客站点中，我采用 [github action](https://docs.github.com/en/actions) 来编译并发布站点内容。站点中，会有很多基于 [gitbook](https://www.gitbook.com/) 的书籍，并且每一本书都对应一个 github 仓库。为了加快站点的发布速度，对于每一本书籍而言，都会提前编译并且将编译产物置于 latest release 中。在发布主站内容时，我利用 [build_books.sh](https://github.com/wangwei1237/wangwei1237.github.io_src/blob/master/build_books.sh) 脚本来获取书籍的 release 产物。如果采用REST Api，则相对比较简单，直接请求如下的 `end point` 即可：
+在我的个人博客站点中，我采用 [github action](https://docs.github.com/en/actions) 来编译并发布站点内容。站点中，会有很多基于 [gitbook](https://www.gitbook.com/) 的书籍，并且每一本书都对应一个 github 仓库。为了加快站点的发布速度，对于每一本书籍而言，都会提前编译并且将编译产物置于 latest release 中。在发布主站内容时，我利用 [build_books.sh](https://github.com/wangwei1237/wangwei1237.github.io_src/blob/master/build_books.sh) 脚本来获取书籍的 release 产物。如果采用REST API，则相对比较简单，直接请求如下的 `end point` 即可：
 
 ```javascript
 https://api.github.com/repos/wangwei1237/${BOOKS[i]}/releases/latest
 ```
 
-这种情况下，我只需要对应的 `assets.browser_download_url`字段，但是使用 REST Api 我没办法控制接口的返回数据，即便我只需要某一个字段，接口还是会返给我所有的数据。
+这种情况下，我只需要对应的 `assets.browser_download_url`字段，但是使用 REST API 我没办法控制接口的返回数据，即便我只需要某一个字段，接口还是会返给我所有的数据。
 
 而如果使用 GraphQL，我就可以自己说了算了：
 
@@ -140,7 +140,7 @@ query getBooksAssetUrl($repo: String!, $owner: String!) {
 因此，在这种情况下，GraphQL 完美的避免了不必要的数据传输（overfetching）[^6],尤其是对于如下的场景：流量较大，网络较差，针对不同的客户端返回不同数据……，这个特性尤为重要。更重要的是，这个特性改变了通信双方的话语权。
 
 #### 精确预测响应数据
-GraphQL 不但改变了通信双方的话语权，还使得客户端可以精确的预测服务端的响应。在使用 REST Api 时，我们需要借助各种 Api 文档才能**大概**预测请求的响应，在开发中，这确实是一件非常讨厌的事情。无法精确的预测请求的响应，这回直接导致代码的容错性大大折扣。谁能确保所有的接口的接口文档都会详细的穷举所有情况下的接口响应呢？据我的经验而言，很难……
+GraphQL 不但改变了通信双方的话语权，还使得客户端可以精确的预测服务端的响应。在使用 REST API 时，我们需要借助各种 API 文档才能**大概**预测请求的响应，在开发中，这确实是一件非常讨厌的事情。无法精确的预测请求的响应，这回直接导致代码的容错性大大折扣。谁能确保所有的接口的接口文档都会详细的穷举所有情况下的接口响应呢？据我的经验而言，很难……
 
 当我请求一个没有 release 产物的的仓库时，根据 GraphQL 的类型系统，我会预测到，此时 GraphQL 会返回 null，如下所示：
 
@@ -165,7 +165,7 @@ latestRelease: Release
 ```
 
 #### GraphQL API 的版本控制
-对于 Api 的版本控制而言，GraphQL 借鉴了其他语言中的 `@deprecated注解`。如果经受过 REST Api 的版本控制之痛，经受过那些 v1，v2，……，那么你也会像我一样，喜欢 GraphQL 提供的这一特性。
+对于 API 的版本控制而言，GraphQL 借鉴了其他语言中的 `@deprecated注解`。如果经受过 REST API 的版本控制之痛，经受过那些 v1，v2，……，那么你也会像我一样，喜欢 GraphQL 提供的这一特性。
 
 摘录Samer Buna在 [《GraphQL in Action》](https://wangwei1237.gitee.io/shares/GraphQL_in_Action.pdf) 中的例子如下：
 
@@ -187,11 +187,11 @@ type NumbersInRange {
 }
 ```
 
-对于 `sumNumbersInRange` 字段，使用 `@deprecated` 标志该字段是废弃字段，并且利用 `reason` 参数来将该废弃字段和推荐的新字段关联起来。如果配合 IDE 的代码扫描能力，当在接口中请求 `sumNumbersInRange` 的时候，IDE 给出对应的废弃提示和原因，那么经过一段时间的迭代，标记为 `@deprecated` 的字段就会慢慢消失在产品代码中。这会使得 Api 的版本管理更加容易，也使得客户端更加容易理解 Api 的进化和向后兼容。
+对于 `sumNumbersInRange` 字段，使用 `@deprecated` 标志该字段是废弃字段，并且利用 `reason` 参数来将该废弃字段和推荐的新字段关联起来。如果配合 IDE 的代码扫描能力，当在接口中请求 `sumNumbersInRange` 的时候，IDE 给出对应的废弃提示和原因，那么经过一段时间的迭代，标记为 `@deprecated` 的字段就会慢慢消失在产品代码中。这会使得 API 的版本管理更加容易，也使得客户端更加容易理解 API 的进化和向后兼容。
 
-而使用 REST Api 的时候，在没有这种类似机制的帮助下，我经常会使用了上游服务准备 `deprecated` 的字段，因此，在这种情况下，准备废弃的字段不得不为了兼容而永久的保留在了服务之中。
+而使用 REST API 的时候，在没有这种类似机制的帮助下，我经常会使用了上游服务准备 `deprecated` 的字段，因此，在这种情况下，准备废弃的字段不得不为了兼容而永久的保留在了服务之中。
 
-我见过一个 REST Api，这个 Api 经过好几年的发展，每次请求都会返回 10K+ 的数据，并且里面有很多字段的含义基本一致，只不过是有些字段为了兼容某个特定的需求而增加。这个 Api 中的字段谁也不敢动，能做的只能是随着需求的增加而不断的增加该 Api 的规模。开发这个 Api 是一件非常可怕的事情。
+我见过一个 REST API，这个 API 经过好几年的发展，每次请求都会返回 10K+ 的数据，并且里面有很多字段的含义基本一致，只不过是有些字段为了兼容某个特定的需求而增加。这个 API 中的字段谁也不敢动，能做的只能是随着需求的增加而不断的增加该 API 的规模。开发这个 API 是一件非常可怕的事情。
 
 ## 客观看待 GraphQL 的缺点
 新生之物，其貌必丑。虽然 GraphQL 已经发展了几年，但是实际上而言 GraphQL 还算是一个比较新颖的技术。根据 [《GraphQL in Action》](https://wangwei1237.gitee.io/shares/GraphQL_in_Action.pdf) 中的第 1.3 节的介绍，到目前为止，GraphQL 仍然有很多的问题需要解决，例如：
@@ -200,7 +200,7 @@ type NumbersInRange {
 * 学习门槛问题
 * ……
 
-虽然如此，我还是认为 GraphQL 开创了 Api 交互的新天地，代表着新的技术的发展方向。并且我也发现，目前整个 GraphQL 社区也在做很多的工作来解决目前的一些问题。例如 Facebook 为了解决缓存问题而开发的 dataloader 库……
+虽然如此，我还是认为 GraphQL 开创了 API 交互的新天地，代表着新的技术的发展方向。并且我也发现，目前整个 GraphQL 社区也在做很多的工作来解决目前的一些问题。例如 Facebook 为了解决缓存问题而开发的 dataloader 库，[apollo graphql](https://www.apollographql.com/) 在推动 GraphQL 工业落地方面所做的各种努力，……
 
 正如我在 [如何提升工作效率](/2021/05/01/how-to-improve-the-work-efficiency/) 一文中说的那样：
 
@@ -211,9 +211,9 @@ type NumbersInRange {
 ## 是否马上使用 GraphQL
 即便如此，在确定是否要使用 GraphQL 技术时，需要做认真的分析，且不可为了追新而采用 GraphQL。
 
-如果所提供服务的下游消费者较少并且范围也较少，那么还是推荐使用 REST Api。但是如果提供的服务是类似 Github Open Api 这样的规模较大的服务，或者使用该服务的下游消费者范围较大、数量较多，我认为采用 GraphQL 确实是上上之选。
+如果所提供服务的下游消费者较少并且范围也较少，那么还是推荐使用 REST API。但是如果提供的服务是类似 Github Open API 这样的规模较大的服务，或者使用该服务的下游消费者范围较大、数量较多，我认为采用 GraphQL 确实是上上之选。
 
-总之，越是涉及到团队交互多、团队协作多的服务，我越是建议采用 GraphQL。因为协作最复杂的地方在于 `communication`，而 GraphQL 就是革新多方协作的一种新技术。就像万维网彻底改变了人类世界的交流方式一样，我想，GraphQL 正在彻底改变 Api 的交流方式，尤其是在微服务架构中。
+总之，越是涉及到团队交互多、团队协作多的服务，我越是建议采用 GraphQL。因为协作最复杂的地方在于 `communication`，而 GraphQL 就是革新多方协作的一种新技术。就像万维网彻底改变了人类世界的交流方式一样，我想，GraphQL 正在彻底改变 API 的交流方式，尤其是在微服务架构中。
 
 ## 学习资源
 * https://spec.graphql.cn/
@@ -224,6 +224,7 @@ type NumbersInRange {
 * https://www.apollographql.com/docs/
 * https://www.howtographql.com
 * https://wangwei1237.gitee.io/shares/GraphQL_in_Action.pdf
+* https://github.com/graphql/graphql-playground
 
 ## 参考文献
 [^1]: Samer Buna. GraphQL in Action. Manning Publications, March 9, 2021. 
