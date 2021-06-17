@@ -215,6 +215,8 @@ type NumbersInRange {
 
 总之，越是涉及到团队交互多、团队协作多的服务，我越是建议采用 GraphQL。因为协作最复杂的地方在于 `communication`，而 GraphQL 就是革新多方协作的一种新技术。就像万维网彻底改变了人类世界的交流方式一样，我想，GraphQL 正在彻底改变 API 的交流方式，尤其是在微服务架构中[^7] [^8] [^9]。
 
+![](2.png)
+
 ## 学习资源
 * https://spec.graphql.cn/
 * https://graphql.org/ or https://graphql.cn
