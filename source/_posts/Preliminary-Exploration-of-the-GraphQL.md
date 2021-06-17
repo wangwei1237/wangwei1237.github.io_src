@@ -213,7 +213,7 @@ type NumbersInRange {
 
 如果所提供服务的下游消费者较少并且范围也较少，那么还是推荐使用 REST API。但是如果提供的服务是类似 Github Open API 这样的规模较大的服务，或者使用该服务的下游消费者范围较大、数量较多，我认为采用 GraphQL 确实是上上之选。
 
-总之，越是涉及到团队交互多、团队协作多的服务，我越是建议采用 GraphQL。因为协作最复杂的地方在于 `communication`，而 GraphQL 就是革新多方协作的一种新技术。就像万维网彻底改变了人类世界的交流方式一样，我想，GraphQL 正在彻底改变 API 的交流方式，尤其是在微服务架构中。
+总之，越是涉及到团队交互多、团队协作多的服务，我越是建议采用 GraphQL。因为协作最复杂的地方在于 `communication`，而 GraphQL 就是革新多方协作的一种新技术。就像万维网彻底改变了人类世界的交流方式一样，我想，GraphQL 正在彻底改变 API 的交流方式，尤其是在微服务架构中[^7] [^8] [^9]。
 
 ## 学习资源
 * https://spec.graphql.cn/
@@ -233,3 +233,6 @@ type NumbersInRange {
 [^4]: [GraphQL vs. REST](https://www.apollographql.com/blog/graphql/basics/graphql-vs-rest/).
 [^5]: [GraphQL is the better REST](https://www.howtographql.com/basics/1-graphql-is-the-better-rest/)
 [^6]: [Reasons to use GraphQL | Top 5 Reasons Why and How to use GraphQL](https://www.prisma.io/blog/top-5-reasons-to-use-graphql-b60cfa683511)
+[^7]: [GraphQL as an API Gateway to Microservices](https://www.cloudbees.com/blog/graphql-as-an-api-gateway-to-micro-services)
+[^8]: [Netflix Embraces GraphQL Microservices for Rapid Application Development](https://www.infoq.com/news/2021/03/netflix-graphql-microservices/)
+[^9]: [Beyond REST——Rapid Development with GraphQL Microservices](https://netflixtechblog.com/beyond-rest-1b76f7c20ef6)
