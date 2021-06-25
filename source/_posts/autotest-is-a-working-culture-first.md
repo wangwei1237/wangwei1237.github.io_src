@@ -60,7 +60,7 @@ tags:
 * **决策**：根据测试结论进行相关决策，包括是否存在风险，是否达到上线标准……
 
 ### 敏捷测试4象限
-根据测试所支持的对象，测试可以分为：[面向业务业务的测试和面向研发的测试](https://www.tutorialspoint.com/agile_testing/agile_testing_quadrants.htm)。[Brian Marick](http://www.exampler.com/old-blog/2003/08/22/#agile-testing-project-2)根据这两种测试类型提出了**敏捷测试4象限**的概念，如[图2](#f2)所示。
+根据测试所支持的对象，测试可以分为：[面向业务的测试和面向研发的测试](https://www.tutorialspoint.com/agile_testing/agile_testing_quadrants.htm)。[Brian Marick](http://www.exampler.com/old-blog/2003/08/22/#agile-testing-project-2)根据这两种测试类型提出了**敏捷测试4象限**的概念，如[图2](#f2)所示。
 
 <span id='f2'>![](f2.png)</span>
 
