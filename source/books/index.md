@@ -36,6 +36,12 @@ date: 2020-06-17 16:50:12
 
 ## 转载
 {% valkyrurl
+[url=/shares/Digital_Video_and_HD_Algorithms_and_Interfaces_2nd_ed.pdf]
+[title="Dgital Video and HD Algorithms and Interfaces(2nd Edition)"]
+[avatar=/books/index/digital_video_HD_algorithms.jpg]
+%}
+
+{% valkyrurl
 [url=/shares/GraphQL_in_Action.pdf]
 [title="GraphQL in Action"]
 [avatar=/books/index/Buna-GraphQL.png]
