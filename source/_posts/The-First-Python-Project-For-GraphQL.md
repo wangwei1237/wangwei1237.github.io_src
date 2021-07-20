@@ -118,7 +118,7 @@ GraphQL API 完成之后，我们找了几名该服务的使用者来亲自体�
 
 从压测结果看，GraphQL API 的耗时比 REST API 的耗时高 `30ms` 左右。由于 GraphQL API 引入了 GraphQL Runtime 层来解析 GraphQL API 的请求，因此从性能角度看，GraphQL API 会不可避免的带来性能损耗。
 
-但是，值得注意的是，GraphQL 提供的按需索取数据的能力可以最大程度的降低性能折损。例如在请求视频列表的时候，如果仅请求每个视频的 vid 信息，则 GraphQL API 的性能基本上能和 REST API 的性能差异会不断缩小（`10ms` 左右），具体如下图所示：
+但是，值得注意的是，GraphQL 提供的按需索取数据的能力可以最大程度的降低性能折损。例如在请求视频列表的时候，如果仅请求每个视频的 vid，url, videoMetainfo 信息，则 GraphQL API 的性能基本上能和 REST API 的性能差异会不断缩小（`10ms` 左右），具体如下图所示：
 
 ![](8.png)
 
