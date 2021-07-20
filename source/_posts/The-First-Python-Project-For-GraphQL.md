@@ -111,4 +111,9 @@ GraphQL API 完成之后，我们找了几名该服务的使用者来亲自体�
 
 所以，我认为，GraphQL 对于微服务架构而言具备天然的优势。当然，如果 REST API 的接口文档能够做到和代码实现同步的话，使用 REST API 也是没有问题的，但是有多少团队可以做到这一点呢？
 
-#### GraphAPI 的性能
+#### GraphQL API 确实会有性能折损
+在同一台机器上，采用相同的 QPS 对同一功能的不同实现进行性能测试，最终的测试结果如下图所示：
+
+![](7.png)
+
+从压测结果看，GraphQL API 的耗时比 REST API 的耗时高 `30ms` 左右。由于 GraphQL API 引入了 GraphQL Runtime 层来解析 GraphQL API 的请求，因此从性能角度看，GraphQL API 会不可避免的带来性能损耗。在考虑迁移 GraphQL 的时候，这一点需要特别关注。
