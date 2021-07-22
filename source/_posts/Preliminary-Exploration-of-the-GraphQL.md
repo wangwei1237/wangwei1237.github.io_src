@@ -208,6 +208,10 @@ type NumbersInRange {
 > 
 > 我们不能因为堵车，就回退到自行车的时代；我们不能因为有假币，就回退到物物交换的时代；……
 
+并且，目前看，GraphQL 正在变的越来越流行。Postman 博客站点的 [Postman v7.2 Supports GraphQL](https://blog.postman.com/postman-v7-2-supports-graphql/) 中提到：
+
+> 如果您一直在等待 Postman 对 GraphQL 的支持，那么现在可以结束这种等待了。随着 Postman v7.2 的发布，Postman 已经支持 GraphQL！在 GitHub 上，[GraphQL 的内置支持](https://github.com/postmanlabs/postman-app-support/issues/1669)一直是我们的第二大最受欢迎的特性，我们很高兴将这个流行的规范引入 Postman 应用程序。
+
 ## 是否马上使用 GraphQL
 即便如此，在确定是否要使用 GraphQL 技术时，需要做认真的分析，且不可为了追新而采用 GraphQL。
 
