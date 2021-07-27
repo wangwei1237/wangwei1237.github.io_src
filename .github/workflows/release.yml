@@ -29,6 +29,7 @@ jobs:
           /bin/cp -rf misc/bilibili-embed-convert/* node_modules/bilibili-embed-convert/
           /bin/cp -rf misc/hexo-asset-image_index.js node_modules/hexo-asset-image/index.js
           /bin/cp -rf misc/markdown-it-katex_index.js node_modules/@abreto/markdown-it-katex/index.js
+          /bin/cp -rf misc/@mdline/mdline-formatter-html/component/App.svelte node_modules/@mdline/mdline-formatter-html/component/App.svelte
           hexo clean && hexo generate
 
       - name: build the books

@@ -35,6 +35,7 @@
     "hexo-tag-bilibili": "^0.3.1",
     "hexo-tag-chart": "^1.0.8",
     "hexo-tag-echarts3": "^1.1.2",
+    "hexo-tag-mdline": "^1.0.0",
     "hexo-valkyr-url": "^1.1.0",
     "katex": "^0.13.3",
     "markdown-it-emoji": "^2.0.0",
