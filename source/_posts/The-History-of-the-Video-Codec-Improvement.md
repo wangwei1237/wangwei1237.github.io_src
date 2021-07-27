@@ -11,23 +11,26 @@ tags:
   - 压缩标准
 ---
 
-just for test.
+多年以来，人们设计出许多不同的算法来压缩视频。视频压缩虽然听起来是一个很现代的词，但其实它从模拟视频开始，已经有很长的历史了。在本篇文章中，我会向大家一一介绍视频压缩史上的里程碑事件，正是这些事件的发生才有了今天的视频压缩。从过去到现在，各类视频压缩方法由最初的概念最终演化成现今的标准。很多压缩标准今天还在使用，人们也一直在继续开发和完善新的标准。[^1]
+
+本文仅仅是对文献[^1]的进一步整理，用时间轴的形式把视频压缩算法的演进历程更好的表现出来。
 
 {% mdline %}
-## 1997-06: ECMAScript 1
+### 1929: 帧间压缩首次出现
+英国的 R.D. Kell 提出将帧间压缩用于模拟视频，这一概念随后便延续下来并应用在今天的数字视频上。
 
-First edition.
-
+### 1952: 差分脉冲编码调制
 <!--more-->
-## 1998-06: ECMAScript 2
+贝尔实验室的 B.M. Oliver 和 C.W. Harrison 提出可以在视频编码中使用差分脉冲编码调制（DPCM）。在此之前，DPCM 一直被用于音频（今天依然如此）。
 
-Editorial changes to keep the specification fully aligned with ISO/IEC 16262 international standard.
+### 1959: 使用时间压缩的帧间预测编码
+日本广播公司（NHK）的研究人员 Y. Taki、M. Hatori 和 S. Tanaka 提出使用时间压缩的预测性帧间视频编码的概念。
 
-## 1999-12: ECMAScript 3
+### 1967: 行程长度编码
+伦敦大学的研究人员 A.H. Robinson 和 C. Cherry 提出行程编码这一概念，最初用于降低模拟电视信号的传输带宽。今天，行程长度编码仍在数字视频中使用。
 
-Added regular expressions, better string handling, new control statements, try/catch exception handling, tighter definition of errors, formatting for numeric output and other enhancements.
-
-## 2000-01--2007-10-23: [Abandoned] ECMAScript 4
-
-Fourth Edition was abandoned, due to political differences concerning language complexity. Many features proposed for the Fourth Edition have been completely dropped; some were incorporated into the sixth edition.
+》》》待续
 {% endmdline %}
+
+## 参考文献
+[^1]: [视频压缩标准简史：从1929到2020](https://mp.weixin.qq.com/s/TKemCfbfnOBiw72FEnDPcg)
