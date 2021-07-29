@@ -18,7 +18,7 @@ copyright: false
 <div>
     <p> </p>
     <p> </p>
-    <img src="/aboutme/index/17.jpeg" alt="avatar" width="300" style="border-radius:50%">
+    <img src="/aboutme/index/17.jpeg" width="300" style="border-radius:50%">
     <p> </p>
     <p> </p>
 </div>
