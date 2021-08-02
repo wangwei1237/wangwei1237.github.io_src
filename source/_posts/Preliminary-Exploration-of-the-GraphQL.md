@@ -12,23 +12,28 @@ tags:
 
 ![](1.jpg)
 
+早在 2019 年的时候，我在 InfoQ 上读到了一篇携程介绍其关于 GraphQL 探索的文章：[全面解析 GraphQL，携程微服务背景下的前后端数据交互方案](https://www.infoq.cn/article/xZ0ws6_A5jmrJ6ZTPOz8)。这是我第一次接触到 GraphQL 的概念，当时并没有做深入的了解和学习，后来，在工作中，这个概念也在脑海中慢慢的淡化了。
+
+今年 3 月份的时候，我在 InfoQ 上读到了爱奇艺关于 GraphQL 落地的文章：[减少重复开发，GraphQL 在低代码平台如何落地？](https://www.infoq.cn/article/cWTUJhYMT6DjGQOHIse2)。刚开始觉得这个概念似曾相识，于是就搜索了一下，然后勾起了初次听到 GraphQL 的记忆。接下来，我在 InfoQ 上搜索了和 GraphQL 相关的内容，才发现原来有很多文章已经在介绍 GraphQL。同时，我在 GitHub 的文档中发现 GitHub 也提供了 [GraphQL API 文档](https://docs.github.com/en/graphql)，技术的敏感性促使我下定决心来仔细&深入的了解 GraphQL。
+
+于是，我在 [manning](https://www.manning.com/) 上找到了 [GraphQL in Action](https://www.manning.com/books/graphql-in-action)（我一般会试图在这个站点找到希望了解的技术领域的最新的书籍）， 然后参照这本书，开启了我的 GraphQL 之旅。
+<!--more-->
+
+## GraphQL 简介
 对于 API 而言，GraphQL 被视为一种革命性的新思路、新技术。GraphQL 改变了前后端团队的交互方式、颠覆了前后端团队的通信方式，使得他们可以更顺畅而高效地协作。
 
 正如Samer Buna在其著作 [《GraphQL in Action》](https://wangwei1237.gitee.io/shares/GraphQL_in_Action.pdf) 中的序言中所说的那样[^1]：
 
 > 早在 2015 年，Facebook 首次宣布 GraphQL 项目时，我第一次听说了 GraphQL，那个时候 GraphQL 就深深的吸引了我。并且，学习 GraphQL 是我做过的最好的时间投资之一。
 
-最近，在不断的了解、学习、使用 GraphQL 之后，我也像 Samer Buna 一样，被 GraphQL 深深的吸引了。
+在不断的了解、学习、使用 GraphQL 之后，我也像 Samer Buna 一样，被 GraphQL 深深的吸引了。
 
-<!--more-->
-
-## GraphQL简介
 关于 GraphQL 的介绍，网上已经有非常多的资料了，这里不再过多描述，具体可以参考 [GraphQL.org](https://graphql.cn/)[^2]，[GitHub GraphQL Docs](https://docs.github.com/en/graphql)[^3]，以及 [GraphQL in Action](https://wangwei1237.gitee.io/shares/GraphQL_in_Action.pdf)。
 
 ## GraphQL vs. REST
 关于 GraphQL 和 REST 之间的详细对比，我认为可以参考 [GraphQL vs. REST](https://www.apollographql.com/blog/graphql/basics/graphql-vs-rest/) 以及 [GraphQL is the better REST](https://www.howtographql.com/basics/1-graphql-is-the-better-rest/)，此处不再赘述了[^4] [^5]。
 
-## GraphQL 的优势
+## GraphQL 的优势有哪些
 在  [《GraphQL in Action》](https://wangwei1237.gitee.io/shares/GraphQL_in_Action.pdf) 中，作者对 GraphQL 的优缺点做了很全面的介绍；在 [GraphQL 的社区网站](https://graphql.org/) 上，也对 GraphQL 的优点做了全面的介绍；甚至，可以用搜索引擎搜索出一堆 GraphQL 相关的文章和资源……
 
 但是，作为一个刚接触 GraphQL 的门外汉，我还是希望写一写自己学习 GraphQL 之后的感想，尤其是我觉的 GraphQL 那些能让我激动无比的特性。
@@ -193,7 +198,7 @@ type NumbersInRange {
 
 我见过一个 REST API，这个 API 经过好几年的发展，每次请求都会返回 10K+ 的数据，并且里面有很多字段的含义基本一致，只不过是有些字段为了兼容某个特定的需求而增加。这个 API 中的字段谁也不敢动，能做的只能是随着需求的增加而不断的增加该 API 的规模。开发这个 API 是一件非常可怕的事情。
 
-## 客观看待 GraphQL 的缺点
+## 如何看待 GraphQL 的缺点
 新生之物，其貌必丑。虽然 GraphQL 已经发展了几年，但是实际上而言 GraphQL 还算是一个比较新颖的技术。根据 [《GraphQL in Action》](https://wangwei1237.gitee.io/shares/GraphQL_in_Action.pdf) 中的第 1.3 节的介绍，到目前为止，GraphQL 仍然有很多的问题需要解决，例如：
 * 安全性问题
 * 缓存问题
@@ -212,7 +217,7 @@ type NumbersInRange {
 
 > 如果您一直在等待 Postman 对 GraphQL 的支持，那么现在可以结束这种等待了。随着 Postman v7.2 的发布，Postman 已经支持 GraphQL！在 GitHub 上，[GraphQL 的内置支持](https://github.com/postmanlabs/postman-app-support/issues/1669)一直是我们的第二大最受欢迎的特性，我们很高兴将这个流行的规范引入 Postman 应用程序。
 
-## 是否马上使用 GraphQL
+## 如何判断是否要使用 GraphQL
 即便如此，在确定是否要使用 GraphQL 技术时，需要做认真的分析，且不可为了追新而采用 GraphQL。
 
 如果所提供服务的下游消费者较少并且范围也较少，那么还是推荐使用 REST API。但是如果提供的服务是类似 Github Open API 这样的规模较大的服务，或者使用该服务的下游消费者范围较大、数量较多，我认为采用 GraphQL 确实是上上之选。
@@ -220,6 +225,9 @@ type NumbersInRange {
 总之，越是涉及到团队交互多、团队协作多的服务，我越是建议采用 GraphQL。因为协作最复杂的地方在于 `communication`，而 GraphQL 就是革新多方协作的一种新技术。就像万维网彻底改变了人类世界的交流方式一样，我想，GraphQL 正在彻底改变 API 的交流方式，尤其是在微服务架构中[^7] [^8] [^9]。
 
 ![](2.png)
+
+## 后记
+后来，我们对一个内部的小项目实施了 GraphQL 迁移，具体的可以参见：[GraphQL 实践](/2021/07/17/The-First-Python-Project-For-GraphQL/)。
 
 ## 学习资源
 * https://spec.graphql.cn/
