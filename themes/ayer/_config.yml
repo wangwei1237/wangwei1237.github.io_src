@@ -240,13 +240,13 @@ minivaline:
 ads:
   ad_1:
     title: 从单体应用到微服务架构（中文版）
-    img: https://wangwei1237.gitee.io/2020/08/19/monolith-to-microservices/cover.png
-    url: https://wangwei1237.gitee.io/monolith-to-microservices/
+    img: https://wangwei1237.github.io/2020/08/19/monolith-to-microservices/cover.png
+    url: https://wangwei1237.github.io/monolith-to-microservices/
     width: 150
   ad_2:
     title: GraphQL in Action
-    img: https://wangwei1237.gitee.io/books/index/Buna-GraphQL.png
-    url: https://wangwei1237.gitee.io/shares/GraphQL_in_Action.pdf
+    img: https://wangwei1237.github.io/books/index/Buna-GraphQL.png
+    url: https://wangwei1237.github.io/shares/GraphQL_in_Action.pdf
     width: 150
 
 # 网站开启加密访问，密码可设置任何字符
