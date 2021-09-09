@@ -81,7 +81,7 @@ if (s->c && frame_rate.den > 0) {
 }
 ```
 
-详细的修改代码可以参见 [vf_drawtext.patch](/2021/09/09/Draw-Circle-Frame-Number-for-Each-Secnod-Using-FFmpeg/vf_drawtext.patch)。
+详细的修改代码可以参见 [vf_drawtext.patch](https://github.com/wangwei1237/wangwei1237.github.io/blob/master/2021/09/09/Draw-Circle-Frame-Number-for-Each-Secnod-Using-FFmpeg/vf_drawtext.patch)。
 
 ## 修改 drawtext 之后的效果
 此时，我们利用修改后的 drawtext 滤镜来生成我们需要视频，具体操作如下所示：
