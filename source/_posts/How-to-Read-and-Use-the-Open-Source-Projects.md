@@ -56,7 +56,7 @@ target_link_libraries( MT
 include(cmake/FindFFmpeg.cmake)
 
 IF (APPLE)
-target_link_libraries( mpc
+target_link_libraries( MT
     PRIVATE
         libavutil.dylib 
         libavcodec.dylib 
@@ -64,7 +64,7 @@ target_link_libraries( mpc
         ......
 )
 ELSEIF (UNIX)
-target_link_libraries( mpc
+target_link_libraries( MT
     PRIVATE
         libavutil.so
         libavcodec.so
@@ -138,14 +138,15 @@ target_link_libraries( MT
 相比较一上来就阅读项目的源码而言，阅读 README 是了解这个项目并准备使用该项目的最快速有效的方法。如果具备可以通过阅读源码提取到项目文档的能力的话，直接阅读源码也可以，但是我认为和阅读 README 相比，阅读源码的效率还是差一点的。
 
 #### 2. 深入阅读需要用到的能力
-在 [FFmpeg 解码 API 以及在解码过程中存在的丢帧问题](/2021/01/19/FFMpeg-decode-process-and-lose-frame-in-that-process/) 中，我提到过我是如何利用 FFMpeg Api 中的代码注释来定位并解决我们小组开发的工具中存在的 BUG。实际上，如果同事当时能够认真的阅读 [FFMpeg avcodec](https://github.com/FFmpeg/FFmpeg/blob/release/3.1/libavcodec/avcodec.h) 的文档（代码注释），那么就不会有这篇文章中的 BUG 了。
+在 [FFmpeg 解码 API 以及在解码过程中存在的丢帧问题](/2021/01/19/FFMpeg-decode-process-and-lose-frame-in-that-process/) 中，我提到过我是如何利用 FFMpeg API 中的代码注释来定位并解决我们小组开发的工具中存在的 BUG。实际上，如果同事当时能够认真的阅读 [FFMpeg avcodec](https://github.com/FFmpeg/FFmpeg/blob/release/3.1/libavcodec/avcodec.h) 的文档（代码注释），那么就不会有这篇文章中的 BUG 了。
 
-因此，在阅读完 README 之后，如果要在自己的项目中使用开源项目的某个具体能力或 Api，那么首先需要针对需要使用的部分更详细的阅读：
+因此，在阅读完 README 之后，如果要在自己的项目中使用开源项目的某个具体能力或 API，那么首先需要针对需要使用的部分更详细的阅读：
 1. 开发者指南中对应的内容
     * Developer Guides：需要首先阅读 Developer Guides 中对应的相关资料，例如 [Android Developer Guides](https://developer.android.com/guide/index.html)，[IntelliJ Platform SDK](https://plugins.jetbrains.com/docs/intellij/getting-started.html)……还有很多非开源项目也会有 Developer Guides，对于这种项目，Developer Guides 无疑是最好的、必须首先阅读的资料，比较典型的就是[Apple Developer Guides](https://developer.apple.com/library/archive/navigation/)，我当时了解 iOS 消息推送相关的技术就是首先阅读的 [Local and Remote Notification Programming Guide](https://developer.apple.com/library/archive/documentation/NetworkingInternet/Conceptual/RemoteNotificationsPG/index.html#//apple_ref/doc/uid/TP40008194)，自我认为比查阅互联网上其他人总结的文档要高效很多。
-    * Document：除了 Developer Guides 之外，项目提供的 documentation 也是需要首先阅读的内容，例如 [nginx document](http://nginx.org/en/docs/)，[FFMpeg document](https://ffmpeg.org/documentation.html)，……
+    * Document：除了 Developer Guides 之外，项目提供的 documentation 也是需要首先阅读的内容，例如 [nginx document](http://nginx.org/en/docs/)，[FFMpeg document](https://ffmpeg.org/documentation.html)，……我比较喜欢使用 [Dash](https://kapeli.com/dash) 这款 MacOS 上的这款 API document 工具，真的非常方便。每当使用一个新的 API 或者使用一个自己拿不准的 API 的时候，Dash 总是我最好的帮手。
+    ![](5.png)
 
-2. Api 对应的代码注释
+2. API 对应的代码注释
     很多的项目，尤其是优秀的项目会有非常优秀的代码注释（很多文档也可能是从代码注释中自动生成的）。因此，在动手写代码之前，最好还是再认真阅读以下项目代码中的注释，这对于我们理解所引用的项目会有很大好处。
     
     在我的工作中，我经常会从开源代码的注释中获取灵感，进而找到解决我所遇到的问题的思路：
@@ -164,7 +165,7 @@ target_link_libraries( MT
 #### 3. 慎用搜索引擎
 真的，除非万不得已，除非是我们在执行了如上的步骤之后还没有找到解决方案时，我们才需要运用搜索引擎来帮我们找出如何使用某个项目中的特定能力的方法。我非常不建议一开始就运用搜索引擎，当然这在大多数情况下可能会解决我们的问题，但是我们会因为使用搜索引擎而错过获得更多知识、错过更全面的了解我们将要使用的对象的机会。
 
-并且，我们从搜索引擎获得的方案有时候可能会存在问题，我再 [FFmpeg 解码 API 以及在解码过程中存在的丢帧问题](/2021/01/19/FFMpeg-decode-process-and-lose-frame-in-that-process/) 中提到的解码丢帧问题就是通过搜索引擎而得到的方案。尤其是当我们还处于某方面的新手的时候，这种情况出现的可能会更大。
+并且，我们从搜索引擎获得的方案有时候可能会存在问题，我在 [FFmpeg 解码 API 以及在解码过程中存在的丢帧问题](/2021/01/19/FFMpeg-decode-process-and-lose-frame-in-that-process/) 中提到的解码丢帧问题就是通过搜索引擎而得到的方案。尤其是当我们还处于某方面的新手的时候，这种情况出现的可能会更大。
 
 ## 善用别人的代码
 善用别人的项目让我们可以站在巨人的肩膀上工作，最重要的是我们需要了解、熟悉我们所用的代码。否则，我们不但没有利用这个项目的优势，反而让自己的项目变成了恐龙。
