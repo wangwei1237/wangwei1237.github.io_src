@@ -25,7 +25,6 @@ tags:
 * Nginx
 * Redis
 * FFMpeg
-* Android/platform/frameworks/av
 * VMAF
 * ……
 
