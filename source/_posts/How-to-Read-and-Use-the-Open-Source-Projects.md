@@ -103,12 +103,10 @@ ENDIF ()
 ```cmake
 ......
 include(cmake/FindFFmpeg.cmake)
+include_directories("${FFMPEG_INCLUDE_DIRS}")
 target_link_libraries( MT
     PRIVATE
-        ${AVUTIL_LIBRARIES}
-        ${AVCODEC_LIBRARIES}
-        ${AVFORMAT_LIBRARIES}
-        ......
+        ${FFMPEG_LIBRARIES}
 ```
 
 ![](3.png)
