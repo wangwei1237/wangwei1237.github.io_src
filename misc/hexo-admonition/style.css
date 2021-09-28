@@ -13,11 +13,12 @@
   p.admonition-title {
     position: relative;
     margin: -.6rem -.6rem .8em -.6rem !important;
-    padding: .4rem .6rem .4rem 2.5rem;
+    padding: .4rem .6rem .4rem .4rem;
     font-weight: 700;
     background-color:rgba(66, 185, 131, .1);
   }
   
+  /*
   .admonition-title::before {
     position: absolute;
     top: .9rem;
@@ -28,6 +29,7 @@
     border-radius: 50%;
     content: ' ';
   }
+  */
   
   .info>.admonition-title, .todo>.admonition-title {
     background-color: rgba(0,184,212,.1);
