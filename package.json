@@ -15,6 +15,7 @@
     "co": "^4.6.0",
     "emoji": "^0.3.2",
     "hexo": "^5.4.0",
+    "hexo-admonition": "^1.1.2",
     "hexo-asset-image": "^1.0.0",
     "hexo-deployer-git": "^3.0.0",
     "hexo-douban-card": "^1.2.2",
