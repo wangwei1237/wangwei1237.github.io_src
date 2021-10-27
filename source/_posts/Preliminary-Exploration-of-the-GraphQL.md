@@ -236,6 +236,8 @@ type NumbersInRange {
 ## 后记
 后来，我们对一个内部的小项目实施了 GraphQL 迁移，具体的可以参见：[GraphQL 实践](/2021/07/17/The-First-Python-Project-For-GraphQL/)。
 
+再之后，我读到了一篇 PayPal 实践 GraphQL 的文章 —— [PayPal 大规模采用 GraphQL 的探索和实践](https://www.infoq.cn/article/l7smlb4HFKjMZrt4wERK)，在这篇文章中，讲述了 PayPal 面临的问题，为什么会采用 GraphQL，如何采用 GraphQL，采用 GraphQL 还面临的问题，……这也是对”GraphQL 很难适合有业务包袱的部门和公司“的一个比较好的反驳案例。
+
 ## 学习资源
 * https://spec.graphql.cn/
 * https://graphql.org/ or https://graphql.cn
