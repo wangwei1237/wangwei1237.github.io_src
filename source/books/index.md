@@ -34,11 +34,25 @@ date: 2020-06-17 16:50:12
 [avatar=/books/index/idioms.jpg]
 %}
 
+## 荐书
+{% valkyrurl
+[url=https://www.oreilly.com/library/view/building-microservices-2nd/9781492034018/]
+[title="Building Microservices, 2nd Edition"]
+[avatar=/books/index/building_microservices_2ed.png]
+[desc="Building Microservices is a forthcoming book on all aspects of Microservices"]
+%}
+
 ## 转载
 {% valkyrurl
 [url=/shares/Digital_Video_and_HD_Algorithms_and_Interfaces_2nd_ed.pdf]
 [title="Dgital Video and HD Algorithms and Interfaces(2nd Edition)"]
 [avatar=/books/index/digital_video_HD_algorithms.jpg]
+%}
+
+{% valkyrurl
+[url=/shares/FFmpegBasics.pdf]
+[title="FFmpeg Basics"]
+[desc="Multimedia handling with a fast audio and video encoder"]
 %}
 
 {% valkyrurl

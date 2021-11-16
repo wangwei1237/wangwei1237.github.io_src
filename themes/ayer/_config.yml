@@ -238,6 +238,11 @@ minivaline:
 # 首页广告配置
 # 可以根据需要自行增加ad_3，ad_4...，留空则不显示，建议图片和url不要带ad等关键词，否则可能会被adblock等插件屏蔽
 ads:
+  ad_3:
+    title: Building Microservices, 2nd Edition
+    img: /books/index/building_microservices_2ed.png
+    url: https://www.oreilly.com/library/view/building-microservices-2nd/9781492034018/
+    width: 150
   ad_1:
     title: 从单体应用到微服务架构（中文版）
     img: https://wangwei1237.github.io/2020/08/19/monolith-to-microservices/cover.png
