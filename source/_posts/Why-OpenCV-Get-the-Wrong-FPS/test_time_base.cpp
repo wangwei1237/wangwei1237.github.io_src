@@ -39,9 +39,11 @@ int main() {
 
     AVRational time_base = pFmtContext->streams[video_stream_idx]->codec->time_base;
     AVRational framerate = pFmtContext->streams[video_stream_idx]->codec->framerate;
+    AVRational avg_framerate = pFmtContext->streams[video_stream_idx]->avg_frame_rate;
     
     std::cout << "time_base: " << time_base.num << "/" << time_base.den << std::endl;
     std::cout << "framerate: " << framerate.num << "/" << framerate.den << std::endl;
+    std::cout << "avg_framerate: " << avg_framerate.num << "/" << avg_framerate.den << std::endl;
     
     avformat_free_context(pFmtContext);
 
