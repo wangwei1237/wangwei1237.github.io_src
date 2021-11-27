@@ -92,7 +92,7 @@ AVRational time_base;
 
 从中可以看出，对于解码而言，time_base 已经被废弃，需要使用 framerate 来替换 time_base。并且，对于固定帧率而言，time_base = 1/framerate，但是，并非总是如此。
 
-利用 [H264Naked](https://github.com/shi-yan/H264Naked) 对 test.ts 对应的 H264 码流进行分析，我们得到SPS.Vui 信息：
+利用 [H264Naked](https://github.com/shi-yan/H264Naked) 对 test.ts 对应的 H264 码流进行分析，我们得到 <a name="sps">SPS.Vui</a> 信息：
 ```shell
 timing_info_present_flag :1
 num_units_in_tick :1
@@ -160,10 +160,21 @@ int avformat_find_stream_info(AVFormatContext *ic, AVDictionary **options);
 !!! note avformat_find_stream_info() 的几个重要步骤
     * **STEP 1**. 设置线程数，避免 H264 多线程解码时没有把 SPS/PPS 信息提取到 extradata 的问题。
     * **STEP 2**. 设置 AVStream \*st，st 会在后续的函数调用中一直透到 try_decode_frame()。
-    * **STEP 4**. 设置 AVCodecContext \*avctx 为透传的 st->internal->avctx，在后续的解码函数调用中，一直透传的就是这个 avctx，因此，从这里开始的执行流程，FFMpeg 使用的全部都是 st->internal->avctx，而不是st->codec，这里要特别的注意。此处同时会设置解码的线程数，其目的和 *STEP 1*是一致的。
-    * **STEP 5**. 因为之前设置了解码线程数为 1，因此此处会调用 ret = avctx->codec->decode(avctx, frame, &got_frame, pkt) 来解码并计算 avctx->framerate。注意，此处的 avctx 实际上是透传而来的 st->internal->avctx。这里先假定解码之后我们拿到了 framerate，具体的解码过程以及计算framerate 的逻辑我们在后续的章节继续介绍。
-    * **STEP 6**. 根据解码器得到的 framerate 信息来计算 avctx->time_base，注意此处实际上是 st->internal->avctx->time_base。
-    * **STEP 7**. 这一步可谓是“瞒天过海，明修栈道暗度陈仓”，这一步为了解决 API 的前向兼容，做了一个替换，把st->internal->avctx->time_base 赋值给了 st->codec->time_base，而把 st->avg_frame_rate 赋值给了 st->codec->framerate。
+    * <a name="step4">**STEP 4**</a>. 设置 AVCodecContext \*avctx 为透传的 st->internal->avctx，在后续的解码函数调用中，一直透传的就是这个 avctx，因此，从这里开始的执行流程，FFMpeg 使用的全部都是 st->internal->avctx，而不是st->codec，这里要特别的注意。此处同时会设置解码的线程数，其目的和 *STEP 1*是一致的。
+    * <a name="step5">**STEP 5**</a>. 因为之前设置了解码线程数为 1，因此此处会调用 ret = avctx->codec->decode(avctx, frame, &got_frame, pkt) 来解码并计算 avctx->framerate。注意，此处的 avctx 实际上是透传而来的 st->internal->avctx。这里先假定解码之后我们拿到了 framerate，具体的解码过程以及计算framerate 的逻辑我们在后续的章节继续介绍。
+    * <a name="step6">**STEP 6**</a>. 根据解码器得到的 framerate 信息来计算 avctx->time_base，注意此处实际上是 st->internal->avctx->time_base。
+      根据 [下文 framerate 的计算](#framerate)可知，此处 framerate = {1000, 1}。
+      根据 [AVCodecContext.ticks_per_frame](#ticks_per_frame) 可知，ticks_per_frame = 2。
+      因此，此处 avctx->time_base = {1, 2000}：
+      ```
+      avctx->time_base = av_inv_q(av_mul_q({1000, 1}, {2, 1})) = {1, 2000}
+      ```
+    * **STEP 7**. 这一步可谓是“瞒天过海，明修栈道暗度陈仓”，这一步为了解决 API 的前向兼容，做了一个替换，把st->internal->avctx->time_base 赋值给了 st->codec->time_base，而把 st->avg_frame_rate 赋值给了 st->codec->framerate。因此：
+    ```
+    st->codec->time_base = {1, 2000}
+    st->codec->framerate = {0, 0}
+    ```
+    而st->codec->time_base 的计算和 st->codec->framerate 之间没有任何关系，而是和 st->internal->avctx->framerate 有关，本质而言，是和如下数据有关：sps.vui.time_scale，sps.vui.num_units_in_tick，st->avctx->ticks_per_frame。
 
 正是如上所示的 *STEP 7* 导致了 [test_time_base.cpp](https://github.com/wangwei1237/wangwei1237.github.io_src/blob/master/source/_posts/Why-OpenCV-Get-the-Wrong-FPS/test_time_base.cpp) 的结果：
 
@@ -173,4 +184,68 @@ st->codec->time_base: 1/2000
 ```
 
 ## ff_h264_decoder
+[libavcodec/decode.c](https://github.com/FFmpeg/FFmpeg/blob/master/libavcodec/decode.c) 中的 `decode_simple_internal()` 中会调用对应的解码器来进行解码（[STPE 5](#step5)）。而正如前所示，test.ts 为 H264 编码的视频流，因此，此处会调用 H264 解码器来进行解码。在 FFMpeg 中，H264 解码器位于 [libavcodec/h264dec.c](https://github.com/FFmpeg/FFmpeg/blob/master/libavcodec/h264dec.c) 中定义的 `const AVCodec ff_h264_decoder`。
+
+```c
+const AVCodec ff_h264_decoder = {
+    .name                  = "h264",
+    .type                  = AVMEDIA_TYPE_VIDEO,
+    .id                    = AV_CODEC_ID_H264,
+    .priv_data_size        = sizeof(H264Context),
+    .init                  = h264_decode_init,
+    .close                 = h264_decode_end,
+    .decode                = h264_decode_frame,
+    ......
+};
+```
+在上文图中的 [STPE 5](#step5) 中，
+```c
+ret = avctx->codec->decode(avctx, frame, &got_frame, pkt);
+```
+
+实际调用的就是
+```
+ff_h264_decoder->h264_decode_frame(avctx, frame, &got_frame, pkt);
+```
+而此处的 avctx 也就是 try_decode_frame() 中的透传下来的 st->internal->avctx，即上文图中的 [STEP 4](#step4)。
+
+## h264_decode_frame
+`h264_decode_frame()` 的整体逻辑如下图所示：
+
+![](3.png)
+
+!!! note <a name="ticks_per_frame">AVCodecContext.ticks_per_frame</a>
+    后面会用到 `ticks_per_frame` 来计算 framerate，当然在 [STEP 6](#step6) 中计算 `time_base` 的时候也用到了该值，因此，有必要做一下特殊说明。在 H264 解码器中，`ticks_per_frame` 的值为 2，具体的取值可以从如下几处得知：
+    * [libavcodec/avcodec.h](https://github.com/FFmpeg/FFmpeg/blob/master/libavcodec/avcodec.h) 中的字段说明：
+    ```c
+    /**
+     * For some codecs, the time base is closer to the field rate than the frame rate.
+     * Most notably, H.264 and MPEG-2 specify time_base as half of frame duration
+     * if no telecine is used ...
+     *
+     * Set to time_base ticks per frame. Default 1, e.g., H.264/MPEG-2 set it to 2.
+     */
+    int ticks_per_frame;
+    ```
+    * [libavcodec/h264dec.c](https://github.com/FFmpeg/FFmpeg/blob/master/libavcodec/h264dec.c) 中的 `h264_decode_init()`：
+    ```c
+    avctx->ticks_per_frame = 2;
+    ```
+
+!!! note h264_decode_frame() 的几个重要步骤
+    * STEP 1. 根据整体的计算流程可知，此处的 `h` 实际上就是 `avformat_find_stream_info()` 中的 `st->internal->avctx->priv_data`。`h` 会一直透传到之后的所有流程，这个务必要注意。
+    * STEP 2. 此处会首先获取到 `sps` 的相关信息，以备后续的计算使用，我们可以再次看一下 [test.ts sps](#sps) 的相关信息。
+    ```shell
+    timing_info_present_flag :1
+    num_units_in_tick :1
+    time_scale :2000
+    fixed_frame_rate_flag :0
+    ```
+    * STEP 3. 根据 `sps` 的相关信息计算 framerate，在上文的 [STEP 6](#step6) 中计算 `time_base` 用到的 `framerate` 就是在此处计算的。因为 `timing_info_present_flag = 1`，因此会执行计算 <a name="framerate">`framerate`</a> 的逻辑：
+    ```c
+    avctx->framerate.den = sps->num_units_in_tick * h->avctx->ticks_per_frame = 1 * 2 = 2
+    avctx->framerate.num = sps->time_scale = 2000
+    avctx->framerate = (AVRational){1000, 1}
+    ```
+    因此，`st->internal->avctx->framerate = {1000, 1}`。
 
