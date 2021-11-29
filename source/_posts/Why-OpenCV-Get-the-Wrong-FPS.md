@@ -225,6 +225,8 @@ int avformat_find_stream_info(AVFormatContext *ic, AVDictionary **options);
     avctx->framerate = 1 / (avctx->time_base * avctx->ticks_per_frame)
     ```
     因此，当 **st->avg_frame_rate = 0** 时，[OpenCV 计算 fps 的逻辑](#opencv-framerate) 是错误的。
+    
+    在 H265 中，**ticks_per_frame = 1**，因此对于 H265 的编码，OpenCV 是没有这个问题的。可以使用 [Zond 265](https://www.dektec.com/products/applications/Zond/) 工具来分析一个 H265 的视频码流，然后对照 OpenCV 以及 FFMpeg 的结果来验证。
 
 
 同时，正是如上所示的 *[STEP 7](#step7)* 中的移花接木导致了 [test_time_base.cpp](https://github.com/wangwei1237/wangwei1237.github.io_src/blob/master/source/_posts/Why-OpenCV-Get-the-Wrong-FPS/test_time_base.cpp) 的结果：
