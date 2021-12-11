@@ -56,7 +56,7 @@ tags:
 
 如上的几组问题，在不利用搜索引擎帮助的情况下，我们能说出几个呢？如果您有时间，不妨花 1-2 分钟的时间一起参与到这件有意思的事情上来，点一点，完成如下的 15 个问题。
 
-<div><iframe height="500" width="800" src="https://wj.qq.com/s2/9442849/3f79/" frameborder="0" allowfullscreen></iframe></div>
+<div><iframe height="500" width="100%" src="https://wj.qq.com/s2/9442849/3f79/" frameborder="0" allowfullscreen></iframe></div>
 
 #### 问卷的结果
 待补充
