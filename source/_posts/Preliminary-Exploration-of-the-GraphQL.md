@@ -234,7 +234,7 @@ type NumbersInRange {
 ![](2.png)
 
 ## GraphQL 分享
-{% pdf https://raw.githubusercontent.com/wangwei1237/docs/3e833c2a020524753163fb0a3cafcefc7357a59e/GraphQL_in_Action.pdf %}
+下载地址：[https://github.com/wangwei1237/docs/releases/download/v1.0.0/GraphQL_in_Action.pdf](https://github.com/wangwei1237/docs/releases/download/v1.0.0/GraphQL_in_Action.pdf)
 
 ## 后记
 后来，我们对一个内部的小项目实施了 GraphQL 迁移，具体的可以参见：[GraphQL 实践](/2021/07/17/The-First-Python-Project-For-GraphQL/)。
