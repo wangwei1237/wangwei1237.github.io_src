@@ -336,3 +336,4 @@ D55 曾是胶片投影的标准白点，DCI 白点（译者注：接近 D63，�
 7: http://openstd.samr.gov.cn/bzgk/gb/newGbInfo?hcno=AB4FAB66987D97573EA90F4DD56ABA36
 8: http://www.cuva.org.cn/ueditor/php/upload/file/20200904/1599186578364054.pdf
 9: https://zhuanlan.zhihu.com/p/345169019
+10: [What Is HDR: Concepts, Standards, and Related Aspects](https://www.videoproc.com/resource/high-dynamic-range.htm)
