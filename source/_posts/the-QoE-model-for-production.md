@@ -55,21 +55,20 @@ $$
 只有超出用户预期的产品才能让用户上瘾，和用户预期一致的产品只能是基本满足用户的需求，低于用户预期的产品则会被用户抛弃。
 
 $$
-用户上瘾 \Rightarrow  \ QoE\  > \Delta ，
-$$
-
-$$
-基本满足 \Rightarrow  |\ QoE\ | < \varepsilon ，
-$$
-
-$$
-用户离去 \Rightarrow  \ QoE\  <  -\Delta ，
-$$
-
-$$
-s.t. \ \ \varepsilon > 0, \Delta > 0
+\begin{aligned}
+&QoE = \begin{cases}
+用户上瘾, &\text{if } \ QoE\  > \Delta;\\
+基本满足, &\text{if } \ |\ QoE\ | < \varepsilon;\\
+用户离去, &\text{if } \ \ QoE\  <  -\Delta
+\end{cases}\\
+&\\
+& s.t. \ \ 0 < \varepsilon \ll \Delta
+\end{aligned}
 $$
 
 如上的模型可以用下图来表示：
 
 ![](2.png)
+
+## 必须认识到用户预期的重要性
+
