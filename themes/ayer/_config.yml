@@ -140,7 +140,7 @@ busuanzi:
 # 友盟cnzz统计(url填js代码src链接)
 cnzz:
   enable: true
-  url: https://s4.cnzz.com/z_stat.php?id=1278605528&online=1&show=line
+  url: https://s4.cnzz.com/z_stat.php?id=1278605528&web_id=1&online=1&show=line
 
 # Google Analytics
 google_analytics: ''
