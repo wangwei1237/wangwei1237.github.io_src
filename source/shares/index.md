@@ -4,6 +4,11 @@ date: 2020-06-30 09:30:07
 ---
 
 {% valkyrurl
+[url=/shares/vqs.pdf]
+[title="视频质量主观评估方法和规范"]
+%}
+
+{% valkyrurl
 [url=/shares/rbt.pdf]
 [title="基于风险的测试"]
 %}
