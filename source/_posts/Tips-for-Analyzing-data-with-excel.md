@@ -80,3 +80,31 @@ tags:
 
 
 ## Excel 宏
+#### 从存在超链接的单元格中提取超链接
+如下图所示，从 **工具->宏->Visual Basic编辑器** 打开Visual Basic 编辑器，然后选择插入**模块**选项，在编辑器中输入如下的代码。
+
+![](5.jpg)
+
+```vb
+Function GetAdrs(Rng)
+    Application.Volatile True
+    With Rng.Hyperlinks(1)
+        GetAdrs = IIf(.Address = "", .SubAddress, .Address)
+    End With
+End Function
+```
+
+然后按照如下图所示像使用普通 Excel 函数一样使用 `GetAdrs` 就可以了。
+![](6.jpg)
+
+## 字符串操作
+
+!!! note find
+    
+
+!!! note value
+
+
+!!! note left, mid, right
+    
+    
