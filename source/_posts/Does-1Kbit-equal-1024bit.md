@@ -5,7 +5,7 @@ top: false
 date: 2022-06-19 11:17:53
 authors:
 categories:
-  - 码率
+  - 软件理论
 tags:
   - IEC(国际电工委员会) 
   - SI(国际单位制)
