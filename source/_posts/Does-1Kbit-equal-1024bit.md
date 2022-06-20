@@ -9,6 +9,8 @@ categories:
 tags:
   - IEC(国际电工委员会) 
   - SI(国际单位制)
+  - KiB
+  - kB
 ---
 ![](1.jpg)
 
@@ -20,7 +22,7 @@ ffprobe -select_streams v:0 -show_entries stream=bit_rate \
 -of default=nokey=0:noprint_wrappers=1 'video_file'
 ```
 
-此时，得到的 bit_rate 的单位是 b/s，因为为了方便，我们把该码率转换为了 Mb/s：
+此时，得到的 bit_rate 的单位是 b/s，为了方便，我们把该码率转换为了 Mb/s：
 
 ```C
 bit_rate = bit_rate / 1024 / 1024;
@@ -39,7 +41,7 @@ bit_rate=3492451 ==> 3.33 Mb/s
 <!--more-->
 
 ## 问题追查
-都是 `ffprobe` 返回的数据，为什么单位转换之后结果不一致呢了？带着这个问题，我咨询了音视频处理的同事，同事达复说：
+都是 `ffprobe` 返回的数据，为什么单位转换之后结果不一致呢了？带着这个问题，我咨询了音视频处理的同事，同事答复说：
 
 ```
 在 FFMpeg 中，kb 就是 1000 bit 的意思，b 转换到 kb 是 /1000 而不是 /1024。
@@ -66,6 +68,10 @@ if (bitrate != 0) {
 
 为什么到了 FFMpeg 这里，1 kb 就等于 1000 b 了呢？
 
+我发起了一个关于 **1kb = (?)b** 的问卷，在回收的 105 份问卷中，答案的分布如下：
+
+![](6.png)
+
 ## kb and Kib
 维基百科对码率的解释如下：
 > The bit rate is expressed in the unit bit per second (symbol: bit/s), often in conjunction with an SI prefix such as kilo (1 kbit/s = 1,000 bit/s), mega (1 Mbit/s = 1,000 kbit/s), giga (1 Gbit/s = 1,000 Mbit/s) or tera (1 Tbit/s = 1,000 Gbit/s).
@@ -74,7 +80,7 @@ if (bitrate != 0) {
 >
 > Binary prefixes are sometimes used for bit rates. The International Standard (IEC 80000-13) specifies different abbreviations for binary and decimal (SI) prefixes (e.g. 1 KiB/s = 1024 B/s = 8192 bit/s, and 1 MiB/s = 1024 KiB/s).
 
-在 SI 中，基于 10 进制定义了各缩写字母的含义：
+在 SI 中，基于 10 进制定义了各[缩写字母](https://en.wikipedia.org/wiki/Metric_prefix)的含义：
 * k：$10^3$
 * M：$10^6$
 * G：$10^9$
@@ -88,6 +94,8 @@ if (bitrate != 0) {
 !!! attention IEC 80000-13:2008
     [IEC 80000-13:2008](https://webstore.iec.ch/publication/7479) 取消并替换了 IEC 60027-2 中的第 3.8 和 3.9 节中的内容。
 
+    ![](4.png)
+    
 
 因此：
 * $1Gb = 10^{3}Mb = 10^{6}kb = 10^{9}b$
@@ -108,6 +116,9 @@ $ man du
 
 如果我们查看 Mac 系统中的文件简介的时候，我们也会发现 Mac 是采用了 SI 来表示单位转换的。
 ![](2.jpg)
+
+我们用 `du` 命令的不同选项来查看同一个文件的大小的时候也会发现其中的差异：
+![](5.jpg)
 
 因此，后续在使用相关命令的时候，务必需要查看对应的文档，以确认该命令的输出是基于 SI 还是基于 IEC。
 
