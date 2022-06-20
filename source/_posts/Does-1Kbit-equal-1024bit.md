@@ -85,7 +85,9 @@ if (bitrate != 0) {
 
 ![](3.jpg)
 
-[IEC 80000-13:2008 ](https://webstore.iec.ch/publication/7479) 取消并替换了 IEC 60027-2 中的第 3.8 和 3.9 节中的内容。
+!!! attention IEC 80000-13:2008
+    [IEC 80000-13:2008](https://webstore.iec.ch/publication/7479) 取消并替换了 IEC 60027-2 中的第 3.8 和 3.9 节中的内容。
+
 
 因此：
 * $1Gb = 10^{3}Mb = 10^{6}kb = 10^{9}b$
