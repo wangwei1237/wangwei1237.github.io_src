@@ -81,7 +81,11 @@ if (bitrate != 0) {
 * T：$10^{12}$
 * P：$10^{15}$
 
-在二进制领域中，使用“k”（kilo-）、“M”（mega-）、“G”（giga-）等缩写符号会引起严重的混淆，因此在 1999 年 1 月，国际电工委员会（IEC）在 [IEC 60027-2](https://webstore.iec.ch/publication/12253) 中引入了“kibi-”、“mebi-”、“gibi-”等词头以及缩写符号“Ki”、“Mi”、“Gi”等来明确说明二进制计数。
+在二进制领域中，使用“k”（kilo-）、“M”（mega-）、“G”（giga-）等缩写符号会引起严重的混淆，因此在 1999 年 1 月，国际电工委员会（IEC）在 [IEC 60027-2:1972/AMD2:1999](https://webstore.iec.ch/publication/12253) 的第 3.8.3 节中引入了“kibi-”、“mebi-”、“gibi-”等词头以及缩写符号“Ki”、“Mi”、“Gi”等来明确说明二进制计数。
+
+![](3.jpg)
+
+[IEC 80000-13:2008 ](https://webstore.iec.ch/publication/7479) 取消并替换了 IEC 60027-2 中的第 3.8 和 3.9 节中的内容。
 
 因此：
 * $1Gb = 10^{3}Mb = 10^{6}kb = 10^{9}b$
