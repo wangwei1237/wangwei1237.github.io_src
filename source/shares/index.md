@@ -18,3 +18,10 @@ date: 2020-06-30 09:30:07
 [title="专业认知与实践"]
 [desc="应研究生导师之邀为大一新生做的一次分享"]
 %}
+
+{% valkyrurl
+[url=/shares/VQA_RIGHTLY.pdf]
+[title="如何正确的评估视频画质"]
+[desc="视频评测"]
+%}
+
