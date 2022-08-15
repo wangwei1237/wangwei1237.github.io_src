@@ -7,12 +7,15 @@ authors:
 categories:
   - 视频技术
 tags:
-  - 颜色空间
+  - RGB 
+  - XYZ
+  - linear RGB
+  - FFMpeg colorspace
 ---
 
 ![](1.jpeg)
 
-在视频处理中，我们经常会用到不同的色彩空间：RGB，YUV，HSL……。为什么需要这么多的色彩空间呢？
+在视频处理中，我们经常会用到不同的色彩空间：`非线性RGB`，`线性 RGB`，`YUV`，`XYZ`……为什么需要这么多的色彩空间呢？为什么在 FFMpeg 中会有 `color_space`，`color_transfer`，`color_primaries` 等一系列的颜色属性呢？这些术语之间究竟隐藏着什么秘密？
 <!--more-->
 
 ## 相机系统--采集
@@ -75,11 +78,11 @@ RGB->YUV，不同标准有不同要求，一般常用的标准有：
 ![](7.png)
 
 ## 视频播放
-对于大部分显示设备，例如CRT显示器、LCD、OLED，屏幕上的每个像素都是通过驱动三个非常靠近但仍然分开的小型 RGB 光源而构建的。[^6] 因此，显示屏（监视器，电视机，屏幕等等）仅使用 RGB 模型，并以不同的方式来组织，并显示最终的图像。[^7]
+对于大部分显示设备，例如CRT显示器、LCD、OLED，屏幕上的每个像素都是通过驱动三个非常靠近但仍然分开的小型 RGB 光源而构建的。[^5] 因此，显示屏（监视器，电视机，屏幕等等）仅使用 RGB 模型，并以不同的方式来组织，并显示最终的图像。[^6]
 
 ![](8.jpeg)
 
-而不同的显示设备采用的 RGB 的色域并不一定相同，因此，RGB 是一种设备依赖型的颜色模型。[^8]在 Mac 电脑上，可以通过显示器配置来选择显示器支持不同的 RGB 色域。
+而不同的显示设备采用的 RGB 的色域并不一定相同，因此，RGB 是一种设备依赖型的颜色模型。[^7]在 Mac 电脑上，可以通过显示器配置来选择显示器支持不同的 RGB 色域。
 
 ![](10.jpg)
 
@@ -93,7 +96,7 @@ RGB->YUV，不同标准有不同要求，一般常用的标准有：
 
 ![](12.png)
 
-此时，就需要在不同的色域空间进行 RGB 数据的转换，这也就是我们所说的 [色彩管理](https://en.wikipedia.org/wiki/Color_management)。色彩管理会对图像进行色彩管理以适配当前设备环境下的颜色效果，从而保证同一张图片在不同输入、输出、显示设备上都呈现出最好的颜色。[^9]
+此时，就需要在不同的色域空间进行 RGB 数据的转换，这也就是我们所说的 [色彩管理](https://en.wikipedia.org/wiki/Color_management)。色彩管理会对图像进行色彩管理以适配当前设备环境下的颜色效果，从而保证同一张图片在不同输入、输出、显示设备上都呈现出最好的颜色。[^8]
 
 色彩转换需要在某个线性空间下进行操作，并且操作过程需要保持设备的独立性。因此，不同的 RGB 色域空间是不能直接进行转换的，需要一个设备无关、线性的颜色模型作为中转才能实现其转换。
 
@@ -105,18 +108,30 @@ RGB->YUV，不同标准有不同要求，一般常用的标准有：
 ![](14.png)
 
 ## FFMpeg如何处理这些变换
+类似的，在视频转码中，如果我们希望对原视频进行色域的变换，那么我们也会经历类似的操作。例如从 BT. 601 转码为 BT. 709。[^9]
+
+![](15.png)
+
+在如上的变换中，涉及到 3 个颜色空间的转换，分别是：
+1. YUV 和 RGB 之间的转换
+2. 线性 RGB 和非线性 RGB 之间的转换
+3. 线性 RGB 和 XYZ 之间的转换
+
+在 FFMpeg 中，所有的这些转换参数都保存在 [AVFrame](https://ffmpeg.org/doxygen/trunk/structAVFrame.html) 结构中[^10]：
+* AVFrame->[colorspace](https://ffmpeg.org/doxygen/trunk/structAVFrame.html#a9262c231f1f64869439b4fe587fe1710) 中保存了 YUV/RGB 的转换矩阵
+* AVFrame->[color_trc](https://ffmpeg.org/doxygen/trunk/structAVFrame.html#ab09abb126e3922bc1d010cf044087939) 中保存了线性 RGB 和非线性 RGB 之间的转换函数（transformation characteristics）。
+* AVFrame->[color_primaries](color_primaries) 中保存了 RGB/XYZ 的转换矩阵
+
+正是通过不同的颜色模型和不同的变换，才得以让我们实现：在不同输入、输出、显示设备上都呈现出最好的颜色。
 
 ## 参考文献
-\[1\]: [https://zhuanlan.zhihu.com/p/158502818](https://zhuanlan.zhihu.com/p/158502818)
-\[2\]: [https://discuss.pixls.us/t/what-does-linear-rgb-mean/16584](https://discuss.pixls.us/t/what-does-linear-rgb-mean/16584)
-\[3\]: [https://www.astropix.com/html/astrophotography/how.html](https://www.astropix.com/html/astrophotography/how.html)
-\[4\]: [Linear vs. Logarithmic Dimming—A White Paper](https://www.pathwaylighting.com/products/downloads/brochure/technical_materials_1466797044_Linear+vs+Logarithmic+Dimming+White+Paper.pdf)
-\[5\]: [https://trac.ffmpeg.org/wiki/colorspace](https://trac.ffmpeg.org/wiki/colorspace)
-\[6\]: [https://en.wikipedia.org/wiki/RGB_color_model](https://en.wikipedia.org/wiki/RGB_color_model)
-\[7\]: [https://wangwei1237.github.io/2020/02/28/Introduction-to-digital-video-technology/](https://wangwei1237.github.io/2020/02/28/Introduction-to-digital-video-technology/)
-\[8\]: [Computational Color Technology](https://www.spiedigitallibrary.org/ebooks/PM/Computational-Color-Technology/eISBN-9780819481085/10.1117/3.660835)
-\[9\]: [https://blog.csdn.net/weixin_43194305/article/details/107944264](https://blog.csdn.net/weixin_43194305/article/details/107944264)
-
-
-
-
+[^1]: [https://zhuanlan.zhihu.com/p/158502818](https://zhuanlan.zhihu.com/p/158502818)
+[^2]: [https://discuss.pixls.us/t/what-does-linear-rgb-mean/16584](https://discuss.pixls.us/t/what-does-linear-rgb-mean/16584)
+[^3]: [https://www.astropix.com/html/astrophotography/how.html](https://www.astropix.com/html/astrophotography/how.html)
+[^4]: [Linear vs. Logarithmic Dimming—A White Paper](https://www.pathwaylighting.com/products/downloads/brochure/technical_materials_1466797044_Linear+vs+Logarithmic+Dimming+White+Paper.pdf)
+[^5]: [https://en.wikipedia.org/wiki/RGB_color_model](https://en.wikipedia.org/wiki/RGB_color_model)
+[^6]: [https://wangwei1237.github.io/2020/02/28/Introduction-to-digital-video-technology/](https://wangwei1237.github.io/2020/02/28/Introduction-to-digital-video-technology/)
+[^7]: [Computational Color Technology](https://www.spiedigitallibrary.org/ebooks/PM/Computational-Color-Technology/eISBN-9780819481085/10.1117/3.660835)
+[^8]: [https://blog.csdn.net/weixin_43194305/article/details/107944264](https://blog.csdn.net/weixin_43194305/article/details/107944264)
+[^9]: [https://medium.com/invideo-io/talking-about-colorspaces-and-ffmpeg-f6d0b037cc2f](https://medium.com/invideo-io/talking-about-colorspaces-and-ffmpeg-f6d0b037cc2f)
+[^10]: [https://trac.ffmpeg.org/wiki/colorspace](https://trac.ffmpeg.org/wiki/colorspace)
