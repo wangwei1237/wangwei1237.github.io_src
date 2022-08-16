@@ -135,12 +135,12 @@ RGB->YUV，不同标准有不同要求，一般常用的标准有：
 除了如上的参数外，AVFrame->[range](https://ffmpeg.org/doxygen/trunk/pixfmt_8h.html#a3da0bf691418bc22c4bcbe6583ad589a) 还用来存储视频中对应像素的每个分量的取值范围。在 [vf_setparams.c](https://github.com/FFmpeg/FFmpeg/blob/a78f136f3fa039fd7ad664fd6e6e976f1448c68b/libavfilter/vf_setparams.c) 中也作了相关的定义说明：
 
 ```
-{"limited",                      NULL,   0, AV_OPT_TYPE_CONST, {.i64=AVCOL_RANGE_MPEG},         0, 0, FLAGS, "range"},
-{"tv",                           NULL,   0, AV_OPT_TYPE_CONST, {.i64=AVCOL_RANGE_MPEG},         0, 0, FLAGS, "range"},
-{"mpeg",                         NULL,   0, AV_OPT_TYPE_CONST, {.i64=AVCOL_RANGE_MPEG},         0, 0, FLAGS, "range"},
-{"full",                         NULL,   0, AV_OPT_TYPE_CONST, {.i64=AVCOL_RANGE_JPEG},         0, 0, FLAGS, "range"},
-{"pc",                           NULL,   0, AV_OPT_TYPE_CONST, {.i64=AVCOL_RANGE_JPEG},         0, 0, FLAGS, "range"},
-{"jpeg",                         NULL,   0, AV_OPT_TYPE_CONST, {.i64=AVCOL_RANGE_JPEG},         0, 0, FLAGS, "range"},
+{"limited", NULL, 0, AV_OPT_TYPE_CONST, {.i64=AVCOL_RANGE_MPEG},  0, 0, FLAGS, "range"},
+{"tv",      NULL, 0, AV_OPT_TYPE_CONST, {.i64=AVCOL_RANGE_MPEG},  0, 0, FLAGS, "range"},
+{"mpeg",    NULL, 0, AV_OPT_TYPE_CONST, {.i64=AVCOL_RANGE_MPEG},  0, 0, FLAGS, "range"},
+{"full",    NULL, 0, AV_OPT_TYPE_CONST, {.i64=AVCOL_RANGE_JPEG},  0, 0, FLAGS, "range"},
+{"pc",      NULL, 0, AV_OPT_TYPE_CONST, {.i64=AVCOL_RANGE_JPEG},  0, 0, FLAGS, "range"},
+{"jpeg",    NULL, 0, AV_OPT_TYPE_CONST, {.i64=AVCOL_RANGE_JPEG},  0, 0, FLAGS, "range"},
 ```
 
 正是通过不同的颜色模型和不同的变换，才得以让我们实现：在不同输入、输出、显示设备上都呈现出最好的颜色。
