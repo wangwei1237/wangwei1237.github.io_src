@@ -10,6 +10,7 @@ tags:
   - RGB 
   - XYZ
   - linear RGB
+  - HSL
   - FFMpeg colorspace
 ---
 
@@ -86,15 +87,17 @@ RGB->YUV，不同标准有不同要求，一般常用的标准有：
 * 终端用户支持的视频编解码算法和相机压缩视频的编解码算法不一致
 * ……
 
-一般不会直接把相机产出的视频文件分发给用户去消费。媒体服务商会对相机生成的视频文件进行转码，然后选择合适的转码后的视频分发给终端消费用户。
+一般不会直接把相机产出的视频文件分发给用户去消费。媒体服务商会对相机生成的视频文件进行转码，然后选择合适的转码后的视频分发给终端消费用户。[^5]
 
-在视频转码阶段，如果我们希望对原视频进行色域的变换，例如从 BT. 601 转码为 BT. 709，则需要在不同色域的 RGB 数值之间进行转换。[^5]
+在视频转码阶段，如果我们希望对原视频进行色域的变换，例如从 BT. 601 转码为 BT. 709，则需要在不同色域的 RGB 数值之间进行转换。[^6]
 
-在不同的色域空间进行 RGB 数据的转换，这也就是我们所说的 [色彩管理](https://en.wikipedia.org/wiki/Color_management)。色彩管理会对图像进行色彩管理以适配当前环境下的颜色效果，从而保证同一张图片在不同输入、输出上都呈现出最好的颜色。[^6]
+在不同的色域空间进行 RGB 数据的转换，这也就是我们所说的 [色彩管理](https://en.wikipedia.org/wiki/Color_management)。色彩管理会对图像进行色彩管理以适配当前环境下的颜色效果，从而保证同一张图片在不同输入、输出上都呈现出最好的颜色。[^7]
 
 色彩转换需要在某个线性空间下进行操作，并且操作过程需要保持设备的独立性。因此，不同的 RGB 色域空间是不能直接进行转换的，需要一个设备无关、线性的颜色模型作为中转才能实现其转换。
 
-而 [XYZ(CIE 1931 XYZ color space)](https://en.wikipedia.org/wiki/CIE_1931_color_space) 具备设备无关、线性操作的特性。BT. 601->BT. 709 的转换过程如下所示：
+而 [XYZ(CIE 1931 XYZ color space)](https://en.wikipedia.org/wiki/CIE_1931_color_space) 具备设备无关、线性操作的特性。
+
+在 FFMpeg 中，主要使用 [colorspace 滤镜](https://github.com/FFmpeg/FFmpeg/blob/master/libavfilter/vf_colorspace.c) 来完成不同色域空间的转换。[^6]根据 colorspace 的实现可知，在 FFMpeg 中，BT. 601->BT. 709 的转换过程如下所示：
 
 ![](15.png)
 
@@ -103,7 +106,7 @@ RGB->YUV，不同标准有不同要求，一般常用的标准有：
 2. 线性 RGB 和非线性 RGB 之间的转换
 3. 线性 RGB 和 XYZ 之间的转换
 
-在 FFMpeg 中，所有的这些转换参数都保存在 [AVFrame](https://ffmpeg.org/doxygen/trunk/structAVFrame.html) 结构中[^7]：
+在 FFMpeg 中，所有的这些转换参数都保存在 [AVFrame](https://ffmpeg.org/doxygen/trunk/structAVFrame.html) 结构中[^8]：
 * AVFrame->[colorspace](https://ffmpeg.org/doxygen/trunk/structAVFrame.html#a9262c231f1f64869439b4fe587fe1710) 中保存了 YUV/RGB 的转换矩阵
 * AVFrame->[color_trc](https://ffmpeg.org/doxygen/trunk/structAVFrame.html#ab09abb126e3922bc1d010cf044087939) 中保存了线性 RGB 和非线性 RGB 之间的转换函数（transformation characteristics）。
 * AVFrame->[color_primaries](color_primaries) 中保存了 RGB/XYZ 的转换矩阵
@@ -142,11 +145,11 @@ color_primaries=bt2020
 ```
 
 ## 视频解码&播放
-转码之后的视频，可以通过各种渠道分发到终端用户进行消费。对于大部分显示设备，例如CRT显示器、LCD、OLED，屏幕上的每个像素都是通过驱动三个非常靠近但仍然分开的小型 RGB 光源而构建的。[^8] 因此，显示屏（监视器，电视机，屏幕等等）仅使用 RGB 模型，并以不同的方式来组织，并显示最终的图像。[^9]
+转码之后的视频，可以通过各种渠道分发到终端用户进行消费。对于大部分显示设备，例如CRT显示器、LCD、OLED，屏幕上的每个像素都是通过驱动三个非常靠近但仍然分开的小型 RGB 光源而构建的。[^9] 因此，显示屏（监视器，电视机，屏幕等等）仅使用 RGB 模型，并以不同的方式来组织，并显示最终的图像。[^10]
 
 ![](8.jpeg)
 
-如前所述，不同的显示设备采用的 RGB 的色域并不一定相同，因此，RGB 是一种设备依赖型的颜色模型。[^10]在 Mac 电脑上，可以通过显示器配置来选择显示器支持不同的 RGB 色域。
+如前所述，不同的显示设备采用的 RGB 的色域并不一定相同，因此，RGB 是一种设备依赖型的颜色模型。[^11]在 Mac 电脑上，可以通过显示器配置来选择显示器支持不同的 RGB 色域。
 
 ![](10.jpg)
 
@@ -169,17 +172,34 @@ color_primaries=bt2020
 因此，对于拍摄设备和显示设备的色域不同时，视频的播放增加了颜色管理的过程。
 ![](14.png)
 
+## 视频观看
+虽然视频信息的采集和最终终端播放采用的都是 RGB 的颜色模型，但是对人眼而言，RGB 其实并不直观，比如我们很难马上反应出`天青色`的 RGB 色值？
+
+为了能够更直观的表示颜色，又引入了 [HSL](https://en.wikipedia.org/wiki/HSL_and_HSV) 色彩模型。HSL 比 RGB 更加直观，比如：想从黄色过度到红色，只需要调整色相即可，饱和度和亮度保持不变。因此，HSL 一般更适合人的色彩感知，而 RGB 更适合显示领域。
+
+为了让作品可以呈现出期望的效果，提升用户的视觉体验，在摄影后期，使用 HSL 对作品进行调整是最方便的一种方式。利用 HSL 对作品进行调整，简单几步就可以让灰暗的「马路随拍」秒变「街头大片」。[^12]
+
+![](16.webp)
+
 ## 总结
+虽然颜色还是那个颜色，但是不同的颜色空间的适用范围并不相同：
+* RGB：面向采集和现实设备
+* YUV：面向存储
+* HSL：面向人类视觉感知
+* XYZ：RGB之间的转换桥梁
+
 从视频采集到视频消费的整个过程，涉及到不同的设备和标准，而不同的设备和标准所支持的色域空间又不相同。正是通过不同的颜色模型转换和不同的色域转换，才得以让我们实现：在不同输入、输出、显示设备上都呈现出最好的颜色，才得以让我们实现以近似相同的观看体验来消费视频。
 
 ## 参考文献
-[^1]: [https://zhuanlan.zhihu.com/p/158502818](https://zhuanlan.zhihu.com/p/158502818)
-[^2]: [https://discuss.pixls.us/t/what-does-linear-rgb-mean/16584](https://discuss.pixls.us/t/what-does-linear-rgb-mean/16584)
-[^3]: [https://www.astropix.com/html/astrophotography/how.html](https://www.astropix.com/html/astrophotography/how.html)
+[^1]: [CMOS Image Sensor原理简述](https://zhuanlan.zhihu.com/p/158502818)
+[^2]: [What does linear RGB mean ?](https://discuss.pixls.us/t/what-does-linear-rgb-mean/16584)
+[^3]: [How Digital Cameras Work](https://www.astropix.com/html/astrophotography/how.html)
 [^4]: [Linear vs. Logarithmic Dimming—A White Paper](https://www.pathwaylighting.com/products/downloads/brochure/technical_materials_1466797044_Linear+vs+Logarithmic+Dimming+White+Paper.pdf)
-[^5]: [https://medium.com/invideo-io/talking-about-colorspaces-and-ffmpeg-f6d0b037cc2f](https://medium.com/invideo-io/talking-about-colorspaces-and-ffmpeg-f6d0b037cc2f)
-[^6]: [https://blog.csdn.net/weixin_43194305/article/details/107944264](https://blog.csdn.net/weixin_43194305/article/details/107944264)
-[^7]: [https://trac.ffmpeg.org/wiki/colorspace](https://trac.ffmpeg.org/wiki/colorspace)
-[^8]: [https://en.wikipedia.org/wiki/RGB_color_model](https://en.wikipedia.org/wiki/RGB_color_model)
-[^9]: [https://wangwei1237.github.io/2020/02/28/Introduction-to-digital-video-technology/](https://wangwei1237.github.io/2020/02/28/Introduction-to-digital-video-technology/)
-[^10]: [Computational Color Technology](https://www.spiedigitallibrary.org/ebooks/PM/Computational-Color-Technology/eISBN-9780819481085/10.1117/3.660835)
+[^5]: [What is Video Transcoding and Why Do You Do It?](https://medium.com/videocoin/what-is-video-transcoding-and-why-do-you-do-it-348a2610cefc)
+[^6]: [Talking About Colorspaces and FFmpeg](https://medium.com/invideo-io/talking-about-colorspaces-and-ffmpeg-f6d0b037cc2f)
+[^7]: [【颜色科学】RGB和XYZ颜色空间的转换](https://blog.csdn.net/weixin_43194305/article/details/107944264)
+[^8]: [Colorspace support in FFmpeg](https://trac.ffmpeg.org/wiki/colorspace)
+[^9]: [RGB color model](https://en.wikipedia.org/wiki/RGB_color_model)
+[^10]: [数字视频导论](https://wangwei1237.github.io/2020/02/28/Introduction-to-digital-video-technology/)
+[^11]: [Computational Color Technology](https://www.spiedigitallibrary.org/ebooks/PM/Computational-Color-Technology/eISBN-9780819481085/10.1117/3.660835)
+[^12]: [用HSL调色=简单、快速、超出片！](https://zhuanlan.zhihu.com/p/142767122)
