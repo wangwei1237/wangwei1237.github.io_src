@@ -181,7 +181,18 @@ color_primaries=bt2020
 
 ![](16.webp)
 
+FFMpeg 的 `signalstats` 滤镜可以分析获取视频的色调、饱和度、亮度信息。但是该滤镜获取的色调、饱和度和 [HSL 中的计算](https://www.rapidtables.com/convert/color/rgb-to-hsl.html) 是不一致的。
 
+`signalstats` 计算色调、饱和度的算法如下所示：
+$$
+Hue=\frac{180}{\pi} * arctan{\frac{U-128}{V-128}} + 180, arctan{\frac{y}{x}} \in [-\pi, \pi]
+$$
+
+$$
+Saturation=\sqrt{(U-128)^2 + (V-128)^2}
+$$
+
+如果需要得到视频的标准 HSL 信息，可以使用作者开发的 [vf_hsl 滤镜](https://github.com/wangwei1237/wangwei1237.github.io/blob/master/2022/08/14/Why-so-much-color-space-in-video/vf_hsl.c)。
 
 ## 总结
 虽然颜色还是那个颜色，但是不同的颜色空间的适用范围并不相同：
