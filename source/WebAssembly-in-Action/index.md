@@ -8,9 +8,6 @@ date: 2020-11-28 18:10:14
 ## 原书链接
 * [www.manning.com](https://www.manning.com/books/webassembly-in-action)
 
-## PDF版本下载链接
-* [WebAssembly in Action](/shares/WebAssembly-in-Action.pdf)
-
 > Gerard Gallant
 > 
 > November 2019  ISBN 9781617295744  448 pages  printed in black & white
