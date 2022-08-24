@@ -56,13 +56,13 @@ date: 2020-06-17 16:50:12
 %}
 
 {% valkyrurl
-[url=/shares/GraphQL_in_Action.pdf]
+[url=https://www.manning.com/books/graphql-in-action]
 [title="GraphQL in Action"]
 [avatar=/books/index/Buna-GraphQL.png]
 %}
 
 {% valkyrurl
-[url=/WebAssembly-in-Action/]
+[url=https://www.manning.com/books/webassembly-in-action]
 [title="WebAssembly in Action"]
 [avatar=/books/index/Gallant-WA-HI.png]
 %}
