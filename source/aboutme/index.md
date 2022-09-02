@@ -15,7 +15,7 @@ copyright: false
 测试过众多的 1.0 产品
 
 ###### 2014: 开始整理并撰写《nginx沉思录》
-[nginx沉思录](/shares/nginx-insight.pdf)
+* [nginx沉思录](/shares/nginx-insight.pdf)
 
 ###### 2015: 第一届金 BUG 获得者
 提交接口 400 响应问题定位
@@ -29,8 +29,9 @@ copyright: false
 ###### 2018-2019: 线上质量改进
 架构分析等一些列工作改进产品线上质量
 
-###### 2020: 翻译《从单体应用到微服务架构》
-[从单体应用到微服务架构](/monolith-to-microservices/)
+###### 2020: 翻译图书
+* [数字视频概念，方法和测量指标](/digital_video_concepts/)
+* [从单体应用到微服务架构](/monolith-to-microservices/)
 
 ###### 2020-2022: 灵镜项目
 视频评测的工程实践，提升视频评测的效率和置信度。
