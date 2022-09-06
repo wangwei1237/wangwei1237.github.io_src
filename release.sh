@@ -33,4 +33,5 @@ cp monolith-to-microservices/sitemap.xml m2m_sitemap.xml
 cp m2m_sitemap.xml m2m_e_sitemap.xml && sed -i "s/gitee/github/g" m2m_e_sitemap.xml
 
 cd .. 
-cp -r docs/* public/shares
+cp -r docs/* public/shares && cd public/shares && rm -rf GraphQL_in_Action.pdf WebAssembly-in-Action.pdf
+cd .. 
