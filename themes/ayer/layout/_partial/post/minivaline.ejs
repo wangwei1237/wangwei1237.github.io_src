@@ -7,6 +7,7 @@
 <script>
   new MiniValine(Object.assign(<%- JSON.stringify(theme.minivaline) %>, {
     el: '#mvcomments',
+    visitor: true
   }));
   const infoEle = document.querySelector('#mvcomments .info');
   if (infoEle && infoEle.childNodes && infoEle.childNodes.length > 0) {
