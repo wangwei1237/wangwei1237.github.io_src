@@ -4,6 +4,18 @@ date: 2020-06-30 09:30:07
 ---
 
 {% valkyrurl
+[url=https://mp.weixin.qq.com/s/1NItxX5a8WaXAHZ4Em1cbQ]
+[title="视频中为什么需要这么多的颜色空间？"]
+[desc="LiveVideoStack"]
+%}
+
+{% valkyrurl
+[url=https://mp.weixin.qq.com/s/J9hnkTQ--p2VTndYGlTK0w]
+[title="为什么OpenCV计算的帧率是错误的？"]
+[desc="LiveVideoStack"]
+%}
+
+{% valkyrurl
 [url=/shares/vqs.pdf]
 [title="视频质量主观评估方法和规范"]
 %}

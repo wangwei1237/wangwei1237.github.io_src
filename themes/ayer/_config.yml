@@ -240,6 +240,11 @@ minivaline:
 # 首页广告配置
 # 可以根据需要自行增加ad_3，ad_4...，留空则不显示，建议图片和url不要带ad等关键词，否则可能会被adblock等插件屏蔽
 ads:
+  ad_4:
+    title: LiveVideoStack 2022（北京站）
+    img: /lvs2022bj.jpeg
+    url: https://bj2022.livevideostack.cn/topics
+    width: 150
   ad_3:
     title: Building Microservices, 2nd Edition
     img: /books/index/building_microservices_2ed.png
