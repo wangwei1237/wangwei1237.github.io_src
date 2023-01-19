@@ -59,7 +59,7 @@ int avcodec_decode_audio4(AVCodecContext *avctx, AVFrame *frame,
                           int *got_frame_ptr, const AVPacket *avpkt);
 ```
 
-在我们的工具中，我们采用了新的解码API：`avcodec_send_packet()`和`avcodec_receive_frame()`，实现视频帧的解码，并将解码后的数据转成YUV数据。具体的代码片段如下，[点击可查看完整测试代码](https://wangwei1237.gitee.io/2021/01/19/FFmpeg-decode-process-and-lose-frame-in-that-process/test_video_parser_1.cpp)。
+在我们的工具中，我们采用了新的解码API：`avcodec_send_packet()`和`avcodec_receive_frame()`，实现视频帧的解码，并将解码后的数据转成YUV数据。具体的代码片段如下，[点击可查看完整测试代码](https://github.com/wangwei1237/wangwei1237.github.io/blob/master/2021/01/19/FFMpeg-decode-process-and-lose-frame-in-that-process/test_video_parser_1.cpp)。
 
 ```c++
 int process_frame() {
@@ -108,7 +108,7 @@ $ frame count: 248
 
 也就是说，为了提升性能或出于其他的考虑，解码器会在内部缓存多个`frames`/`packets`。因此，当流结束的时候，需要对解码器执行`flushing`操作，以便获取解码器缓存的`frames`/`packets`。
 
-我们的工具中，在流结束之后，并没有执行`flushing`操作，因此就出现了解码过程丢帧的现象。按照FFmpeg的指导，我们补充了如下的逻辑，以便获取解码器中缓存的帧，[点击可查看完整测试代码](https://wangwei1237.gitee.io/2021/01/19/FFmpeg-decode-process-and-lose-frame-in-that-process/test_video_parser_2.cpp)。
+我们的工具中，在流结束之后，并没有执行`flushing`操作，因此就出现了解码过程丢帧的现象。按照FFmpeg的指导，我们补充了如下的逻辑，以便获取解码器中缓存的帧，[点击可查看完整测试代码](https://github.com/wangwei1237/wangwei1237.github.io/blob/master/2021/01/19/FFMpeg-decode-process-and-lose-frame-in-that-process/test_video_parser_2.cpp)。
 
 ```c++
 //Flush remaining frames that are cached in the decoder
