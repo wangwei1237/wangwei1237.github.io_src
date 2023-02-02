@@ -33,9 +33,11 @@ copyright: false
 * [数字视频概念，方法和测量指标](/digital_video_concepts/)
 * [从单体应用到微服务架构](/monolith-to-microservices/)
 
-###### 2020-2022: 灵镜项目
+###### 2020-2022: 灵镜（度知了）项目
 视频评测的工程实践，提升视频评测的效率和置信度，发表专利20+篇
 
+* [iOS版本](https://apps.apple.com/cn/app/%E7%81%B5%E9%95%9Cmagic/id1628460657)
+* [Android版本](https://mobile.baidu.com/item?docid=5002082124)
 {% endmdline %}
 
 ###### 可以通过如下方式来帮助站点完善内容：
