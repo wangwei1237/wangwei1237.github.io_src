@@ -36,8 +36,13 @@ copyright: false
 ###### 2020-2022: 灵镜（度知了）项目
 视频评测的工程实践，提升视频评测的效率和置信度，发表专利20+篇
 
-* [iOS版本](https://apps.apple.com/cn/app/%E7%81%B5%E9%95%9Cmagic/id1628460657)
-* [Android版本](https://mobile.baidu.com/item?docid=5002082124)
+* [iOS版本](https://apps.apple.com/cn/app/%E5%BA%A6%E7%9F%A5%E4%BA%86/id1628460657)
+* Android版本
+    * [华为](https://appgallery.huawei.com/app/C107655085)
+    * [VIVO](https://h5.appstore.vivo.com.cn/#/details?appId=3514024)
+    * [小米](https://app.mi.com/details?id=com.baidu.lingjing.app)
+    * [百度手机助手](https://mobile.baidu.com/item?docid=5002082124)
+    * OPPO: OPPO软件商店内搜索“度知了”
 {% endmdline %}
 
 ###### 可以通过如下方式来帮助站点完善内容：
