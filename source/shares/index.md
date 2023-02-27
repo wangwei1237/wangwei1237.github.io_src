@@ -4,6 +4,12 @@ date: 2020-06-30 09:30:07
 ---
 
 {% valkyrurl
+[url=https://pan.baidu.com/s/1imFGho1xueWrr1_yuKhMPQ?pwd=3fsx]
+[title="视频质量评估体系"]
+[desc="LiveVideoStack"]
+%}
+
+{% valkyrurl
 [url=https://mp.weixin.qq.com/s/1NItxX5a8WaXAHZ4Em1cbQ]
 [title="视频中为什么需要这么多的颜色空间？"]
 [desc="LiveVideoStack"]
