@@ -44,10 +44,10 @@ bit_rate=3492451 ==> 3.33 Mb/s
 都是 `ffprobe` 返回的数据，为什么单位转换之后结果不一致呢了？带着这个问题，我咨询了音视频处理的同事，同事答复说：
 
 ```
-在 FFMpeg 中，kb 就是 1000 bit 的意思，b 转换到 kb 是 /1000 而不是 /1024。
+在 FFmpeg 中，kb 就是 1000 bit 的意思，b 转换到 kb 是 /1000 而不是 /1024。
 ```
 
-从 [libavcodec/avcodec.c](https://github.com/FFmpeg/FFmpeg/blob/master/libavcodec/avcodec.c) 中的 avcodec_string() 所定义的码率信息打印操作的代码可以知道，在 FFMpeg 中，1kb 的确为 1000 bit。 
+从 [libavcodec/avcodec.c](https://github.com/FFmpeg/FFmpeg/blob/master/libavcodec/avcodec.c) 中的 avcodec_string() 所定义的码率信息打印操作的代码可以知道，在 FFmpeg 中，1kb 的确为 1000 bit。 
 
 ```C
 bitrate = get_bit_rate(enc);
@@ -66,7 +66,7 @@ if (bitrate != 0) {
 > 
 > 存储空间容量的单位除了用字节表示以外，还从小到大依次可以用千字节（KB）、兆字节（MB）、吉字节（GB）、太字节（TB）等表示。它们之间每一级别的换算关系为 1024 倍，也就是说 1KB 相当于 1024B，其他单位以此类推。
 
-为什么到了 FFMpeg 这里，1 kb 就等于 1000 b 了呢？
+为什么到了 FFmpeg 这里，1 kb 就等于 1000 b 了呢？
 
 我发起了一个关于 **1kb = (?)b** 的问卷，在回收的 105 份问卷中，答案的分布如下：
 
@@ -101,7 +101,7 @@ if (bitrate != 0) {
 * $1Gb = 10^{3}Mb = 10^{6}kb = 10^{9}b$
 * $1Gib = 2^{10}Mib = 2^{20}Kib = 2^{30}b$
 
-所以，在 FFMpeg 中，当码率需要转换为 kb/s 单位时，采用了 **(b/s) / 1000** 的操作。
+所以，在 FFmpeg 中，当码率需要转换为 kb/s 单位时，采用了 **(b/s) / 1000** 的操作。
 
 ## 必须关注Kib制带来的差别
 在 Linux 或者 Mac 中，已经采用了 IEC 引入了 KiB、MiB 等单位。例如，我们可以查看下 `du` 命令的帮助文档：

@@ -10,7 +10,7 @@ categories:
   - 视频技术
 tags:
   - OpenCV
-  - FFMpeg
+  - FFmpeg
   - 帧率
 ---
 
@@ -73,9 +73,9 @@ r2d(ic->streams[video_stream]->avg_frame_rate) = 0
 ```
 来计算该视频的 fps。而此处的 **time_base = 1/2000**，因此，最终得到的 fps 是 2000。
 
-也就是说，**AVStream->codec->time_base** 的值导致了 OpenCV 得到一个看起来是错误的 fps。那么，**AVStream->codec->time_base** 为什么是这个数呢？FFMpeg 是怎么计算这个字段的呢？
+也就是说，**AVStream->codec->time_base** 的值导致了 OpenCV 得到一个看起来是错误的 fps。那么，**AVStream->codec->time_base** 为什么是这个数呢？FFmpeg 是怎么计算这个字段的呢？
 
-## FFMpeg 如何计算 AVCodecContext.time_base
+## FFmpeg 如何计算 AVCodecContext.time_base
 **AVStream->codec->time_base** 是 **AVCodecContext** 中定义的 **time_base** 字段，根据 [libavcodec/avcodec.h](https://github.com/FFmpeg/FFmpeg/blob/master/libavcodec/avcodec.h) 中的定义，该字段的解释如下：
 ```c
 /**
@@ -113,10 +113,10 @@ fixed_frame_rate_flag :0
 
 难道，对于非固定帧率视频而言，**time_base** 和 **framerate** 之间没有关联？如果存在关联，那又是怎样的运算才能产生这种结果？这个 **time_base** 究竟是怎么计算的呢？究竟和 **framerate** 有没有关系呢？一连串的问题随之而来……
 
-源码面前，了无秘密。接下来，带着这个问题，我们来一起分析一下 FFMpeg 究竟是如何处理 **time_base** 的。
+源码面前，了无秘密。接下来，带着这个问题，我们来一起分析一下 FFmpeg 究竟是如何处理 **time_base** 的。
 
 ## avformat_find_stream_info
-在 FFMpeg 中，`avformat_find_stream_info()` 会对 **ic->streams[video_stream]->codec** 进行初始化，因此，我们可以从 `avformat_find_stream_info()` 开始分析。
+在 FFmpeg 中，`avformat_find_stream_info()` 会对 **ic->streams[video_stream]->codec** 进行初始化，因此，我们可以从 `avformat_find_stream_info()` 开始分析。
 
 从 [libavformat/avformat.h](https://github.com/FFmpeg/FFmpeg/blob/master/libavformat/avformat.h) 中，可以得知`avformat_open_input()`会打开视频流，从中读取相关的信息，然后存储在`AVFormatContext`中，但是有时候，此处获取的信息并不完整，因此需要调用`avformat_find_stream_info()`来获取更多的信息。
 
@@ -172,7 +172,7 @@ int avformat_find_stream_info(AVFormatContext *ic, AVDictionary **options);
 !!! note avformat_find_stream_info() 的重要步骤说明
     * <a name="step1">**STEP 1**</a>. 设置线程数，避免 H264 多线程解码时没有把 **SPS/PPS** 信息提取到 **extradata**。
     * **STEP 2**. 设置 `AVStream *st`，**st** 会在后续的函数调用中一直透到 `try_decode_frame()`。
-    * <a name="step4">**STEP 4**</a>. 设置 `AVCodecContext *avctx` 为透传的 **st->internal->avctx**，在后续的解码函数调用中，一直透传的就是这个 **avctx**，因此，从这里开始的执行流程，FFMpeg 使用的全部都是 **st->internal->avctx**，而不是 **st->codec**，这里要特别的注意。此处同时会设置解码的线程数，其目的和 [STEP 1](#step1)是一致的。
+    * <a name="step4">**STEP 4**</a>. 设置 `AVCodecContext *avctx` 为透传的 **st->internal->avctx**，在后续的解码函数调用中，一直透传的就是这个 **avctx**，因此，从这里开始的执行流程，FFmpeg 使用的全部都是 **st->internal->avctx**，而不是 **st->codec**，这里要特别的注意。此处同时会设置解码的线程数，其目的和 [STEP 1](#step1)是一致的。
     * <a name="step5">**STEP 5**</a>. 因为之前设置了解码线程数为 1，因此此处会调用 
     ```c
     ret = avctx->codec->decode(avctx, frame, &got_frame, pkt)
@@ -226,7 +226,7 @@ int avformat_find_stream_info(AVFormatContext *ic, AVDictionary **options);
     ```
     因此，当 **st->avg_frame_rate = 0** 时，[OpenCV 计算 fps 的逻辑](#opencv-framerate) 是错误的。
     
-    在 H265 中，**ticks_per_frame = 1**，因此对于 H265 的编码，OpenCV 是没有这个问题的。可以使用 [Zond 265](https://www.dektec.com/products/applications/Zond/) 工具来分析一个 H265 的视频码流，然后对照 OpenCV 以及 FFMpeg 的结果来验证。
+    在 H265 中，**ticks_per_frame = 1**，因此对于 H265 的编码，OpenCV 是没有这个问题的。可以使用 [Zond 265](https://www.dektec.com/products/applications/Zond/) 工具来分析一个 H265 的视频码流，然后对照 OpenCV 以及 FFmpeg 的结果来验证。
 
 
 同时，正是如上所示的 *[STEP 7](#step7)* 中的移花接木导致了 [test_time_base.cpp](https://github.com/wangwei1237/wangwei1237.github.io_src/blob/master/source/_posts/Why-OpenCV-Get-the-Wrong-FPS/test_time_base.cpp) 的结果：
@@ -237,7 +237,7 @@ st->codec->time_base: 1/2000
 ```
 
 ## ff_h264_decoder
-[libavcodec/decode.c](https://github.com/FFmpeg/FFmpeg/blob/master/libavcodec/decode.c) 中的 `decode_simple_internal()` 中会调用对应的解码器来进行解码（[STPE 5](#step5)）。而正如前所示，test.ts 为 H264 编码的视频流，因此，此处会调用 H264 解码器来进行解码。在 FFMpeg 中，H264 解码器位于 [libavcodec/h264dec.c](https://github.com/FFmpeg/FFmpeg/blob/master/libavcodec/h264dec.c) 中定义的 `const AVCodec ff_h264_decoder`。
+[libavcodec/decode.c](https://github.com/FFmpeg/FFmpeg/blob/master/libavcodec/decode.c) 中的 `decode_simple_internal()` 中会调用对应的解码器来进行解码（[STPE 5](#step5)）。而正如前所示，test.ts 为 H264 编码的视频流，因此，此处会调用 H264 解码器来进行解码。在 FFmpeg 中，H264 解码器位于 [libavcodec/h264dec.c](https://github.com/FFmpeg/FFmpeg/blob/master/libavcodec/h264dec.c) 中定义的 `const AVCodec ff_h264_decoder`。
 
 ```c
 const AVCodec ff_h264_decoder = {
@@ -310,13 +310,13 @@ ff_h264_decoder->h264_decode_frame(avctx, frame, &got_frame, pkt);
 
 ## 结论
 通过如上的分析我们可以知道：
-* FFMpeg 在计算 `AVCodecContex` 中的 **framerate** 和 **time_base** 的时候，会用到：
+* FFmpeg 在计算 `AVCodecContex` 中的 **framerate** 和 **time_base** 的时候，会用到：
   * **sps.time_scale**
   * **sps.num_units_in_tick**
   * **AVCodecContex.ticks_per_frame**
-* 在 FFMpeg 中，**framerate** 和 **time_base** 的关系为：
+* 在 FFmpeg 中，**framerate** 和 **time_base** 的关系为：
   * **framerate = 1 / (time_base * ticks_per_frame)**
   * **time_base = 1 / (framerate * ticks_per_frame)**
-* 对于非 H.264/MPEG-2，**ticks_per_frame=1**，因此 **framerate** 和 **time_base** 是互为倒数的关系。而对于 H.264/MPEG-2 而言，**ticks_per_frame=2**，因此，此时，二者并非是互为倒数的关系。因此，FFMpeg 中才说，**framerate** 和 **time_base** 通常是互为倒数的关系，但并非总是如此。
+* 对于非 H.264/MPEG-2，**ticks_per_frame=1**，因此 **framerate** 和 **time_base** 是互为倒数的关系。而对于 H.264/MPEG-2 而言，**ticks_per_frame=2**，因此，此时，二者并非是互为倒数的关系。因此，FFmpeg 中才说，**framerate** 和 **time_base** 通常是互为倒数的关系，但并非总是如此。
 * 在 OpenCV 中，对于 H.264/MPEG-2 视频而言，当 **AVStream.avg_frame_rate=0** 时，其计算 fps 的逻辑存在 BUG。
 * 因为在解码时，**AVCodecContex.time_base** 已经废弃，同时 **AVStream.avctx** 也已经废弃，而 `avformat_find_stream_info()` 中为了兼容老的 API，因此会利用 **AVStream.internal.avctx** 和其他的信息来设置 **AVStream.avctx**。而 **AVStream.avctx.time_base** 取自 **AVStream.internal.avctx**，**AVStream.avctx.framerate** 则取自 **AVStream.framerate**。

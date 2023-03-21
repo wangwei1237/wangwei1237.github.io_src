@@ -6,7 +6,7 @@ date: 2020-04-08 09:23:19
 categories: 
   - 视频技术
 tags:
-  - FFMpeg
+  - FFmpeg
   - 编译
   - macOS Catalina
   - strip

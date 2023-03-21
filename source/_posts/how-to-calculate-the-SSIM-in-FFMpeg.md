@@ -9,7 +9,7 @@ categories:
   - IVQA
 tags:
   - SSIM
-  - FFMpeg
+  - FFmpeg
 ---
 
 ## SSIM基本概念

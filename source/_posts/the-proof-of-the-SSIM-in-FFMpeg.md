@@ -8,7 +8,7 @@ authors:
 categories:
   - IVQA
 tags: 
-  - FFMpeg
+  - FFmpeg
   - SSIM
 ---
 这篇文章是对[FFmpeg中计算SSIM算法](https://github.com/FFmpeg/FFmpeg/blob/master/tests/tiny_ssim.c)中用到的公式的证明。其中的$fs1$，$fs2$，$fs12$，$fss$的含义和FFmpeg保持一致，具体可以参考[FFmpeg如何计算图像的SSIM](/2020/02/15/how-to-calculate-the-SSIM-in-FFmpeg/)中的说明。

@@ -11,12 +11,12 @@ tags:
   - XYZ
   - linear RGB
   - HSL
-  - FFMpeg colorspace
+  - FFmpeg colorspace
 ---
 
 ![](1.jpeg)
 
-在视频处理中，我们经常会用到不同的色彩空间：`非线性RGB`，`线性 RGB`，`YUV`，`XYZ`……为什么需要这么多的色彩空间呢？为什么在 FFMpeg 中会有 `color_space`，`color_transfer`，`color_primaries` 等一系列的颜色属性呢？这些术语之间究竟隐藏着什么秘密？
+在视频处理中，我们经常会用到不同的色彩空间：`非线性RGB`，`线性 RGB`，`YUV`，`XYZ`……为什么需要这么多的色彩空间呢？为什么在 FFmpeg 中会有 `color_space`，`color_transfer`，`color_primaries` 等一系列的颜色属性呢？这些术语之间究竟隐藏着什么秘密？
 <!--more-->
 
 ## 视频采集
@@ -97,7 +97,7 @@ RGB->YUV，不同标准有不同要求，一般常用的标准有：
 
 而 [XYZ(CIE 1931 XYZ color space)](https://en.wikipedia.org/wiki/CIE_1931_color_space) 具备设备无关、线性操作的特性。
 
-在 FFMpeg 中，主要使用 [colorspace 滤镜](https://github.com/FFmpeg/FFmpeg/blob/master/libavfilter/vf_colorspace.c) 来完成不同色域空间的转换。[^6]根据 colorspace 的实现可知，在 FFMpeg 中，BT. 601->BT. 709 的转换过程如下所示：
+在 FFmpeg 中，主要使用 [colorspace 滤镜](https://github.com/FFmpeg/FFmpeg/blob/master/libavfilter/vf_colorspace.c) 来完成不同色域空间的转换。[^6]根据 colorspace 的实现可知，在 FFmpeg 中，BT. 601->BT. 709 的转换过程如下所示：
 
 ![](15.png)
 
@@ -106,7 +106,7 @@ RGB->YUV，不同标准有不同要求，一般常用的标准有：
 2. 线性 RGB 和非线性 RGB 之间的转换
 3. 线性 RGB 和 XYZ 之间的转换
 
-在 FFMpeg 中，所有的这些转换参数都保存在 [AVFrame](https://ffmpeg.org/doxygen/trunk/structAVFrame.html) 结构中[^8]：
+在 FFmpeg 中，所有的这些转换参数都保存在 [AVFrame](https://ffmpeg.org/doxygen/trunk/structAVFrame.html) 结构中[^8]：
 * AVFrame->[colorspace](https://ffmpeg.org/doxygen/trunk/structAVFrame.html#a9262c231f1f64869439b4fe587fe1710) 中保存了 YUV/RGB 的转换矩阵
 * AVFrame->[color_trc](https://ffmpeg.org/doxygen/trunk/structAVFrame.html#ab09abb126e3922bc1d010cf044087939) 中保存了线性 RGB 和非线性 RGB 之间的转换函数（transformation characteristics）。
 * AVFrame->[color_primaries](color_primaries) 中保存了 RGB/XYZ 的转换矩阵
@@ -181,7 +181,7 @@ color_primaries=bt2020
 
 ![](16.webp)
 
-FFMpeg 的 `signalstats` 滤镜可以分析获取视频的色调、饱和度、亮度信息。但是该滤镜获取的色调、饱和度和 [HSL 中的计算](https://www.rapidtables.com/convert/color/rgb-to-hsl.html) 是不一致的。
+FFmpeg 的 `signalstats` 滤镜可以分析获取视频的色调、饱和度、亮度信息。但是该滤镜获取的色调、饱和度和 [HSL 中的计算](https://www.rapidtables.com/convert/color/rgb-to-hsl.html) 是不一致的。
 
 `signalstats` 计算色调、饱和度的算法如下所示：
 $$

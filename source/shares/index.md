@@ -6,7 +6,7 @@ date: 2020-06-30 09:30:07
 {% valkyrurl
 [url=https://pan.baidu.com/s/1imFGho1xueWrr1_yuKhMPQ?pwd=3fsx]
 [title="视频质量评估体系"]
-[desc="LiveVideoStack"]
+[desc="LiveVideoStack直播公开课"]
 %}
 
 {% valkyrurl

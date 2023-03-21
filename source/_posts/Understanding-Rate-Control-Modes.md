@@ -22,13 +22,13 @@ tags:
 
 在视频编码技术中，码率控制（Rate Control）是一件非常重要的事情。在编码视频帧时，码率控制决定了编码器为该视频帧分配的 bit 数。
 
-本文将基于 FFMpeg 中的 X264、X265 编码器来介绍常用的码率控制模式。
+本文将基于 FFmpeg 中的 X264、X265 编码器来介绍常用的码率控制模式。
 <!--more-->
 
 ## CQP(Constant Quantization Parameter)
 [**QP(Quantization Parameter)**](https://www.vcodex.com/h264avc-4x4-transform-and-quantization/) 用于控制每帧视频中每一个宏块的压缩量。实际上，QP 反映了空间细节压缩情况。QP 越小，就会保留越多的细节信息，视频质量也会越高，同时码率越大。QP 越大，细节信息丢失的越多，码率也会随之降低，但图像失真也会越严重。也就是说，QP 和码率成反比，QP 越大，码率越低；QP 越小，码率越高。
 
-在 H.264/H.265 中，QP 的取值范围为 $[0, 51]$。利用 FFMpeg，我们可以非常方便的为整个编码（转码）过程设置一个固定的 QP。
+在 H.264/H.265 中，QP 的取值范围为 $[0, 51]$。利用 FFmpeg，我们可以非常方便的为整个编码（转码）过程设置一个固定的 QP。
 
 ```shell
 ffmpeg -i <input> -c:v libx264 -qp 23 <output>

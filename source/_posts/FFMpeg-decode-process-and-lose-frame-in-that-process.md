@@ -6,7 +6,7 @@ date: 2021-01-19 14:10:38
 categories: 
   - 视频技术
 tags:
-  - FFMpeg
+  - FFmpeg
   - 视频解码
   - 解码丢帧
   - avcodec_send_packet
@@ -154,7 +154,7 @@ $ frame count: 252
 
 在图中，`节点`代表状态（API的返回值），`箭头`代表API的调用。蓝色表示和`avcodec_send_packet()`相关，红色表示和`avcodec_receive_frame()`相关。
 
-[我们修复版本的解码实现](https://wangwei1237.gitee.io/2021/01/19/FFmpeg-decode-process-and-lose-frame-in-that-process/test_video_parser_2.cpp)实际上就是对如上图所示的状态机的实现。
+[我们修复版本的解码实现](https://wangwei1237.gitee.io/2021/01/19/FFMpeg-decode-process-and-lose-frame-in-that-process/test_video_parser_2.cpp)实际上就是对如上图所示的状态机的实现。
 
 而如果在实现的时候，没有处理如下图所示的状态，则会导致无法获取视频最后几帧的问题。
 

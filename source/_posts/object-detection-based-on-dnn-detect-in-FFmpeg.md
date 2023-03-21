@@ -7,7 +7,7 @@ authors:
 categories:
   - 视频技术
 tags:
-  - FFMpeg
+  - FFmpeg
   - 目标检测
   - dnn_detect
 ---
