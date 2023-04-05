@@ -7,11 +7,11 @@ authors:
 categories:
   - 视频技术
 tags:
-  - LVS 2021
+  - LVS 2022
   - LiveVideoStack
 ---
 
-![](1.JPG)
+![](1.jpg)
 
 <!--more-->
 
