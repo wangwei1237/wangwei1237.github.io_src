@@ -11,7 +11,7 @@ tags:
   - LiveVideoStack
 ---
 
-![](1.jpg)
+![](1_0.jpg)
 
 <!--more-->
 
