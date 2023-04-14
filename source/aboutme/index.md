@@ -43,6 +43,10 @@ copyright: false
     * [小米](https://app.mi.com/details?id=com.baidu.lingjing.app)
     * [百度手机助手](https://mobile.baidu.com/item?docid=5002082124)
     * OPPO: OPPO软件商店内搜索“度知了”
+
+###### 2023: LiveVideoStack大会分享
+[百度视频质量评测的实践之路](https://pan.baidu.com/s/1t4m9v2s5-Rt3u0U7HrVLqQ?pwd=46k6)
+
 {% endmdline %}
 
 ###### 可以通过如下方式来帮助站点完善内容：

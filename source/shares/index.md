@@ -4,6 +4,12 @@ date: 2020-06-30 09:30:07
 ---
 
 {% valkyrurl
+[url=https://pan.baidu.com/s/1t4m9v2s5-Rt3u0U7HrVLqQ?pwd=46k6]
+[title="百度视频质量评测的实践之路（度知了视频评测服务实践之路）"]
+[desc="LiveVideoStack 2022 北京站"]
+%}
+
+{% valkyrurl
 [url=https://pan.baidu.com/s/1imFGho1xueWrr1_yuKhMPQ?pwd=3fsx]
 [title="视频质量评估体系"]
 [desc="LiveVideoStack直播公开课"]
