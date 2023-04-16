@@ -77,8 +77,26 @@ ChatGPT 发布后的 5 天内，其注册用户就达到了 100W+，在其发布
     
     这一现象后来被称为“邓宁-克鲁格效应（the Dunning-Kruger effect），简称“达克效应”。
 
-是
+### ChatGPT 提升生产效率
+对于 ChatGPT 而言，有些人惊呼于其强大的能力，并且已经开始使用 ChatGPT 来帮助自己完成各种各样的任务。
+* 研究发现，基于 OpenAI 构建的 Github Copilot 可以帮助程序开发人员提升 55% 的开发效率[^6]。
+* 在线学习平台 Study.com 向 1000 名 18 岁以上学生发起的一项调查显示，超过 89% 的学生承认使用 ChatGPT 来完成家庭作业[^7]。
+* 2023 年 3 月 16 日，微软宣布将推出名为 Copilot 的人工智能服务，并将其嵌入Word、PowerPoint、Excel等Office办公软件。
+* ……
 
+### ChatGPT 的安全隐患
+而另一方面，有更多的对 ChatGPT 认识更深入的个人、组织也对 ChatGPT 所隐含的数据安全、隐私安全、政策安全等各方面的安全表示出担忧。
+* 2022 年 12 月 6 日，知名开发者问答网站 Stack Overflow 发布一项临时政策：禁用 ChatGPT 生成内容来回答 Stack Overflow 上的问题。
+* 2023 年 1 月 31 日，全球最大预印本发布平台arXiv宣布新政策：不允许ChatGPT等生成式AI工具被列为作者。
+* 2023 年 3 月 28日，1000 多名人工智能专家和科技名人联名发布公开信呼吁暂停开发 AGI 系统，署名者包括特斯拉首席执行官、推特掌门人——埃隆·马斯克，马斯克说：”领先的 AGI 开发人员不会注意这个警告，但至少有人说过“。
+* 路透社报道称，意大利个人数据保护局（DPA）宣布从 2023 年 3 月 31 日起禁止使用 ChatGPT，限制 OpenAI 处理意大利用户信息数据，同时对其隐私安全问题立案调查。
+* ……
+
+### ChatGPT 的例子
+为了测试 ChatGPT 的能力，我用非常简单的推理题对 ChatGPT 进行了测试，其表现出的效果还是非常令人激动的。
+![](ChatGPT_DEMO.gif)
+
+### ChatGPT 对工作的影响
 
 ## 参考文献
 [^1]: [ChatGPT User Statistics & Facts (100 million users reached in January 2023)](https://seo.ai/blog/chatgpt-user-statistics-facts)
@@ -86,3 +104,5 @@ ChatGPT 发布后的 5 天内，其注册用户就达到了 100W+，在其发布
 [^3]: [ChatGPT Statistics for 2023 (New Data + GPT-4 Facts)](https://www.demandsage.com/chatgpt-statistics/)
 [^4]: [关于6G、ChatGPT，全国两会首场“部长通道”最新回应](https://baijiahao.baidu.com/s?id=1759507457489651193&wfr=spider&for=pc)
 [^5]: [两会三人谈丨ChatGPT是一场“虚火”还是颠覆性技术革命？](https://baijiahao.baidu.com/s?id=1759897401604443186&wfr=spider&for=pc)
+[^6]: [Research: quantifying GitHub Copilot’s impact on developer productivity and happiness](https://github.blog/2022-09-07-research-quantifying-github-copilots-impact-on-developer-productivity-and-happiness/)
+[^7]: [Productive Teaching Tool or Innovative Cheating?](https://study.com/resources/perceptions-of-chatgpt-in-schools)
