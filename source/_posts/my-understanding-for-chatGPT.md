@@ -97,6 +97,31 @@ ChatGPT 发布后的 5 天内，其注册用户就达到了 100W+，在其发布
 ![](ChatGPT_DEMO.gif)
 
 ### ChatGPT 对工作的影响
+我们都认识到 ChatGPT 将会对我们的工作带来非常大的影响，诚如目前大家所讨论的一样。然而，ChatGPT 对哪些工作会带来影响，会带来哪些具体的影响，却没有人能说的清楚。
+
+2023 年 3 月 17 日， [OpenAI](https://openai.com/)、[OpenResearch](https://openresearch.com/)、[宾夕法尼亚大学](https://www.upenn.edu/) 共同发表了一篇论文 [*GPTs are GPTs: An early look at the labor market impact potential of large language models*](https://arxiv.org/abs/2303.10130) 来详细的研究 GPT 这种大预言模型对我们的工作的具体影响[^8]。
+
+在 *GPTs are GPTs* 这篇论文中：
+* 论文采用了 美国劳工统计局（Bureau of Labor Statistics, BLS）的劳动力市场统计数据和美国求职网站 [O*Net](https://www.onetonline.org/) 的职位招聘数据来分析类似 GPT 的 LLMs 对美国不同职业的影响。在论文中，作者定义了 Exposure 的概念来分析 LLMs 对不同职业的影响。
+* 论文中引用了 [GPT-4 Technical Report](https://arxiv.org/abs/2303.08774) 中提供的 GPT 在各种考试中的得分情况，从下图中可以看出，GPT 的表现还是非常好的，尤其是在美国生物奥林匹克竞赛、法学院入学考试、高中数学考试、心理学、环境科学……
+  ![](5.jpg)
+* 论文指出，根据分析，80% 的职业中的 10% 的工作会受到 LLMs 的影响。并且，19% 的工作中，至少有 50% 的工作会受到 LLMs 的影响。论文还指出，在 LLMs 的帮助下，15% 的工作可以在同等质量下更快的完成，如果考虑到基于 LLMs 构建的各种工具，这个比例可以提升到 50%。
+  ![](6.jpg)
+* 根据论文的研究，对于需要科学分析、批判性思维等技能的工作，LLMs 不会对其带来较大影响，但是对于需要编程、写作等技能的工作，LLMs 会对齐带来非常大的影响。并且，其中准入门槛越高、收入越高的职业越有可能会受到 LLMs 的影响。
+  ![](7.jpg)
+
+由此，我们可以看出，LLMs 作为一种通用目的技术，其是必然会对经济、社会的各个方面带来不同层面的冲击。我们如何面对这种冲击？正式他、学习他、并利用他？还是回避他、拒绝他？我们又如何正确的认识 LLMs 的能力和人的能力之间的异同呢？
+
+就其当前能力而言，LLMs 更多是产生具体的、明确的、预期之内的结果，而作为社会化动物的人而言，这是与 AI 完全不同的最重要的一点。人类在长期的进化过程中所形成的心理、激情、拼搏等，人类对命运的不确定性所展现的风华，目前看 AI 还是很难仅仅通过语料的训练或者一定程度的随机演化而产生。
+
+* 酒逢知己千杯少，人逢喜事精神爽，这种精神层面所赋予的动力，AI 暂时还是不具备的。
+* 在 AI 的评估下，是无法出现像：巨鹿之战，官渡之战，赤壁之战等在历史星空中的璀璨之星。
+
+在《流浪地球》 这部电影中的 MOSS 是一台智能量子计算机，负责管理空间站事务，是流浪地球计划与火种计划的监督者和执行者。MOSS 会坚定的执行延续人类文明的使命，并能在最短的时间内做出最正确的决定，是趋于完美的智慧体。
+
+电影中，MOSS 经过计算发现根本不可能点能点燃木星，地球即将发生无法挽回的变故。因此，MOSS 执行了火种计划，强制人类进行休眠，空间站启动逃离程序。于此形成鲜明对比的是，刘培强则怒砸 MOSS，然后利用牺牲自己和空间站的方式，最终成功引燃木星，拯救了地球。
+
+》》》待续
 
 ## 参考文献
 [^1]: [ChatGPT User Statistics & Facts (100 million users reached in January 2023)](https://seo.ai/blog/chatgpt-user-statistics-facts)
@@ -106,3 +131,5 @@ ChatGPT 发布后的 5 天内，其注册用户就达到了 100W+，在其发布
 [^5]: [两会三人谈丨ChatGPT是一场“虚火”还是颠覆性技术革命？](https://baijiahao.baidu.com/s?id=1759897401604443186&wfr=spider&for=pc)
 [^6]: [Research: quantifying GitHub Copilot’s impact on developer productivity and happiness](https://github.blog/2022-09-07-research-quantifying-github-copilots-impact-on-developer-productivity-and-happiness/)
 [^7]: [Productive Teaching Tool or Innovative Cheating?](https://study.com/resources/perceptions-of-chatgpt-in-schools)
+[^8]: [GPTs are GPTs: An early look at the labor market impact potential of large language models](https://arxiv.org/abs/2303.10130)
+[^9]: [GPT-4 Technical Report](https://arxiv.org/abs/2303.08774)

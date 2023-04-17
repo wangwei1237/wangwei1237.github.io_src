@@ -45,8 +45,8 @@ copyright: false
     * OPPO: OPPO软件商店内搜索“度知了”
 
 ###### 2023: LiveVideoStack大会分享
-[百度视频质量评测的实践之路](https://pan.baidu.com/s/1t4m9v2s5-Rt3u0U7HrVLqQ?pwd=46k6)
-
+* [百度视频质量评测的实践之路](https://pan.baidu.com/s/1t4m9v2s5-Rt3u0U7HrVLqQ?pwd=46k6)
+* [LiveVideoStack 2022 北京站 优秀讲师](https://mp.weixin.qq.com/s/5YhBDDO5e818nQ_-qGeOTA)
 {% endmdline %}
 
 ###### 可以通过如下方式来帮助站点完善内容：
