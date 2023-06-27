@@ -98,13 +98,42 @@ End Function
 ![](6.jpg)
 
 ## 字符串操作
+当需要处理类似视频分辨率信息的数据`720x1280`时，Excel 中的字符串相关函数就派上大用途了。例如，对于如下表所示的视频数据信息中，如何从resolution列提取视频对应宽高信息？
 
-!!! note find
-    
+| ID | URL | resolution | …… |
+|---|---|---| --- |
+| 1 | url | 720*1280 | …… |
+| 2 | url | 1080*1920 | …… |
 
-!!! note value
+!!! note <a href="https://support.microsoft.com/en-us/office/left-leftb-functions-9203d2d2-7960-479b-84c6-1ea52b99640c">left</a>, <a href="https://support.microsoft.com/en-us/office/right-rightb-functions-240267ee-9afa-4639-a02b-f19e1786cf2f">right</a>, <a href="https://support.microsoft.com/en-us/office/len-lenb-functions-29236f94-cedc-429d-affd-b5e33d2c67cb">len</a>, <a href="https://support.microsoft.com/en-us/office/find-findb-functions-c7912941-af2a-4bdf-a553-d0d89b0a0628">find</a>
+    * **LEFT** returns the first character or characters in a text string, based on the number of characters you specify.
+    * **RIGHT** returns the last character or characters in a text string, based on the number of characters you specify.
+    * **LEN** returns the number of characters in a text string.
+    * **FIND** locate one text string within a second text string, and return the number of the starting position of the first text string from the first character of the second text string.
 
+对于 `720*1280` 而言，`*`左边的字符构成了视频的宽度信息，而 `*` 右边的字符构成了高度信息。
+* 宽度信息：left(str, position(*) - 1) → `=LEFT(str, FIND("*", str)-1)`
+* 高度信息：right(str, length(str) - position(*)) → `=RIGHT(str, LEN(str)-FIND("*",str))`
 
-!!! note left, mid, right
-    
-    
+![](7.jpg)
+
+在视频中，我们一般称视频的分辨率为720P，1080P……，其实也就是宽高信息中的最小值。因此，在得到宽高信息后，我们还希望得到这个视频是720P还是1080P。
+
+!!! note <a href="https://support.microsoft.com/en-us/office/min-function-61635d12-920f-4ce2-a70f-96f202dcc152">min</a>，<a href="https://support.microsoft.com/en-us/office/value-function-257d0108-07dc-437d-ae1c-bc2d3953d8c2">value</a>
+    * **MIN** Returns the smallest number in a set of values.
+    * **VALUE** Converts a text string that represents a number to a number.
+
+但是，实际中，我们使用 `min` 得出的结果却是 0，如下图所示。
+![](8.jpg)
+
+至于原因，在 [min](https://support.microsoft.com/en-us/office/min-function-61635d12-920f-4ce2-a70f-96f202dcc152) 的 `Remarks` 部分解释的非常清楚：
+* If an argument is an array or reference, only numbers in that array or reference are used. Empty cells, logical values, or **text** in the array or reference are ignored.
+* If the arguments contain no numbers, MIN returns 0.
+
+因为我们之前通过 `left`、`right` 得到的数据是字符串类型，因此在 `min` 函数中，这些数据均被过滤，而当 `min` 函数参数中不存在数字参数时，它就返回 0。
+
+此时就需要用到 `value` 函数将字符串转成数字，如下所示：
+![](9.jpg)
+
+## 总结
+写到这里，回头想想，觉得自己真是幸运，幸运于自己及时制止了那按耐不住的想展示一下技术的愚蠢的想法，否则我现在还在焦头烂额的调试自己的那一堆代码。当然，Excel 还有更多的、其他的强大的能力，等遇到了再继续补充吧~
