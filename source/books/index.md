@@ -44,6 +44,12 @@ date: 2020-06-17 16:50:12
 
 ## 转载
 {% valkyrurl
+[url=https://www.promptingguide.ai/zh]
+[title="提示工程指南"]
+[desc="Prompt Engineering"]
+%}
+
+{% valkyrurl
 [url=/shares/Digital_Video_and_HD_Algorithms_and_Interfaces_2nd_ed.pdf]
 [title="Dgital Video and HD Algorithms and Interfaces(2nd Edition)"]
 [avatar=/books/index/digital_video_HD_algorithms.jpg]
