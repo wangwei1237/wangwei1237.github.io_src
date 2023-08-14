@@ -175,7 +175,7 @@ MOS_Scores = [61, 55, 54, 65, 15]
 * A：1490
 * B：1510
 
-可以使用 [elo.py](/2023/08/12/the-interesting-elo-rating-system/elo.py) 脚本 [对 100 个评估视频的 MOS 得分](/2023/08/12/the-interesting-elo-rating-system/MOS.html) 进行 Elo 积分迭代，其 Elo 积分的迭代如下图所示：
+可以使用 [elo.py](https://github.com/wangwei1237/wangwei1237.github.io_src/blob/master/source/_posts/the-interesting-elo-rating-system/elo.py) 脚本 [对 100 个评估视频的 MOS 得分](/2023/08/12/the-interesting-elo-rating-system/MOS.html) 进行 Elo 积分迭代，其 Elo 积分的迭代如下图所示：
 
 ![](9.png)
 
