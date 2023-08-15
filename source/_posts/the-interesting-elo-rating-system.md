@@ -183,6 +183,12 @@ MOS_Scores = [61, 55, 54, 65, 15]
 
 另外，对于视频评估而言，我们认为，给定两个编码器赋以相同的初始分（假定两个编解码器效果一致）更为合理。
 
+### 视频顺序对 Elo 的影响
+如前所述，初始分数有可能会对 Elo 带来影响，但是因为 Elo 的收敛特性，当视频样本足够多的时候，视频顺序不会影响最终的 Elo 得分。
+
+为此，我们对视频顺序进行了随机排序，然后再来计算 Elo 得分。我们发现，视频顺序变换后，并没有影响最终的结论。
+![](10.png)
+
 ## 参考文献
 [^1]: [Elo Rating System](https://www.chess.com/terms/elo-rating-chess)
 [^2]: [Elo Rating System](https://en.wikipedia.org/wiki/Elo_rating_system)
