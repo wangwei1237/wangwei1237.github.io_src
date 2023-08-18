@@ -44,6 +44,12 @@ date: 2020-06-17 16:50:12
 
 ## 转载
 {% valkyrurl
+[url=https://learnprompting.org/zh-Hans/docs/intro]
+[title="Learn Prompting"]
+[desc="Prompt Engineering"]
+%}
+
+{% valkyrurl
 [url=https://www.promptingguide.ai/zh]
 [title="提示工程指南"]
 [desc="Prompt Engineering"]
