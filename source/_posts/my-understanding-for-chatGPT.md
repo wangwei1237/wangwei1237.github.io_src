@@ -5,7 +5,7 @@ top: false
 date: 2023-04-05 08:24:12
 authors:
 categories:
-  - 文化
+  - LLM
 tags:
   - OpenAI
   - ChatGPT
