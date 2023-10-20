@@ -4,6 +4,13 @@ date: 2020-06-17 16:50:12
 ---
 ## 原创
 {% valkyrurl
+[url=//LLM_in_Action/]
+[title="Large Language Model in Action"]
+[avatar=/LLM_in_Action/cover.png]
+[desc="基于文心大模型的大语言实践"]
+%}
+
+{% valkyrurl
 [url=/digital_video_concepts/]
 [title="数字视频概念，方法和测量指标"]
 [avatar=/digital_video_concepts/images/cover_0.jpg]
