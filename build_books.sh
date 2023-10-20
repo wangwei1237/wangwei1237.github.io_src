@@ -13,7 +13,8 @@ BOOKS=('chaos-engineering'
 'temperature-of-the-idioms' 
 'monolith-to-microservices' 
 'discovery-the-unpredictable-risk' 
-'Kubernetes-in-Action-Second-Edition')
+'Kubernetes-in-Action-Second-Edition'
+'LLM_in_Action')
 
 mkdir -p ${ROOT_PATH}/books && cd ${ROOT_PATH}/books
 URL=""
