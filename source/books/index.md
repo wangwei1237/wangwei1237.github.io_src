@@ -4,7 +4,7 @@ date: 2020-06-17 16:50:12
 ---
 ## 原创
 {% valkyrurl
-[url=//LLM_in_Action/]
+[url=/LLM_in_Action/]
 [title="Large Language Model in Action"]
 [avatar=/LLM_in_Action/cover.png]
 [desc="基于文心大模型的大语言实践"]
