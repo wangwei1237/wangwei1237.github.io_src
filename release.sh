@@ -13,7 +13,8 @@ BOOKS=('chaos-engineering'
 'temperature-of-the-idioms' 
 'monolith-to-microservices' 
 'discovery-the-unpredictable-risk' 
-'Kubernetes-in-Action-Second-Edition')
+'Kubernetes-in-Action-Second-Edition'
+'LLM_in_Action')
 
 cd public
 for ((i=0; i <${#BOOKS[@]}; i++))
