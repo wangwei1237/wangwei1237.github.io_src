@@ -28,7 +28,7 @@ date: 2020-06-30 09:30:07
 %}
 
 {% valkyrurl
-[url=/shares/vqs.pdf]
+[url=https://pan.baidu.com/s/1hpqNcOEtLn2xfxjKq8YNmA?pwd=qw49]
 [title="视频质量主观评估方法和规范"]
 %}
 
@@ -38,13 +38,13 @@ date: 2020-06-30 09:30:07
 %}
 
 {% valkyrurl
-[url=/shares/professional-knowledge-and-practice.pdf]
+[url=https://pan.baidu.com/s/19NsGhWMgI3Nwdh-E95qUvA?pwd=b28i]
 [title="专业认知与实践"]
 [desc="应研究生导师之邀为大一新生做的一次分享"]
 %}
 
 {% valkyrurl
-[url=/shares/VQA_RIGHTLY.pdf]
+[url=https://pan.baidu.com/s/1n_bJSWIh4gdhxHJJzYZYzw?pwd=zspe]
 [title="如何正确的评估视频画质"]
 [desc="视频评测"]
 %}
