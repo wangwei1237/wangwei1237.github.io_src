@@ -84,7 +84,18 @@ Sora 对自然语言有着深刻的理解，这使其可以准确地解释用户
 "video=https://cdn.openai.com/sora/videos/grandma-birthday.mp4" "autoplay" "poster=/2024/02/22/Sora-the-starlight-in-the-long-night-of-AGI/2.jpg"
 %}
 
+## Sora 的相关技术
+在 Sora 的技术文档 [Video generation models as world simulators](https://openai.com/research/video-generation-models-as-world-simulators) 中，OpenAI 介绍了 Sora 模型的能力和用到的相关技术，但是对于 Sora 模型的具体技术细节并没有进行过多的披露。
+* 把 Visual Patches 作为 Visual Tokens，进而统一了文本、图像、视频的生成式模型架构。不过 Visual Tokens 并非是 OpenAI 的原创，而是借鉴了谷歌的 magvit[^magvit] [^magvit_paper] 的思路。
+* Diffusion Models，正如技术报告中所述：*Sora is a diffusion model21, given input noisy patches (and conditioning information like text prompts), it’s trained to predict the original “clean” patches. **Importantly, Sora is a diffusion transformer.*** 而这个技术最初是由 Bill 和 谢赛宁在论文 [Scalable Diffusion Models with Transformers](https://arxiv.org/abs/2212.09748) 提出的。这也导致当 Sora 刚发布的的时候，网上有自媒体误传 Sora 的作者是 谢赛宁的乌龙事件，之后 谢赛宁也在 Twitter 上对此作了解释和回应。
+* Autoregressive Transformers，为了让 DiT 支持自回归 Diffusion，Sora 借鉴了谷歌在 [Photorealistic Video Generation with Diffusion Models](https://arxiv.org/abs/2312.06662) 中提到的 W.A.L.T 方案。
+
+更多的技术解读可以参考红博士的 [去魅 Sora: OpenAI 鲜肉小组的小试牛刀](https://mp.weixin.qq.com/s/H8UYQ27nNPbW2jetseJgYQ)，此处不再一一介绍。
+
 ## Sora 的思考
+所以，整体上看 Sora 并没有发明新的技术，只是对原有技术的整合而已。但是这恰恰是我们该认真思考的最重要的点。都是原有的技术，这些技术论文也都是公开的，为什么在 Sora 之前，却没有出现如此惊艳的 TTV 效果呢？单纯的技术拼凑可以拼凑出 类似 Sora 的突破性产品吗？同样是用乐高的零件，为什么有的大牛就能[用 84000 片乐高拼成宏伟的紫禁城呢](https://zhuanlan.zhihu.com/p/336748815)，而有些人离开了图纸就什么也拼不出来呢？
+
+我想，之所以是 OpenAI 首先发布了 Sora，这里面肯定是有某些特殊的原因的。在我看来 `用实践检验真理` 是最重要的原因之一。
 
 ## 参考文献
 [^billpeeb]: [Sora is here!](https://twitter.com/billpeeb/status/1758194105111269697?s=20)
@@ -94,3 +105,5 @@ Sora 对自然语言有着深刻的理解，这使其可以准确地解释用户
 [^sora_tr]: [Video generation models as world simulators](https://openai.com/research/video-generation-models-as-world-simulators)
 [^DiTs]: [Scalable Diffusion Models with Transformers](https://arxiv.org/abs/2212.09748)
 [^dm]: [一文弄懂 Diffusion Model](https://mp.weixin.qq.com/s/rGyX0w43EifuK781i3NmHw)
+[^magvit]: [google-research/magvit](https://github.com/google-research/magvit)
+[^magvit_paper]: [MAGVIT: Masked Generative Video Transformer](https://arxiv.org/abs/2212.05199)
