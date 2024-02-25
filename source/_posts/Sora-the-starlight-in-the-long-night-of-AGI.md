@@ -72,6 +72,16 @@ Sora 对自然语言有着深刻的理解，这使其可以准确地解释用户
 * 当路边的广告牌跟随者镜头的运动逐渐出现，并从近景慢慢变为远景的时候，广告牌上的字体也慢慢变得模糊，并且在这个过程中视频丝毫没有出现跳跃。
 * 在视频的第 36S 处，视频从全景镜头丝滑切换到了特写镜头，墨镜的反光效果、脸部皮肤、头发的效果、主角的表情更是相当逼真。
 
+我们之所以感觉到 Sora 生成的视频如此的逼真，是因为 Sora 不仅仅是在操作像素、图形，而是在慢慢的学习物理世界的规律。就像 ChatGTP 通过大量的数据来理解人类语言体系一样，Sora 正在通过大量的视觉数据来理解物理世界的法则——视觉数据中的信息是对真实物理世界的映射，这才是 Sora 最令人惊奇的地方。
+
+Sora 可以理解画面，理解画面上的角色和实体，并理解实体之间的相互关系和物理规律。ChatGPT 通过理解人类语言实现了 AI 和人的互动，Sora 通过理解物理世界则可能会实现 AI 和世界的互动，这是既 ChatGPT 以来， AGI 道路上的又一座里程碑。
+
+正如 OpenAI 在 Sora 技术报告中所说的那样[^sora_tr]：
+> Our results suggest that scaling video generation models is a promising path towards building general purpose simulators of the physical world.
+
+也正如 OpenAI 在其使命和愿景中所说的那样[^openai_about]：
+> Our mission is to ensure that artificial general intelligence—AI systems that are generally smarter than humans—benefits all of humanity.
+
 
 ## Sora 的不足
 从目前 Sora 生成的视频来看，即便 Sora 已经令我们相当兴奋，但是也依然存在很多不足。所有的这些不足，OpenAI 在其官方介绍页面也都给了对应的生成视频，并且给出了对应视频中存在的问题。
@@ -87,15 +97,53 @@ Sora 对自然语言有着深刻的理解，这使其可以准确地解释用户
 ## Sora 的相关技术
 在 Sora 的技术文档 [Video generation models as world simulators](https://openai.com/research/video-generation-models-as-world-simulators) 中，OpenAI 介绍了 Sora 模型的能力和用到的相关技术，但是对于 Sora 模型的具体技术细节并没有进行过多的披露。
 * 把 Visual Patches 作为 Visual Tokens，进而统一了文本、图像、视频的生成式模型架构。不过 Visual Tokens 并非是 OpenAI 的原创，而是借鉴了谷歌的 magvit[^magvit] [^magvit_paper] 的思路。
-* Diffusion Models，正如技术报告中所述：*Sora is a diffusion model21, given input noisy patches (and conditioning information like text prompts), it’s trained to predict the original “clean” patches. **Importantly, Sora is a diffusion transformer.*** 而这个技术最初是由 Bill 和 谢赛宁在论文 [Scalable Diffusion Models with Transformers](https://arxiv.org/abs/2212.09748) 提出的。这也导致当 Sora 刚发布的的时候，网上有自媒体误传 Sora 的作者是 谢赛宁的乌龙事件，之后 谢赛宁也在 Twitter 上对此作了解释和回应。
+* Diffusion Models，正如技术报告中所述：*Sora is a diffusion model, given input noisy patches (and conditioning information like text prompts), it’s trained to predict the original “clean” patches. **Importantly, Sora is a diffusion transformer.*** 而这个技术最初是由 Bill 和 谢赛宁在论文 [Scalable Diffusion Models with Transformers](https://arxiv.org/abs/2212.09748)[^DiTs] 提出的。这也导致当 Sora 刚发布的的时候，网上有自媒体误传 Sora 的作者是 谢赛宁的乌龙事件，之后 谢赛宁也在 Twitter 上对此作了解释和回应。
 * Autoregressive Transformers，为了让 DiT 支持自回归 Diffusion，Sora 借鉴了谷歌在 [Photorealistic Video Generation with Diffusion Models](https://arxiv.org/abs/2312.06662) 中提到的 W.A.L.T 方案。
 
 更多的技术解读可以参考红博士的 [去魅 Sora: OpenAI 鲜肉小组的小试牛刀](https://mp.weixin.qq.com/s/H8UYQ27nNPbW2jetseJgYQ)，此处不再一一介绍。
 
 ## Sora 的思考
-所以，整体上看 Sora 并没有发明新的技术，只是对原有技术的整合而已。但是这恰恰是我们该认真思考的最重要的点。都是原有的技术，这些技术论文也都是公开的，为什么在 Sora 之前，却没有出现如此惊艳的 TTV 效果呢？单纯的技术拼凑可以拼凑出 类似 Sora 的突破性产品吗？同样是用乐高的零件，为什么有的大牛就能[用 84000 片乐高拼成宏伟的紫禁城呢](https://zhuanlan.zhihu.com/p/336748815)，而有些人离开了图纸就什么也拼不出来呢？
+所以，整体上看 Sora 并没有发明新的技术，只是对原有技术的整合而已。但是这恰恰是我们该认真思考的最重要的点。都是原有的技术，这些技术论文也都是公开的，为什么在 Sora 之前，却没有出现如此惊艳的 TTV 效果呢？单纯的技术拼凑可以拼凑出类似 Sora 的突破性产品吗？同样是用乐高的零件，为什么有的大牛就能[用 84000 片乐高拼成宏伟的紫禁城呢](https://zhuanlan.zhihu.com/p/336748815)，而有些人离开了图纸就什么也拼不出来呢？
 
-我想，之所以是 OpenAI 首先发布了 Sora，这里面肯定是有某些特殊的原因的。在我看来 `用实践检验真理` 是最重要的原因之一。
+### 鉴定的践行能力
+我想，之所以是 OpenAI 首先发布了 Sora，这里面肯定是有某些特殊的原因的。在我看来 **思维方式的多样性** 以及其 **坚定的践行能力** 是非常重要的因素。
+
+从 *A Survey on ChatGPT and Beyond*[^chatgpt] 中的大语言模型族谱中我们也能发现，GPT 在发展之初就没有采用当时自编码的主流方案，而是采用了很少有人涉足的自回归的分支，这对 OpenAI 的科研工作者而言，需要非常大的勇气和毅力。感谢 OpenAI 的大胆和魄力，我们才尽可能早的感受到了 AI 大模型的强大性能。
+
+![大语言模型族谱](https://wangwei1237.github.io/LLM_in_Action/images/LLMTree.jpeg)
+
+而这样的大胆，并非是匹夫之勇，而是通过不断实践、实验来不断强化对技术方向的判断。在 *Scaling Laws for Neural Language Models*[^sl] 中，他们提到：
+> We study **empirical scaling laws** for language model performance on the cross-entropy loss. The loss scales as a power-law with model size, dataset size, and the amount of compute used for training, with some trends spanning more than seven orders of magnitude. Other architectural details such as network width or depth have minimal effects within a wide range. 
+
+在 Sora 的技术文档中，我们又看到：
+> We **explore large-scale training of generative models on video data**.
+
+从 GPT 的演进历程[^gptc]我们也能感受到，从 2018 年～2022 年，在长达 5 年多的时间里，OpenAI 一步一步通过探索和实践，让大模型应该具备的相关能力一点一点的浮出水面，进入我们的视野。
+
+实践是检验真理的唯一标准，想尽一切办法让实践边的可行：扩大数据规模，增强数据质量，扩大模型规模……
+
+### 强大的工程能力
+当不该发生的事情发生了，科学就需要登场了；当该发生的事情没有发生，工程就需要登场了。OpenAI 强大的技术整合能力和工程化能力是 Sora 可以成功的另一个因素。
+
+虽然 Sora 用到的大部分的技术都是现成的技术，但是为了在工程上将其整合到一起从而实现 Sora 的效果，整个团队作了非常多的事情：
+* 整合 DiT[^[^DiTs]] 和 W.A.L.T[^magvit]。
+* 在训练阶段，利用 GPT 给视频标注 Caption 数据，在推理阶段，利用 GPT 扩写用户输入的 Prompt，这使得 Sora 可以生成精准遵循用户指令的高质量的视频。
+* 生产了足够规模、质量足够大的标注数据，做过标注的应该都可以理解到这里的难度究竟有多大。
+* 提出了通用视觉数据模型，从而可以不再像之前的方法那样需要对不同的视觉数据进行特定的处理。
+* ……
+
+我们的工程能力产出了多少像下图那样的系统？
+
+![](http://localhost:4000/2021/09/11/How-to-Read-and-Use-the-Open-Source-Projects/2.png)
+
+在 GPT-4 的技术报告中[^gpt4_tr]，OpenAI 提到他们可以做到：在小规模的计算成本下训练出来的模型，可以准确预估到在计算成本扩大之后，模型的性能将会怎样？这对于像 GPT4 这样训练一次就要耗费几周甚至上月的大模型而言，其效率提升真的是如虎添翼。
+> A large focus of the GPT-4 project was building a deep learning stack that scales predictably. The primary reason is that for very large training runs like GPT-4, it is not feasible to do extensive model-specific tuning. To address this, we developed infrastructure and optimization methods that have very predictable behavior across multiple scales. These improvements allowed us to reliably predict some aspects of the performance of GPT-4 from smaller models trained using 1, 000× – 10, 000× less compute.
+
+所以我们讲，科学和技术决定了产品的上限，工程能力决定了产品的下限，科学和技术可以试错，但是工程能力务必讲究精益求精，唯有精益求精的工程能力才能产生足够惊艳的效果。
+
+## 后记
+随着 Sora 的爆火，越来越多的公司也开始发布新的技术：
+* 2 月 22 日，Stability AI 发布了 [Stable Diffusion 3](https://stability.ai/news/stable-diffusion-3)，从其官方展示的效果看，SD3 在文字拼写、色彩协调、图片逼真度等各个方面都表现惊人。
 
 ## 参考文献
 [^billpeeb]: [Sora is here!](https://twitter.com/billpeeb/status/1758194105111269697?s=20)
@@ -107,3 +155,8 @@ Sora 对自然语言有着深刻的理解，这使其可以准确地解释用户
 [^dm]: [一文弄懂 Diffusion Model](https://mp.weixin.qq.com/s/rGyX0w43EifuK781i3NmHw)
 [^magvit]: [google-research/magvit](https://github.com/google-research/magvit)
 [^magvit_paper]: [MAGVIT: Masked Generative Video Transformer](https://arxiv.org/abs/2212.05199)
+[^openai_about]: [OpenAI Vision](https://openai.com/about)
+[^chatgpt]: [Harnessing the Power of LLMs in Practice: A Survey on ChatGPT and Beyond](https://arxiv.org/abs/2304.13712)
+[^sl]: [Scaling Laws for Neural Language Models](https://arxiv.org/abs/2001.08361)
+[^gptc]: [GPT 的贡献](https://wangwei1237.github.io/LLM_in_Action/llm_intro.html)
+[^gpt4_tr]: [GPT-4 Technical Report](https://arxiv.org/abs/2303.08774)
