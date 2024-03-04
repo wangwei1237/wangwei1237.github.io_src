@@ -102,6 +102,8 @@ Sora 可以理解画面，理解画面上的角色和实体，并理解实体之
 
 更多的技术解读可以参考红博士的 [去魅 Sora: OpenAI 鲜肉小组的小试牛刀](https://mp.weixin.qq.com/s/H8UYQ27nNPbW2jetseJgYQ)，此处不再一一介绍。
 
+微软研究院和理海大学的研究者根据已发表的技术报告和逆向工程，首次在论文 *Sora: A Review on Background, Technology, Limitations, and Opportunities of Large Vision Models* 中全面回顾了 Sora 的背景、相关技术、新兴应用、当前局限和未来机遇[^sora_wr]。
+
 ## Sora 的思考
 所以，整体上看 Sora 并没有发明新的技术，只是对原有技术的整合而已。但是这恰恰是我们该认真思考的最重要的点。都是原有的技术，这些技术论文也都是公开的，为什么在 Sora 之前，却没有出现如此惊艳的 TTV 效果呢？单纯的技术拼凑可以拼凑出类似 Sora 的突破性产品吗？同样是用乐高的零件，为什么有的大牛就能[用 84000 片乐高拼成宏伟的紫禁城呢](https://zhuanlan.zhihu.com/p/336748815)，而有些人离开了图纸就什么也拼不出来呢？
 
@@ -160,3 +162,4 @@ Sora 可以理解画面，理解画面上的角色和实体，并理解实体之
 [^sl]: [Scaling Laws for Neural Language Models](https://arxiv.org/abs/2001.08361)
 [^gptc]: [GPT 的贡献](https://wangwei1237.github.io/LLM_in_Action/llm_intro.html)
 [^gpt4_tr]: [GPT-4 Technical Report](https://arxiv.org/abs/2303.08774)
+[^sora_wr]: [Sora: A Review on Background, Technology, Limitations, and Opportunities of Large Vision Models](https://arxiv.org/abs/2402.17177)
