@@ -63,7 +63,7 @@ $$
 
 * STEP 1：从 $MOS_A$ 和 $MOS_B$ 中随机抽取 $M$ 个样本得到 $MOS_{A'}$ 和 $MOS_{B'}$
 * STEP 2：计算 $MOS_{A'}$ 和 $MOS_{B'}$ 的平均值 $MOS_{A,i}$ 和 $MOS_{B,i}$
-* STEP 3：利用 $Elo_{A,i}$ 和 $Elo_{B,i}$ 计算 Elo 积分
+* STEP 3：利用 $MOS_{A,i}$ 和 $MOS_{B,i}$ 计算 Elo 积分
 * STEP 4：重复如上步骤 $K$ 次，得到 $K$ 轮的 Elo 积分
 * STEP 5：计算 $K$ 组 Elo 积分的平均值作为最终 Elo 积分
 
