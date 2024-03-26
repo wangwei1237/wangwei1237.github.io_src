@@ -49,6 +49,13 @@ date: 2020-06-17 16:50:12
 [desc="Building Microservices is a forthcoming book on all aspects of Microservices"]
 %}
 
+{% valkyrurl
+[url=https://lakens.github.io/statistical_inferences/]
+[title="Improving Your Statistical Inferences"]
+[avatar=/books/index/iysi.png]
+[desc="中文版：https://lakens.github.io/statistical_inferences_chinese/"]
+%}
+
 ## 转载
 {% valkyrurl
 [url=https://learnprompting.org/zh-Hans/docs/intro]
