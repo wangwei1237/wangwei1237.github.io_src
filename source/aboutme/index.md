@@ -6,7 +6,7 @@ copyright: false
 ---
 
 ## 王伟 | 17哥
-###### 嗨，我是王伟，大家都喊我17哥，一名测试开发工程师，技术观察者。喜欢读书、写作、逛 GitHub，喜欢研究新的技术。从事过质量改进和效率提升的相关工作，也从事过产品分析的相关工作，目前从事视频相关方向的工作。
+###### 嗨，我是王伟，大家都喊我17哥，一名测试开发工程师，技术观察者。喜欢读书、写作、逛 GitHub，喜欢研究新的技术。从事过质量改进和效率提升的相关工作，也从事过产品分析的相关工作，还从事过视频相关方向的工作，目前从事大模型、智能体、语音相关的工作。
 
 ###### <i class="fa fa-map-marker" style="color:#0681D0"></i> 北京 <br /><i class="fa fa-github" style="color:#0681D0"></i> [wangwei1237](https://github.com/wangwei1237) <br /> <i class="fa fa-envelope" style="color:#0681D0"></i> [wangwei1237](mailto:wangwei1237@gmail.com)
 
@@ -47,6 +47,10 @@ copyright: false
 ###### 2023: LiveVideoStack大会分享
 * [百度视频质量评测的实践之路](https://pan.baidu.com/s/1t4m9v2s5-Rt3u0U7HrVLqQ?pwd=46k6)
 * [LiveVideoStack 2022 北京站 优秀讲师](https://mp.weixin.qq.com/s/5YhBDDO5e818nQ_-qGeOTA)
+
+###### 2024: LLM in Action
+* [LLM in Action](https://wangwei1237.github.io/LLM_in_Action/)
+
 {% endmdline %}
 
 ###### 可以通过如下方式来帮助站点完善内容：
