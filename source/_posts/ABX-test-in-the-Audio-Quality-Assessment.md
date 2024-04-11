@@ -139,7 +139,7 @@ for i in range(10):
 ### 伯努利分布的 p 值
 我们可以对观察到的打分结果样本计算其 $p$ 值，从而来判断是否存在足够的观测正确来允许我们拒绝 $H_0$。
 
-根据 *Improving Your Statistical Inferences* 中的 第一章中对 $p$ 值的介绍：
+根据 *Improving Your Statistical Inferences* 中的 第一章中对 $p$ 值的介绍[^p_value]：
 
 > 在区分信号和噪点时，$p$ 值是作为防止被随机因素诱导的第一道防线。
 > 
@@ -170,9 +170,65 @@ plt.show()
 因此，在 ABX 测试报告中，除了聚类类统计信息外，我们还需要披露更多的统计推断的指标，例如 $p$ 值，$\alpha$ 值，置信区间等，以便让结果更具备可解释性。
 
 ## ABX 测试需要关注的事项
+### 样本大小需要控制
+根据 QSC 的建议：在进行 ABX 测试时，样本的大小一般可以为 10~25 个，因为过多的样本会导致受试者可能会出现疲劳，这会降低测试的敏感性。[^abx_user_manual]
 
+> The very minimum number of trials you should do in a session is ten.
+> 
+> It’s not a good idea to try more than 25 trials in the same sitting with the same listener. After a while, listener fatigue sets in and it gets harder for him or her to concentrate and judge the sound quality.
 
+### ABX 无法得出无差异的结论
+在 *Improving Your Statistical Inferences* 的第一章中提到，基于 $p$ 值推论的结果是以已知的最大误差率为基础，因此 $p$ 值永远不允许我们肯定地陈述任何事情。即便概率再低，也有被随机因素诱导的可能[^p_value]。
 
+> Because claims are made using a methodological procedure with known maximum error rates, **a p-value never allows you to state anything with certainty**.
+>  
+> Even if we set the $\alpha$ level to 0.000001, any single claim can be an error, Fisher ([1935](http://tankona.free.fr/fisher1935.pdf)) reminds us, ‘for the “one chance in a million” will undoubtedly occur, with no less and no more than its appropriate frequency, however surprised we may be that it should occur to us”. 
+
+ABX 只能证明 A 和 B 之间存在差异；我们不能根据 $p$ 值不足以证明 A 和 B 之间存在差异，就得出 A和 B 之间是无差异的这种论述[^SA_ABX]。
+
+> For example, ABX can only tell you if there is a perceptible difference between two sounds. 
+> 
+> It cannot tell you that there is no difference between the sounds.
+> 
+> Do not conclude there is no difference. ABX can only prove differences in audio files, not prove that there is no difference.
+
+### X 必须符合均匀分布
+在 ABX 测试中，我们总是希望 X 的来源是随机的，这样才能从样本上保证 A 和 B 之间是无偏差的。还是以 10 样本的实验为例，如果 X 信号的来源分布如下所示：
+
+| X 样本数 | 来自 A | 来自 B |
+| :---: | :---: | :---: |
+| 10 | 9 | 1 |
+
+在这种情况下，假定来在 A 的 9 个样本用户打分全部正确，但是来自 B 的 1 个样本用户打分错误，如果我们假设此时用户还是会随机给每个样本打分（$H_0$），那么会出现什么情况？
+
+| 指标 | 结果 |
+| :---: | :---: |
+| 实验次数 | 10 |
+| 正确次数 | 9 |
+| 正确百分比 | 90% |
+| $p$ 值 | 0.02 |
+| 置信水平 | 95% |
+| 出现概率 | 0.0098 |
+
+在如上的结果下，我们能得出 A 和 B 之间存在差异的结论吗？看起来这个结论是不合理的。为了避免样本的分布偏差对结果的影响，我们在组织 ABX 测试时，必须保证 X 的来源是随机抽取的，是符合均匀分布的。
+
+### 完整披露全部统计数据
+对于 ABX 的统计推断分析而言，重要的是要证明结果是公正的（总体结果和每个受试者的结果）。对于任何 $p<0.05$ 的显著结果，必须报告实验的：
+* **样本均衡性**
+* **试验总次数**
+* **正确次数**
+* **正确百分比**
+* **随机变量出现的概率**
+* **置信水平**
+* **$p$ 值**
+
+统计学上的显著结果只能表明，受试者只是在猜测的概率很小。但是，我们必须时刻提醒自己，即便概率再小也完全有可能在随机猜测下获得统计学上的显著结果。因此，在 ABX 测试中，如果结果达到 95% 的置信水平，我们可以说听众只是随机猜测的可能性只有 5%。此时，我们会很有把握地声称 A 和 B 之间可能存在可感知的差异，仅此而已。
+
+## 度知了中的 ABX 测试
+
+```bash
+$ 开发中...
+```
 
 ## 参考文献
 [^ABX]: [Standardizing Auditory Tests](https://pubs.aip.org/asa/jasa/article/22/5_Supplement/675/625412/Standardizing-Auditory-Tests)
