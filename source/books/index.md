@@ -56,6 +56,12 @@ date: 2020-06-17 16:50:12
 [desc="中文版：https://lakens.github.io/statistical_inferences_chinese/"]
 %}
 
+{% valkyrurl
+[url=https://arxiv.org/abs/2305.18793]
+[title="A First Course in Causal Inference"]
+[desc="伯克利大学——因果推论课程"]
+%}
+
 ## 转载
 {% valkyrurl
 [url=https://learnprompting.org/zh-Hans/docs/intro]
