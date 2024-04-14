@@ -14,7 +14,8 @@ BOOKS=('chaos-engineering'
 'monolith-to-microservices' 
 'discovery-the-unpredictable-risk' 
 'Kubernetes-in-Action-Second-Edition'
-'LLM_in_Action')
+'LLM_in_Action'
+'introduction_to_probability_and_statistics')
 
 cd public
 for ((i=0; i <${#BOOKS[@]}; i++))
@@ -32,6 +33,7 @@ sed -i "4 i ${book2} " sitemap.xml
 cp sitemap.xml bd_sitemap.xml && sed -i "s/github.io/gitee.io/g" bd_sitemap.xml
 cp monolith-to-microservices/sitemap.xml m2m_sitemap.xml
 cp LLM_in_Action/sitemap.xml llm_sitemap.xml
+cp introduction_to_probability_and_statistics/sitemap.xml itpas.xml
 cp m2m_sitemap.xml m2m_e_sitemap.xml && sed -i "s/gitee/github/g" m2m_e_sitemap.xml
 
 cd .. 
