@@ -4,6 +4,13 @@ date: 2020-06-17 16:50:12
 ---
 ## 原创
 {% valkyrurl
+[url=/introduction_to_probability_and_statistics/]
+[title="Introduction to Probability and Statistics for Engineers and Scientists（中文版）"]
+[avatar=/introduction_to_probability_and_statistics/cover.png]
+[desc="原书第六版的中文翻译版"]
+%}
+
+{% valkyrurl
 [url=/LLM_in_Action/]
 [title="Large Language Model in Action"]
 [avatar=/LLM_in_Action/cover.png]
