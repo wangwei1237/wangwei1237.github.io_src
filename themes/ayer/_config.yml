@@ -80,13 +80,13 @@ word_count:
 
 # 打赏
 # 打赏type设定：0-关闭打赏； 1-文章对应的md文件里有reward:true属性，才有打赏； 2-所有文章均有打赏
-reward_type: 1
+reward_type: 2
 # 打赏wording
 reward_wording: "请我喝杯咖啡吧~"
 # 支付宝二维码图片地址，跟你设置logo的方式一样。比如：/images/alipay.jpg
 #alipay: /images/alipay.jpg
 # 微信二维码图片地址
-#weixin: /images/wechat.jpg
+weixin: /images/weixin.png
 
 # 版权声明
 # 版权声明type设定：0-关闭版权声明； 1-文章对应的md文件里有copyright: true属性，才有版权声明； 2-所有文章均有版权声明
@@ -240,6 +240,11 @@ minivaline:
 # 首页广告配置
 # 可以根据需要自行增加ad_3，ad_4...，留空则不显示，建议图片和url不要带ad等关键词，否则可能会被adblock等插件屏蔽
 ads:
+  ad_5:
+    title: Introduction to Probability and Statistics for Engineers and Scientists
+    img: https://wangwei1237.github.io/introduction_to_probability_and_statistics/cover.png
+    url: https://wangwei1237.github.io/introduction_to_probability_and_statistics/
+    width: 150
   ad_4:
     title: 大模型实践
     img: https://wangwei1237.github.io/LLM_in_Action/cover.png

@@ -231,10 +231,6 @@ ABX 只能证明 A 和 B 之间存在差异；我们不能根据 $p$ 值不足�
 
 当然，在我们的最新版本中，除了 ABX 测试，我们还提供了 [MUSHRA](https://www.itu.int/rec/R-REC-BS.1534)、[CCR](https://www.itu.int/rec/T-REC-P.800-199608-I)、[DCR](https://www.itu.int/rec/R-REC-BS.1116)、[ACR](https://www.itu.int/rec/R-REC-BT.500)等多种评测方法，以满足不同用户、多场景下的音频质量评估需求。
 
-```bash
-$ Android 版本开发中...
-```
-
 ## 参考文献
 [^ABX]: [Standardizing Auditory Tests](https://pubs.aip.org/asa/jasa/article/22/5_Supplement/675/625412/Standardizing-Auditory-Tests)
 [^SA_ABX]: [Statistical Analysis of ABX Results Using Signal Detection Theory](https://www.researchgate.net/publication/267193579_Statistical_Analysis_of_ABX_Results_Using_Signal_Detection_Theory)
