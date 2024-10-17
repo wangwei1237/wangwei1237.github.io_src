@@ -94,7 +94,7 @@ $$
 \mathbf{Z} = \mathbf{W}\mathbf{X} = \text{softmax}\left(\mathbf{X}\mathbf{X}^T\right)\mathbf{X}
 $$
 
-于是，对于原始的词向量矩阵 $\mathbf{X}$ 而言，经过一些列的矩阵乘法运算，我们得到了根据相关性权重的加权词向量表示。也就是说原始的词向量 $\mathbf{x_i}$ 可以表示为所有词向量的加权表示 $\mathbf{z_i}$
+于是，对于原始的词向量矩阵 $\mathbf{X}$ 而言，经过一些列的矩阵乘法运算，我们得到了根据相关性权重的加权词向量表示。也就是说原始的词向量 $\mathbf{x_i}$ 可以表示为所有词向量的加权表示 $\mathbf{z_i}$。所以，可以用 `Attention` 来解释一句话中不同词之间的相互关系。Transform 模型中的 `Attention` 其实就是矩阵 $\mathbf{Z}$，所以 Transform 可以理解输入序列中的不同的部分，并分析输入序列中不同词之间的关系，进而捕获到上下文信息。
 
 了解如上介绍的 $\text{softmax}\left(\mathbf{X}\mathbf{X}^T\right)\mathbf{X}$ 背后的逻辑对于理解 Transform 中的各个矩阵的含义至关重要，因此我们花了很大的篇幅来对其进行分析。
 
@@ -159,3 +159,44 @@ print(Z)
 [2,]    1 1.540148 2.722573
 [3,]    1 2.864164 2.000000
 ```
+
+## Transformer 中的 Attention
+论文 [Attention Is All You Need](https://arxiv.org/html/1706.03762v7) 的 3.2 节对 Attention 的描述如下[^1]：
+
+> An attention function can be described as mapping a query and a set of key-value pairs to an output, where the query, keys, values, and output are all vectors.
+>  
+> The output is computed as a weighted sum of the values, where the weight assigned to each value is computed by a compatibility function of the query with the corresponding key.
+
+论文中也给出了 Attention 计算公式：
+
+$$
+\text{Attention}(\mathbf{Q},\mathbf{K},\mathbf{V})=\text{softmax}\left(\frac{\mathbf{Q}\mathbf{K}^T}{\sqrt{d_k}}\right)\mathbf{V}
+$$
+
+其中，$\mathbf{Q}$、$\mathbf{K}$ 和 $\mathbf{V}$ 都是矩阵，分别代表 `Query`、`Key` 和 `Value`，$d_k$ 是 $\mathbf{K}$ 的行向量维度。 `Query`、`Key` 和 `Value` 都是为了计算 `注意力` 而引入的抽象的概念，它们都是对原始的输入 $\mathbf{X}$ 的线性变换。
+
+$$
+\begin{aligned}
+\mathbf{Q} &= \mathbf{X}\mathbf{W}^Q \\
+\mathbf{K} &= \mathbf{X}\mathbf{W}^K \\
+\mathbf{V} &= \mathbf{X}\mathbf{W}^V
+\end{aligned}
+$$
+
+因为 $\mathbf{X}$ 是 $m \times n$ 的矩阵，所以如果令 $\mathbf{W}^Q$、$\mathbf{W}^K$、$\mathbf{W}^V$ 均是 $n \times n$ 的单位矩阵 $\mathbf{I}$，那么 $\mathbf{Q}$、$\mathbf{K}$、$\mathbf{V}$ 经过线性变换（$\mathbf{I}$）后仍然是 $\mathbf{X}$，此时我们可以用 $\mathbf{X}$ 替换 $\mathbf{Q}$、$\mathbf{K}$、$\mathbf{V}$，那么公式就变成了：
+
+$$
+\text{Attention}(\mathbf{Q},\mathbf{K},\mathbf{V})=\text{softmax}\left(\frac{\mathbf{X}\mathbf{X}^T}{\sqrt{d_k}}\right)\mathbf{X}
+$$
+
+这也就是为什么我们之前面说：Transform 模型中的 `Attention` 其实就是对原始输入词向量的加权求和而得到的新的表示，在新的表示中，Transform 可以理解输入序列中的不同的部分，并分析输入序列中不同词之间的关系，进而捕获到上下文信息。
+
+实际上，为了增强增强模型的拟合能力，我们并不会采用单位矩阵 $\mathbf{I}$ 对矩阵 $\mathbf{X}$ 做线性变换，而是分别采用 $\mathbf{W}^Q$、$\mathbf{W}^K$、$\mathbf{W}^V$ 这三个可以通过大量语料训练而学习到的参数矩阵（参数矩阵可以是任何维度，但行向量个数必须和 $\mathbf{X}$ 的行向量维度一致）。所以，根据 $\text{Attention}(\mathbf{Q},\mathbf{K},\mathbf{V})$，Transform 可以理解一句话中不同词之间的相互关系。
+
+$\mathbf{Q},\mathbf{K},\mathbf{V}$ 和原始输入之间的关系如下图所示：
+
+![](qkv.png)
+
+
+## 参考文献
+[^1]: [Attention Is All You Need](https://arxiv.org/html/1706.03762v7)
