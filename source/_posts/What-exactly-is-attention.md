@@ -285,6 +285,26 @@ $$
 ![Encoder 架构图](encoder.png)
 
 ## Transformer 中的 Decoder
+假设我们要把英语句子 `I am a student`（原句）翻译成中文 `我是一个学生`（目标句）。
+
+1. 首先，我们把原句 `I am a student` 输入到 Transformer 的 Encoder 中，让 Encoder 学习原句并得到原句的特征矩阵 $\mathbf{R}$。
+2. 然后，我们把 $\mathbf{R}$ 输入到解码器，解码器根据 $\mathbf{R}$ 和解码器之前的输出作为输入，并生成目标句中的下一个词，直到生成目标句为止（解码器每次迭代会生成一个词，直到生成目标句为止）。
+
+具体的生成过程如下图所示：
+
+![解码器的例子](decode_demo1.gif)
+
+### 带掩码的多头注意力层
+以如上的翻译认为为例，假设训练数据集如下所示：
+
+| 原句 | 目标句 |
+| :---: | :---: |
+| I am a student | 我是一个学生 |
+| I am a teacher | 我是一个老师 |
+| Good morning | 早上好 |
+| Thank you very much | 非常感谢你 |
+
+
 
 ## 参考文献
 [^1]: [Attention Is All You Need](https://arxiv.org/html/1706.03762v7)
