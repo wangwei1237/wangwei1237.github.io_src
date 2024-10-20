@@ -177,13 +177,13 @@ $$
 
 $$
 \begin{aligned}
-\mathbf{z_{I}}    &= 0.10 \cdot \mathbf{y_{\text{我}}} + 0.66 \cdot \mathbf{y_{\text{很}}} + 0.24 \cdot \mathbf{y_{\text{好}}} \\
-\mathbf{z_{am}}   &= 0.49 \cdot \mathbf{y_{\text{我}}} + 0.49 \cdot \mathbf{y_{\text{很}}} + 0.02 \cdot \mathbf{y_{\text{好}}} \\
-\mathbf{z_{good}} &= 0.16 \cdot \mathbf{y_{\text{我}}} + 0.42 \cdot \mathbf{y_{\text{很}}} + 0.42 \cdot \mathbf{y_{\text{好}}}
+\mathbf{z_{I}}    &= 0.95 \cdot \mathbf{y_{\text{我}}} + 0.05 \cdot \mathbf{y_{\text{很好}}} \\
+\mathbf{z_{am}}   &= 0.12 \cdot \mathbf{y_{\text{我}}} + 0.88 \cdot \mathbf{y_{\text{很好}}} \\
+\mathbf{z_{good}} &= 0.88 \cdot \mathbf{y_{\text{我}}} + 0.12 \cdot \mathbf{y_{\text{很好}}} 
 \end{aligned}
 $$
 
-如上的计算和权重只是为了说明原理而随机选择的数据，并不代表真实的相关性。因此，我们会看到 `I` 和 `很` 之间的关系最相似，实际上 `I` 和 `我` 之间最相似。
+如上的计算和权重只是为了说明原理而随机选择的数据，并不代表真实的相关性。因此，我们会看到 `good` 和 `我`（而不是 `很好`） 之间的关系最相似。
 
 ## Transformer 中的自注意力
 论文 [Attention Is All You Need](https://arxiv.org/html/1706.03762v7) 的 3.2 节对 Attention 的描述如下[^1]：
@@ -280,7 +280,7 @@ $$
 其中，$\mathbf{W}_0$ 是一个新的权重矩阵。
 
 ## Transformer 中的 Encoder
-在 `Multi-Head Attention` 的基础之上，再增加前馈网络、叠加和归一组件，就得到了完整的 Transformer Encoder。当然，实际中，可以将 $N$ 个 Encoder 一个一个的叠加起来，最后一个 Encoder 的输出就是原始输入内容的特征值 $\mathbf{R}$。
+在 `Multi-Head Attention` 的基础之上，再增加前馈网络、叠加和归一组件，就得到了完整的 Transformer Encoder。当然，实际中，可以将 $N$ 个 Encoder 一个一个的叠加起来，最后一个 Encoder 的输出就是原始输入内容的特征值 $\mathbf{R}$（矩阵 $\mathbf{R}$ 与输入内容的词向量矩阵的维度是一致的）。
 
 ![Encoder 架构图](encoder.png)
 
