@@ -234,7 +234,7 @@ $$
 
 所以，根据 $\text{Attention}(\mathbf{Q},\mathbf{K},\mathbf{V})$，Transformer 可以理解一句话中不同词之间的相互关系。
 
-$\mathbf{Q},\mathbf{K},\mathbf{V}$ 和原始输入之间的关系如下图所示：
+$\mathbf{Q},\mathbf{K},\mathbf{V}$ 和原始输入之间的关系如下图所示[^4]：
 
 ![计算 Q、K、V 矩阵的示例](qkv.png)
 
@@ -432,3 +432,4 @@ $$
 [^1]: [Attention Is All You Need](https://arxiv.org/html/1706.03762v7)
 [^2]: [The Softmax function and its derivative](https://eli.thegreenplace.net/2016/the-softmax-function-and-its-derivative/)
 [^3]: [Intuition for Multi-headed Attention](https://medium.com/@ngiengkianyew/multi-headed-attention-8b940b76c351)
+[^4]: [The Illustrated Transformer](https://jalammar.github.io/illustrated-transformer/)
