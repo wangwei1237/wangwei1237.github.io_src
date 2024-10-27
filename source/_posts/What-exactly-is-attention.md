@@ -287,8 +287,129 @@ $$
 
 其中，$\mathbf{W}_0$ 是一个新的权重矩阵。
 
+## Transformer 中的 Positional Encoding
+对于 Transformer 模型而言，为了缩短训练时间，我们会将一句话中的所有的词并行的输入到模型中。但是，这也带来了一个问题：并行输入的词向量之间丢失了相互之间的位置信息。词序信息能够帮助 Transformer 模型学习词与词之间的相互关系，因此，为了解决这个问题，Transformer 中引入了 `Positional Encoding`。
+
+对于一个给定的句子，例如：`I am good`，我们首先计算每个单词的词向量表示（假定词向量的维度为 $d_{model}$）。如果 $d_{model} = 4$，那么对于 `I am good` 而言，我们就得到了 $3 \times 4$ 的输入矩阵 $\mathbf{X}$：
+
+![输入矩阵 X](pe_input_x.png)
+
+如果把 $\mathbf{X}$ 直接输入到 Transformer 的 Encoder 中，那么模型无法理解不同单词之间的词序。所以，需要对 $\mathbf{X}$ 增加一些表示词序信息的数据，以便模型可以正确理解句子的含义。为此，我们可以构造一个包含位置编码信息的矩阵 $\mathbf{P}$，然后把矩阵 $\mathbf{P}$ 添加到 $\mathbf{X}$ 中，即可得到包含位置信息的输入矩阵。
+
+在 [Attention Is All You Need](https://arxiv.org/html/1706.03762v7) 的第 3.5 节 **Positional Encoding** 中给出了位置矩阵的计算方式：
+
+$$
+\begin{aligned}
+\mathbf{P}(pos, 2i) &= sin\left(\frac{pos}{10000^{2i/d_{model}}}\right) \\ 
+\mathbf{P}(pos, 2i + 1) &= cos\left(\frac{pos}{10000^{2i/d_{model}}}\right)
+\end{aligned}
+$$
+
+* $pos$ 表示当前的单词在句子中的位置，也就是输入矩阵的第 $pos$ 行（从 0 开始索引）；
+* $i$ 表示当前的单词在输入矩阵中的列位置，$2i$ 表示 $\mathbf{P}$ 的所有偶数列，$2i+1$ 表示所有的奇数列。
+* $d_{model}$ 是词向量的维度。
+
+根据位置矩阵的计算公式，对与所有的偶数列，使用正弦函数计算位置编码信息；对于所有的奇数列，使用余弦函数计算位置编码信息。对于 `I am good` 而言，位置矩阵 $\mathbf{P}$ 的计算结果如下：
+
+$$
+\begin{aligned}
+\mathbf{P} &= 
+\begin{bmatrix}
+sin\left(\frac{pos}{10000^{0}}\right) & cos\left(\frac{pos}{10000^{0}}\right) & sin\left(\frac{pos}{10000^{2/4}}\right) & cos\left(\frac{pos}{10000^{2/4}}\right) \\
+sin\left(\frac{pos}{10000^{0}}\right) & cos\left(\frac{pos}{10000^{0}}\right) & sin\left(\frac{pos}{10000^{2/4}}\right) & cos\left(\frac{pos}{10000^{2/4}}\right) \\
+sin\left(\frac{pos}{10000^{0}}\right) & cos\left(\frac{pos}{10000^{0}}\right) & sin\left(\frac{pos}{10000^{2/4}}\right) & cos\left(\frac{pos}{10000^{2/4}}\right)
+\end{bmatrix} \\
+&= \begin{bmatrix}
+sin(0) & cos(0) & sin(0/100) & cos(0 / 100) \\
+sin(1) & cos(1) & sin(1/100) & cos(1 / 100) \\
+sin(2) & cos(2) & sin(2/100) & cos(2 / 100) \\
+\end{bmatrix} \\
+&= \begin{bmatrix}
+0 & 1 & 0 & 1 \\
+0.841 & 0.54 & 0.01 & 0.99 \\
+0.909 & -0.416 & 0.02 & 0.99 
+\end{bmatrix}
+\end{aligned}
+$$
+
+于是，我们得到了包含位置信息的输入矩阵 $\mathbf{X} + \mathbf{P}$：
+
+$$
+\begin{aligned}
+\mathbf{X} + \mathbf{P} &= 
+\begin{bmatrix}
+1.8 & 2.2 & 3.4 & 5.8 \\
+7.3 & 9.9 & 8.5 & 7.1 \\
+9.1 & 7.1 & 0.9 & 10.1 
+\end{bmatrix} + 
+\begin{bmatrix}
+0 & 1 & 0 & 1 \\
+0.841 & 0.54 & 0.01 & 0.99 \\
+0.909 & -0.416 & 0.02 & 0.99 
+\end{bmatrix} \\
+&= \begin{bmatrix}
+1.8 & 3.2 & 3.4 & 6.8 \\
+8.141 & 10.44 & 8.51 & 8.09 \\
+10.009 & 6.684 & 0.92 & 11.09
+\end{bmatrix}
+\end{aligned}
+$$
+
+计算位置矩阵的 R 代码如下所示：
+
+```r
+# 位置编码函数，从 0 开始计算
+get_position_encoding <- function(seq_len, d_model) {
+  position <- 0:(seq_len - 1)
+  div_term <- exp(seq(0, d_model - 1, by = 2) * -(log(10000) / d_model))
+  
+  # 初始化位置编码矩阵
+  position_enc <- matrix(0, nrow = seq_len, ncol = d_model)
+  for (pos in 0:(seq_len - 1)) {
+    # 奇数索引：sin函数
+    position_enc[pos + 1, seq(1, d_model, by = 2)] <- sin(pos * div_term)
+    # 偶数索引：cos函数
+    position_enc[pos + 1, seq(2, d_model, by = 2)] <- cos(pos * div_term)
+  }
+  return(position_enc)
+}
+
+# 生成位置编码矩阵
+position_encoding_matrix <- get_position_encoding(3, 4)
+
+# 查看位置编码矩阵
+print(position_encoding_matrix)
+```
+
+如果一个句子包含 128 个词，每个词向量的维度 $d_model = 512$，那么位置编码矩阵的维度为 $128 \times 512$，可以用如下的 R 代码生成位置编码矩阵，并对齐可视化。
+
+```r
+position_encoding_matrix <- get_position_encoding(128, 512)
+position_encoding_df <- melt(position_encoding_matrix)
+
+# 绘制热图
+ggplot(position_encoding_df, aes(x = Var2, y = Var1, fill = value)) +
+  geom_tile() +
+  scale_fill_viridis_c() +                     # 使用类似的颜色映射
+  scale_y_reverse() + 
+  theme_minimal(base_family = "STKaiti") + 
+  scale_x_continuous(expand = expansion(mult = c(0, 0.05))) + 
+  labs(title = "Position Encoding 可视化",
+       x = "Dimensions", y = "words", fill = "Value") + 
+  theme(panel.grid.major.x = element_blank(),  # 移除 x 轴的主要网格线
+        panel.grid.minor.x = element_blank(),
+        panel.grid.minor.y = element_blank(),
+        axis.line = element_line(),           # 保留x轴和y轴本身
+        axis.ticks = element_line(),          # 保留x轴和y轴上的刻度线
+        legend.position = "top",              # 图例放置在左上角
+        legend.justification = c(0, 1),       # 设置图例的对齐方式
+        legend.title = element_blank())
+```
+
+![](pe_hot_image.png)
+
 ## Transformer 中的 Encoder
-在 `Multi-Head Attention` 的基础之上，再增加前馈网络、叠加和归一组件，就得到了完整的 Transformer Encoder。当然，实际中，可以将 $N$ 个 Encoder 一个一个的叠加起来，最后一个 Encoder 的输出就是原始输入内容的特征值 $\mathbf{R}$（矩阵 $\mathbf{R}$ 与输入内容的词向量矩阵的维度是一致的）。
+在 `Multi-Head Attention` 和 `Positional Encoding` 的基础之上，再增加前馈网络、叠加和归一组件，就得到了完整的 Transformer Encoder。当然，实际中，可以将 $N$ 个 Encoder 一个一个的叠加起来，最后一个 Encoder 的输出就是原始输入内容的特征值 $\mathbf{R}$（矩阵 $\mathbf{R}$ 与输入内容的词向量矩阵的维度是一致的）。
 
 ![Encoder 架构图](encoder.png)
 
