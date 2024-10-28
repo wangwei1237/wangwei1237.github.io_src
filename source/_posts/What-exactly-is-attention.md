@@ -381,7 +381,7 @@ position_encoding_matrix <- get_position_encoding(3, 4)
 print(position_encoding_matrix)
 ```
 
-如果一个句子包含 128 个词，每个词向量的维度 $d_model = 512$，那么位置编码矩阵的维度为 $128 \times 512$，可以用如下的 R 代码生成位置编码矩阵，并对齐可视化。
+如果一个句子包含 128 个词，每个词向量的维度 $d_{model} = 512$，那么位置编码矩阵的维度为 $128 \times 512$，可以用如下的 R 代码生成位置编码矩阵，并对其可视化。
 
 ```r
 position_encoding_matrix <- get_position_encoding(128, 512)
