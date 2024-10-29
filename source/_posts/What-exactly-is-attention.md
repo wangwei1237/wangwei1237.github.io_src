@@ -282,10 +282,26 @@ $$
 因此，为了确保结果的准确性，我们不能依赖一个注意力矩阵，而应该计算多个注意力矩阵，并将这多个注意力矩阵的结果整合起来，这也就是 `Multi-Head Attention` 的由来[^3]。如果我们有 $h$ 个注意力矩阵，那么我们可以按如下的方式将这 $h$ 个注意力矩阵的结果整合起来得到最终的注意力矩阵：
 
 $$
-\text{MultiHeadAttention} = \text{Concatenate}(\mathbf{Z}_1,\cdots,\mathbf{Z}_h)\mathbf{W}_O
+\text{MultiHeadAttention} = \text{Concatenate}(\mathbf{Z}_1,\cdots,\mathbf{Z}_h)\mathbf{W}^O
 $$
 
-其中，$\mathbf{W}_O$ 是一个新的权重矩阵。
+### 矩阵 W^O 的说明
+根据 [Attention Is All You Need](https://arxiv.org/html/1706.03762v7) 的 第 3.2.2 节 **Multi-Head Attention** 的描述，对于多头注意力机制中的任何一个注意力头 $i$ 而言，其各参数矩阵的维度如下所示：
+
+> $W_i^Q \in \mathbb{R}^{d_{\text{model}} \times d_k}$
+> $W_i^K \in \mathbb{R}^{d_{\text{model}} \times d_k}$
+> $W_i^V \in \mathbb{R}^{d_{\text{model}} \times d_v}$ 
+> $W^O \in \mathbb{R}^{h d_v \times d_{\text{model}}}$
+
+其中，$d_{\text{model}}$ 为模型词向量的维度，$d_k$ 为 $\mathbf{W_i}^Q$、$\mathbf{W_i}^K$的列向量维度，$d_v$ 为 $\mathbf {W_i}^V$ 的列向量维度。
+
+所以，矩阵 $\mathbf{W}^O$ 主要有两个作用：
+* 把 $h$ 个注意力头输出的拼接结果转换成单个注意力头的维度 $\mathbb{R}^{d_{\text{model}} \times d_v}$
+* 把单个注意力头的维度再次转换为模型的词向量维度 $\mathbb{R}^{d_{\text{model}} \times d_{\text{model}}}$
+
+实际上，如上的操作其实是把两个线性变换操作合并到了一个矩阵 $\mathbf{W}^O$ 中。在 [Visualizing Attention, a Transformer's Heart](https://www.3blue1brown.com/lessons/attention) 的第 23:08 的时候，也对此进行了详细的说明[^5],[^6]。
+
+![](wo_note.png)
 
 ## Transformer 中的 Positional Encoding
 对于 Transformer 模型而言，为了缩短训练时间，我们会将一句话中的所有的词并行的输入到模型中。但是，这也带来了一个问题：并行输入的词向量之间丢失了相互之间的位置信息。词序信息能够帮助 Transformer 模型学习词与词之间的相互关系，因此，为了解决这个问题，Transformer 中引入了 `Positional Encoding`。
@@ -470,10 +486,8 @@ $$
 此时，我们就可以利用 `softmax()` 对如上的掩码矩阵进行计算，并乘以对应的矩阵 $\mathbf{V}$，得到最终的注意力矩阵 $\mathbf{Z}$。同样的，如果我们有 $h$ 个注意力矩阵，那么我们可以按如下的方式将这 $h$ 个注意力矩阵的结果整合起来得到最终的注意力矩阵 $\mathbf{M}$：
 
 $$
-\mathbf{M} = \text{Concatenate}(\mathbf{Z}_1,\cdots,\mathbf{Z}_h)\mathbf{W}_O
+\mathbf{M} = \text{Concatenate}(\mathbf{Z}_1,\cdots,\mathbf{Z}_h)\mathbf{W}^O
 $$
-
-其中，$\mathbf{W}_O$ 是一个新的权重矩阵。
 
 ### 多头注意力层
 为了根据解码器中计算的 `原句` 的注意力矩阵 $\mathbf{R}$ 和解码器中计算的 `目标句` 的带掩码的注意力矩阵 $\mathbf{M}$ 来预测最终的 `目标句`，我们还需要一个多头注意力层。由于该层涉及到了编码器与解码器的交互，因此，这一层也称之为 **编码器-解码器注意力层**（Encoder-Decoder Attention）。
@@ -507,10 +521,8 @@ $$
 同样的，在该层中，我们仍然可以有 $h$ 个注意力矩阵，那么我们可以按如下的方式将这 $h$ 个注意力矩阵的结果整合起来得到最终的注意力矩阵 $\mathbf{Decoder Multi-head Attention}$：
 
 $$
-\mathbf{Decoder Multi-head Attention} = \text{Concatenate}(\mathbf{Z}_1,\cdots,\mathbf{Z}_h)\mathbf{W}_O
+\mathbf{Decoder Multi-head Attention} = \text{Concatenate}(\mathbf{Z}_1,\cdots,\mathbf{Z}_h)\mathbf{W}^O
 $$
-
-其中，$\mathbf{W}_O$ 是一个新的权重矩阵。
 
 同编码器一样，在多头注意力层之后，我们还会增加叠加和归一组件、前馈网络层并最终构成了完整的解码器。在实际应用中，我们可以将 $N$ 个解码器一个一个的叠加起来，最后一个解码器的输出就是最终的 `目标句` 的特征值 $\mathbf{T}$。
 
@@ -554,3 +566,5 @@ $$
 [^2]: [The Softmax function and its derivative](https://eli.thegreenplace.net/2016/the-softmax-function-and-its-derivative/)
 [^3]: [Intuition for Multi-headed Attention](https://medium.com/@ngiengkianyew/multi-headed-attention-8b940b76c351)
 [^4]: [The Illustrated Transformer](https://jalammar.github.io/illustrated-transformer/)
+[^5]: [Visualizing Attention, a Transformer's Heart](https://www.3blue1brown.com/lessons/attention)
+[^6]: [Visualizing Attention, a Transformer's Heart（B站版）](https://www.bilibili.com/video/BV1TZ421j7Ke?spm_id_from=333.788.recommend_more_video.-1&vd_source=fbeb46d16d08ad900fac814e55c3f27f)
