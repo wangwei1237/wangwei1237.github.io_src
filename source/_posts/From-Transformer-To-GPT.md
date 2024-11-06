@@ -15,7 +15,7 @@ tags:
 在 [自注意力究竟是什么？](/2024/10/16/What-exactly-is-attention/) 一文中，我们介绍了基于注意力机制的 Transformer 模型的基本原理和架构。
 
 * 2017年 6 月，谷歌机器翻译团队提出的机器翻译模型 Transformer 就像大语言模型的一颗种子一样，悄然落地生根，并迅速席卷了 AI 领域。
-* 一年之后，2018 年 6 月，OpenAI 发布了基于 Transformer 架构的 GPT-1[^gpt1]，虽然当时还存在一些局限性，例如当时还不能根据一个给定的标题来生成一篇新闻报道。谁也没想到，就是这个框架，在 4 年之后成为了 AI 领域最炙手可热的模型。
+* 一年之后，2018 年 6 月，OpenAI 发布了基于 Transformer 架构的 GPT-1[^gpt1]，虽然当时还存在一些局限性，例如当时还不能根据一个给定的标题来生成一篇新闻报道；但是，谁也没想到，就是这个框架，在 4 年之后成为了 AI 领域最炙手可热的模型。
 * 4 个月后，2018 年 10 月，谷歌也发布了基于 Transformer 架构的 BERT 模型[^bert]，与 GPT-1 相比，BERT 在很多下游任务上表现出更强劲的性能，并且也刷新了多个榜单的记录。在很长一段时间里，BERT（及其变体）一直处于各类榜单的首位，是人们谈论的焦点。
 * 直到 2022 年 3 月，OpenAI 发布了 GPT-3.5[^gpt35]，并基于 GPT-3.5 于当年的 11 月 30 日正式发布了面向消费用户的产品——ChatGPT，大模型再次引起了圈内、圈外的广泛讨论，开启了新一轮的大模型时代。
 
@@ -60,8 +60,60 @@ tags:
 本质上，自回归模型是单向预测模型，也就是说，自回归模型只能沿一个方向来理解句子并做出预测。这也就是我们通常所说的：GPT 只能根据输入序列中的前面的内容来预测序列中的下一个词。
 
 ## GPT 模型
+### GPT-1
+在 *Improving Language Understanding by Generative Pre-Training* [^gpt1] 中，OpenAI 提出了 GPT-1 的模型架构（预训练模型+下游任务微调），并且其核心是一种 **多层 Transformer 解码器** 的 Transformer 架构变体。GPT-1 先计算输入的上下文 tokens 的多头自注意力，然后在经过前向反馈网络的处理，最终生成目标输出 token 的概率分布。在论文的第 3 节（Framework）中，给出了模型的整体架构描述：
+
+> In our experiments, we use a **multi-layer Transformer decoder** for the language model, which is a variant of the transformer. This model applies a multi-headed self-attention operation over the input context tokens followed by position-wise feedforward layers to produce an output distribution over target tokens.
+
+在论文的第 4 节（Experiments）中，给出了模型的详细参数和训练细节，包括模型超参数、训练数据集和训练过程等：
+
+> **Model specifications** 
+> * Our model largely follows the original transformer work. 
+> * We trained a 12-layer decoder-only transformer with masked self-attention heads (768 dimensional states and 12 attention heads). 
+> * For the position-wise feed-forward networks, we used 3072 dimensional inner states. We used the Adam optimization scheme with a max learning rate of 2.5e-4. The learning rate was increased linearly from zero over the first 2000 updates and annealed to 0 using a cosine schedule. We train for 100 epochs on minibatches of 64 randomly sampled, contiguous sequences of 512 tokens. 
+> * Since layernorm is used extensively throughout the model, a simple weight initialization of N(0,0.02) was sufficient. 
+> * We used a bytepair encoding (BPE) vocabulary with 40,000 merges and residual, embedding, and attention dropouts with a rate of 0.1 for regularization. We also employed a modified version of L2 regularization proposed in , with w= 0.01 on all non bias or gain weights. For the activation function, we used the Gaussian Error Linear Unit (GELU). 
+> * We used learned position embeddings instead of the sinusoidal version proposed in the original work.
+
+### GPT-2
+在 *Language Models are Unsupervised Multitask Learners* [^gpt2] 中的第 2 节 Approach 中，给出了 GPT-2 和 GPT-1 在处理下游任务的数据的不同：
+* GPT-1 对下游任务的数据进行了标注和处理，加入了一些特殊的词元（\<s\>，\<e\>，\<$\>），分别表示开始、提取、分隔。在预训练阶段，模型没有见过这些词元，因此模型必须经过微调阶段的重新训练后才会认识这些新增加的词元。
+* 在 GPT-2 的 Zero-Shot 的设定下，对于下游任务而言，模型不能再次被调整和更新，因此就无法再引入一些新的词元。也就是说，对于下游任务的输入，模型在预训练阶段都应该见过，这要求模型的输入必须更接近人类的自然语言。在建模过程中，只有一个学习任务，即给定输入序列来预测输出单词的概率：$p(output|input)$。同时，模型应该能够执行许多不同的任务，不同的任务，即使输入相同，模型的输出也应该不同，因此模型的学习目标就变成了在给定输入和任务的前提下预测输出的概率：$p(output|input, task)$。
+
+在模型的后续发展中，我们称 GPT-2 中这种更接近人类自然语言的输入为 **提示词**（*Prompt*），GPT-2 的这种 Zero-Shot 设定和使用自然语言提示词来指导预训练模型执行下游任务是 GPT-2 的最大胆的一步。
+
+但是，在模型结构上，论文的第 2.3 节 Model 中指出，GPT-2 与 GPT-1 相比基本一致，仅仅是做了一些小的修改而已：
+* 把 Post-LN 改成了 Pre-LN
+* 在最后一个 Transformer-Decoder 模块之后增加了一个 Norm 层。
+* 扩大了 Transformer-Encoder 模块的层数以及模型对应的超参数的增加。
+
+> We use a Transformer based architecture for our LMs. 
+> * The model largely follows the details of the OpenAI GPT model (Radford et al., 2018) with a few modifications. 
+> * Layer normalization was moved to the input of each sub-block, similar to a pre-activation residual network and an additional layer normalization was added after the final self-attention block.
+
+### GPT-3
+GPT-1 提出的“预训练模型+下游任务微调”的模式有一个很大的限制：下游任务需要针对特定任务标注数据集。GPT-2 虽然可以实 Zero-Shot，并不再需要针对特定任务标注数据集，但在当时仍然存在很多限制导致模型并没有达到 SOTA 的效果。
+
+从应用的角度讲，持续提升 Zero-Shot 的效果非常必要，因为对于“预训练模型+下游任务微调”而言：
+* 不同的下游任务都需要大量的标注数据集，但是下游任务类型非常多，如果每个任务都要收集数据集并微调的话，成本相对较大。
+* 在下游任务上微调之后的效果好并不一定能说明预训练的大模型泛化效果好，还有可能是过拟合了预训练数据集所包含的一部分微调任务的数据而已。因此，对于下游任务而言，如果不需要针对性的微调，那么起决定性作用的就是预训练模型的泛化性。
+* 从人类学习一个新技能的角度看，我们执行一个新的任务时并不需要巨大的数据集，可能看一两个例子就学会了。
+
+对于所有类型的任务，在没有任何梯度更新或微调的情况下，GPT-3 只需通过自然语言文本的方式给出少量示例并指定任务就可以完成对应的任务。
+
+在 *Language Models are Few-Shot Learners* [^gpt3] 的第 2.1 节 Model and Architectures 中指出，GPT-3 和 GPT-2 的模型架构是一致的，并且为了验证先前的论文 *Scaling Laws for Neural Language Models* [^scalinglaw] 中提出的“Scaling Laws”，OpenAI 特意训练了 8 个不同规模的模型。
+
+> * We use the same model and architecture as GPT-2, including the modified initialization, pre-normalization, and reversible tokenization described therein, with the exception that we use alternating dense and locally banded sparse attention patterns in the layers of the transformer, similar to the Sparse Transformer. 
+> * To study the dependence of ML performance on model size, we train 8 different sizes of model, ranging over three orders of magnitude from 125 million parameters to 175 billion parameters, with the last being the model we call GPT-3.
+
+### GPT 架构的演化
+因此，根据如上的描述，我们可以看出 GPT 系列模型架构的演化过程如下：
 
 ![从 Transformer 到 GPT 架构的演化](GPTX_arch.png)
+
+利用如上的模型架构，我们可以实现如下所示的内容生成任务：
+
+![使用 GPT 进行内容续写的示例](GPT_demo_for_student.gif)
 
 ## GPT 模型的参数量
 
