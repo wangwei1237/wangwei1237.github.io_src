@@ -61,11 +61,11 @@ tags:
 
 ## GPT 模型
 ### GPT-1
-在 *Improving Language Understanding by Generative Pre-Training* [^gpt1] 中，OpenAI 提出了 GPT-1 的模型架构（预训练模型+下游任务微调），并且其核心是一种 **多层 Transformer 解码器** 的 Transformer 架构变体。GPT-1 先计算输入的上下文 tokens 的多头自注意力，然后在经过前向反馈网络的处理，最终生成目标输出 token 的概率分布。在论文的第 3 节（Framework）中，给出了模型的整体架构描述：
+在 *Improving Language Understanding by Generative Pre-Training* [^gpt1] 中，OpenAI 提出了 GPT-1 的模型架构（预训练模型+下游任务微调），并且其核心是一种 **多层 Transformer 解码器** 的 Transformer 架构变体。GPT-1 先计算输入的上下文 tokens 的多头自注意力，然后在经过前向反馈网络的处理，最终生成目标输出 token 的概率分布。在论文的第 3 节 Framework 中，给出了模型的整体架构描述：
 
 > In our experiments, we use a **multi-layer Transformer decoder** for the language model, which is a variant of the transformer. This model applies a multi-headed self-attention operation over the input context tokens followed by position-wise feedforward layers to produce an output distribution over target tokens.
 
-在论文的第 4 节（Experiments）中，给出了模型的详细参数和训练细节，包括模型超参数、训练数据集和训练过程等：
+在论文的第 4 节 Experiments 中，给出了模型的详细参数和训练细节，包括模型超参数、训练数据集和训练过程等：
 
 > **Model specifications** 
 > * Our model largely follows the original transformer work. 
@@ -115,8 +115,36 @@ GPT-1 提出的“预训练模型+下游任务微调”的模式有一个很大�
 
 ![使用 GPT 进行内容续写的示例](GPT_demo_for_student.gif)
 
+## GPT 的压缩本质
+在如上的 demo 中，GPT 是如何根据提示词来生成下一个词呢？
+
+在 [自注意力究竟是什么？](/2024/10/16/What-exactly-is-attention/) 这篇文章的 *举个例子🌰* 这一节我们提到，经过矩阵的线性变换后，`I am good` 这三个词的词向量之间可以表示成如下的形式：
+
+$$
+\begin{aligned}
+\mathbf{z_{I}}    &= 0.97 \cdot \mathbf{x_{I}} + 0.02 \cdot \mathbf{x_{am}} + 0.01 \cdot \mathbf{x_{good}} \\
+\mathbf{z_{am}}   &= 0.27 \cdot \mathbf{x_{I}} + 0.73 \cdot \mathbf{x_{am}} + 0.00 \cdot \mathbf{x_{good}} \\
+\mathbf{z_{good}} &= 0.90 \cdot \mathbf{x_{I}} + 0.05 \cdot \mathbf{x_{am}} + 0.05 \cdot \mathbf{x_{good}}
+\end{aligned}
+$$
+
+换句话说，经过自注意力机制后，提示词中的最后一个词都将包含提示词中的任何一个单词的信息。随着 Transformer-Decoder 的层级不断增加，提示词中的最后一个词所包含的信息将会越来越丰富、越来越精准。从另一个角度来讲，经过多层 Transformer-Decoder 之后，提示词中的所有信息将压缩至了最后一个词向量中，然后，我们就可以利用最后一个词向量来生成下一个词。
+
+具体的过程如下图所示：
+
+![词向量的处理流程](llm_compress.png)
+
+这也就是为什么 OpenAI 前首席科学家 Ilya Sutskever 在[公开采访](https://www.youtube.com/watch?v=goOa0biX6Tc&ab_channel=FuVenture) 中指出大规模预训练本质上是在做一个世界知识的压缩，从而能够学习到一个编码世界知识的参数模型，这个模型能够通过解压缩所需要的知识来解决真实世界的任务。
+
+所以 Ilya Sutskever 一直的信念就是：
+> 如果能够高效的压缩信息，就已经得到了知识。想高效压缩信息，就一定得有一些知识，所以他坚信 GPT-3 和最新的 GPT-4，它们已经有了一个世界模型在里面！GPT 学的其实不是语言，而是语言背后的那个真实世界。
+
+在 [Language Modeling Is Compression](https://arxiv.org/pdf/2309.10668) 这篇论文中，作者也提到：
+> 由于大模型表现出强悍的预测能力，因此它们非常适合成为强大的压缩器。我们通过压缩的视角来看待大模型的预测问题，并评估了大模型的压缩能力。
+
 ## GPT 模型的参数量
 
+![GPT 预测下一个词的详细过程](GPT_arch_detail.png)
 ## GPT 模型的计算量
 
 
