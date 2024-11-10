@@ -143,9 +143,134 @@ $$
 > 由于大模型表现出强悍的预测能力，因此它们非常适合成为强大的压缩器。我们通过压缩的视角来看待大模型的预测问题，并评估了大模型的压缩能力。
 
 ## GPT 模型的参数量
+在 *Language Models are Few-Shot Learners* [^gpt3] 中提到，GPT-3 的参数数量是 1750 亿，我们也经常说 ChatGPT 的参数数量是 1750 亿，那么如何计算模型的参数数量呢？
+
+既然 GPT-3 的架构、超参数都是公开的，我们不妨按照相关数据来测算一下 GPT-3 的参数数量，也借这个机会熟悉一下 GPT 系列模型的细节。
+
+对于之前的文本生成的例子，下图展示了其中的一个迭代的详细过程：
 
 ![GPT 预测下一个词的详细过程](GPT_arch_detail.png)
-## GPT 模型的计算量
+
+如上图所示，对于 GPT 架构而言，整个预测的过程可以分为 6 个步骤：
+
+1. 分词
+  对于原始的输入 `我是一个学生`，首先需要使用某种分词算法进行分词，并得到分词之后的 Tokens 序列：
+    > tokens = [我, 是, 一个, 学生]
+  
+    以 GPT-3 为例，模型的总词汇量（tokens）为 50257，每个 token 都有一个对应的 ID 序号，比如 `tokens = [我, 是, 一个, 学生]` 对应的 ID 序号为：
+    > tokens = [176389, 22912, 52770]
+  
+    对于分词而言，并不涉及到任何的模型参数，由于涉及到的计算量并不大，因此整体的操作均在 CPU 上完成。得到 tokens 后，然后将对应的序列发送给 GPU 进行计算。
+
+2. 词嵌入
+  模型需要根据 `tokens = [176389, 22912, 52770]` 中的 ID 得到对应 token 的词向量，并组装成矩阵形式的输入序列 $\mathbf{X}$。在这个过程中，需要使用模型的词嵌入矩阵，该矩阵的每一行代表一个 token 的词向量，词嵌入矩阵的维度依赖于具体的模型。以 GPT-3 为例，其词汇量为 50257，每个 token 的维度为 12288，所以 GPT-3 的词嵌入矩阵的维度为 $50257 \times 12288$，也就是共计有 `617,558,016` 个参数。
+
+3. 位置嵌入
+  根据 [自注意力究竟是什么？中的 Transformer 中的 Positional Encoding 一节](/2024/10/16/What-exactly-is-attention/#transformer-中的-positional-encoding) 中的介绍，我们还需要对输入的矩阵 $\mathbf{X}$ 增加位置信息，并得到含有位置信息的输入矩阵 $\mathbf{X}$。而在该步骤中，需要使用到模型的位置嵌入矩阵，该矩阵的行数和模型的上下文大小一致，并且每一行的大小和模型的词嵌入矩阵中每个 token 的维度一致。以 GPT-3 为例，其模型上下文大小为 2048，所以 GPT-3 的位置嵌入矩阵的维度为 $2048 \times 12288$，也就是共计有 `25,165,824` 个参数。
+
+4. 计算自注意力
+  接下来，需要根据输入矩阵 $\mathbf{X}$ 计算自注意力，根据之前的介绍，需要首先利用 3 个权重矩阵 $\mathbf{W}^Q$、$\mathbf{W}^K$、$\mathbf{W}^V$ 对 $\mathbf{X}$ 进行线性变换并得到 $\mathbf{Q}$、$\mathbf{K}$、$\mathbf{V}$，然后利用 $\text{Attention}(\mathbf{Q},\mathbf{K},\mathbf{V})=\text{softmax}\left(\frac{\mathbf{Q}\mathbf{K}^T}{\sqrt{d_k}}\right)\mathbf{V}$ 计算自注意力。在 GPT-3 中，$\mathbf{W}^Q$、$\mathbf{W}^K$、$\mathbf{W}^V$ 的维度均为 $12288 \times 128$，并且每个解码器包含 96 个自注意力模块，因此共计有 $12288 \times 128 \times 3 \times 96$——即 `452,984,832` 个参数。对于多头注意力计算的结果，还需要使用 $96*128 \times 12288$ 的矩阵 $\mathbf{W}^O$ 对其进行线性变换，因此还需要 $96*128 \times 12288$——即 `150,994,944` 个参数。因此，对于每个解码器而言，自注意力模块的参数共计有 `603,979,776` 个参数。而 GPT-3 中，共计包含 96 个解码器，因此共计有 `57,982,058,496` 个参数。
+
+  ![](mhattention_parameters.png)
+
+5. 前向反馈网络处理
+  前向连接层的计算公式为：$\text{FFN}(\mathbf{x}) = \text{max}(0, \mathbf{x}\mathbf{W}_1 + \mathbf{b}_1)\mathbf{W}_2+\mathbf{b}_2$，因此，其参数包括四个部分：两个权重矩阵和两个偏置变换。权重矩阵的维度 = 词向量维度 * 隐藏层维度，在 GPT-3 中，隐藏层维度为 4 倍词向量维度，因此，前向反馈网络的参数量为 $12288 * (12288 * 4) * 2 + 12288 * 4 + 12288$——即 `1,208,020,992` 个参数。而 GPT-3 中，共计包含 96 个解码器，因此共计有 `115,970,015,232` 个参数。
+6. 线性层生成 logit 向量 并计算概率
+  最终，经过 96 层的解码器之后，我们得到了最后一个词的向量表示 $\mathbf{h}_n$，然后利用 $\text{softmax}(\mathbf{h}_n\mathbf{W}_e^T)$ 计算下一个词的可能概率。由于 $\mathbf{W}_e^T)$ 和模型的词向量矩阵是一致的，因此不需要额外的参数。
+
+
+!!! note "归一化层的参数"
+    对于 GPT-3 模型而言，除了如上的步骤外，在每一个解码器中，还会有 2 个归一化层，同时在最后一个解码器之后，还增加了一个额外的归一化层，其主要作用为：
+    * 稳定训练过程：在深度神经网络中，层归一化通过将每层的输入标准化为相同的分布，减少了梯度爆炸或梯度消失的问题，使模型能够更稳定地进行训练。
+    * 加速收敛：归一化层可以使模型在训练中更快地找到合适的权重参数，通常会加快模型的收敛速度，从而缩短训练时间。
+    * 减小内部协变量偏移：归一化层通过使输入分布保持一致，减少了每层的激活分布随训练而发生的变化，从而有助于模型更容易捕捉数据的特征。
+    * 提升泛化能力：归一化操作可以使模型的训练更具鲁棒性，从而在测试数据上表现更好，提高模型的泛化能力。
+    
+    归一化层只涉及到两个参数：缩放参数（gamma）和偏移参数（beta），这两个参数的大小和模型的词向量维度大小一致。因此，对于 GPT-3 而言，每个归一化层需要 `12288 * 2 = 24,576` 个参数。
+
+我们可以使用如下的代码来计算 GPT 的参数数量，完整的代码参见 [llm_parameters.R](https://github.com/wangwei1237/R/blob/main/llm_parameters.R)。
+
+```r
+get_llm_parameters_cnt <- function(
+  model_name = "",
+  n_vocabulary,    # 模型的总 token 量
+  n_ctx,           # 模型的 prompt 窗口大小
+  d_model,         # 模型的 embedding 向量维度
+  d_q,             # W^Q 矩阵的行向量维度
+  d_k,             # W^K 矩阵的行向量维度
+  d_v,             # W^V 矩阵的行向量维度
+  n_heads,         # 每一个解码器中多头注意力矩阵的头数
+  n_layers,        # 解码器的层数
+  d_ff             # 前向反馈网络隐藏层的维度
+) {
+  n_embedding  <- n_vocabulary * d_model
+  n_position   <- n_ctx * d_model
+
+  # n_layers 层解码器的总参数
+  n_attention  <- n_layers * single_decoder_attention_cnt(d_model,
+                                                          d_q,
+                                                          d_k,
+                                                          d_v,
+                                                          n_heads)
+  n_ffn        <- n_layers * single_decoder_ffn_cnt(d_model, d_ff)
+  n_norm       <- n_layers * single_decoder_norm_cnt(d_model)
+  n_top_norm   <- 2 * d_model # 最顶层的 Norm 层的参数
+
+  total_params <- n_embedding + n_position + n_attention + n_ffn + n_norm +
+    n_top_norm
+
+  # 输出相关参数
+  df <- data.frame(Model     = model_name,
+                   Embedding = n_embedding,
+                   Emd_Rate  = round(n_embedding / total_params, 1),
+                   Position  = n_position,
+                   Attention = n_attention,
+                   Atn_Rate  = round(n_attention / total_params, 1),
+                   Ffn       = n_ffn,
+                   Ffn_Rate  = round(n_ffn / total_params, 1),
+                   Norm      = n_norm,
+                   Total     = total_params)
+  print(kable(df, format = "markdown"))
+
+  return(total_params)
+}
+```
+
+根据论文中公开的模型超参数，我们可以得到不同模型的参数数量，如下表所示：
+```r
+llm_list <- list(
+  list(model_name = "GPT-1",
+       n_vocabulary = 40000,
+       n_ctx = 512,
+       d_model = 768,
+       d_q = 64,
+       d_k = 64,
+       d_v = 64,
+       n_heads = 12,
+       n_layers = 12,
+       d_ff = 768 * 4),
+  ...
+  ...
+)
+
+get_llm_list_parameters_cnt(llm_list)
+```
+
+|Model        | Embedding| Emd_Rate| Position|   Attention| Atn_Rate|          Ffn| Ffn_Rate|    Norm|        Total|
+|:------------|---------:|--------:|--------:|-----------:|--------:|------------:|--------:|-------:|------------:|
+|GPT-1        |  30720000|      0.3|   393216|    28311552|      0.2|     56669184|      0.5|   36864|    116132352|
+|GPT-2-Small  |  38597376|      0.3|   786432|    28311552|      0.2|     56669184|      0.5|   36864|    124402944|
+|GPT-3-Small  |  38597376|      0.3|  1572864|    28311552|      0.2|     56669184|      0.5|   36864|    125189376|
+|GPT-3-Medium |  51463168|      0.1|  2097152|   100663296|      0.3|    201449472|      0.6|   98304|    355773440|
+|GPT-3-Large  |  77194752|      0.1|  3145728|   226492416|      0.3|    453169152|      0.6|  147456|    760152576|
+|GPT-3-XL     | 102926336|      0.1|  4194304|   603979776|      0.4|    805552128|      0.5|  196608|   1516853248|
+|GPT-3-2.7B   | 128657920|      0.0|  5242880|   838860800|      0.3|   1678131200|      0.6|  327680|   2651225600|
+|GPT-3-6.7B   | 205852672|      0.0|  8388608|  2147483648|      0.3|   4295622656|      0.6|  524288|   6657880064|
+|GPT-3-13B    | 258320980|      0.0| 10526720|  4210688000|      0.3|   8455300000|      0.7|  822400|  12935668380|
+|GPT-3-175B   | 617558016|      0.0| 25165824| 57982058496|      0.3| 115970015232|      0.7| 4718592| 174599540736|
+
+!!! attention "Attention Is (Not) All You Need"
+    根据如上的参数量表格，在 GPT 架构中，Attention 层的参数占整个模型的参数的占比在 20%~40%，特别在 GPT-3-175B 模型中，Attention 层的参数占比只有 30%。因此，在大模型架构中，Attention 并非是模型的全部，*Attention Is **(Not)** All You Need*，这一点需要特别的注意。
 
 
 ## 参考文献
