@@ -5,7 +5,7 @@ top: false
 date: 2024-10-16 17:19:11
 authors:
 categories:
-  - 算法与数学
+  - LLM
 tags:
   - Attention
   - 自注意力机制
