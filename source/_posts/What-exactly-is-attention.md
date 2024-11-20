@@ -42,7 +42,7 @@ $$
 如果用向量 $\mathbf{x}$ 表示一个词的词向量，对于 $m$ 个词向量而言，其任意两个词向量之间的相似度可以表示为：
 
 $$
-\mathbf{x_i} \cdot \mathbf{x_j} = \sum_{k=1}^{n}{x_{ik}y_{jk}} = x_{i1}y_{j1} + x_{i2}y_{j2} + ... + x_{in}y_{jn} \quad \forall i,j = 1,2,\cdots,m
+\mathbf{x_i} \cdot \mathbf{x_j} = \sum_{k=1}^{n}{x_{ik}x_{jk}} = x_{i1}x_{j1} + x_{i2}x_{j2} + ... + x_{in}x_{jn} \quad \forall i,j = 1,2,\cdots,m
 $$
 
 
@@ -216,7 +216,7 @@ $$
 \end{aligned}
 $$
 
-因为 $\mathbf{X}$ 是 $m \times n$ 的矩阵，所以如果令 $\mathbf{W}^Q$、$\mathbf{W}^K$、$\mathbf{W}^V$ 均是 $n \times n$ 的单位矩阵 $\mathbf{I}$，那么 $\mathbf{Q}$、$\mathbf{K}$、$\mathbf{V}$ 经过线性变换（$\mathbf{I}$）后仍然是 $\mathbf{X}$，此时我们可以用 $\mathbf{X}$ 替换 $\mathbf{Q}$、$\mathbf{K}$、$\mathbf{V}$，那么公式就变成了：
+因为 $\mathbf{X}$ 是 $m \times n$ 的矩阵，所以如果令 $\mathbf{W}^Q$、$\mathbf{W}^K$、$\mathbf{W}^V$ 均是 $n \times n$ 的单位矩阵 $\mathbf{I}$，那么 $\mathbf{X}$ 经过线性变换（$\mathbf{I}$）后得到的 $\mathbf{Q}$、$\mathbf{K}$、$\mathbf{V}$ 仍然是 $\mathbf{X}$，此时我们可以用 $\mathbf{X}$ 替换 $\mathbf{Q}$、$\mathbf{K}$、$\mathbf{V}$，那么公式就变成了：
 
 $$
 \text{Attention}(\mathbf{Q},\mathbf{K},\mathbf{V})=\text{softmax}\left(\frac{\mathbf{X}\mathbf{X}^T}{\sqrt{d_k}}\right)\mathbf{X}
@@ -504,7 +504,7 @@ $$
     
     ![查询矩阵和键矩阵的点积](m_r_q_mul_k.png)
 
-3. 根据 $\frac{\mathbf{Q}\mathbf{K}^T}{\sqrt{d_k}}$ 的到权重矩阵，为了演示方便，此处我们令 $d_k = 64$。
+3. 根据 $\frac{\mathbf{Q}\mathbf{K}^T}{\sqrt{d_k}}$ 得到权重矩阵，为了演示方便，此处我们令 $d_k = 64$。
 
 4. 根据 $\text{softmax}\left(\frac{\mathbf{Q}\mathbf{K}^T}{\sqrt{d_k}}\right) \mathbf{V}$ 计算注意力矩阵 $\mathbf{Z}$。
 
@@ -532,7 +532,7 @@ $$
 一旦解码器学习到了 `目标句` 的特征值 $\mathbf{T}$，我们就可以使用线性层和 `softmax` 层来生成最终的 `目标句`。线性层将生成一个 `logit` 向量，其大小等于 `目标句` 中的词汇量。假设目标句的词汇量只有 4 个词组成：
 
 $$
-Vocabulary = \{ 是, 我, 学生, 一个 \}
+Vocabulary = \{ \text{是}, \text{我}, \text{学生}, \text{一个} \}
 $$
 
 那么，线性层返回的 `logit` 的向量的维度将是 4。然后使用 `softmax()` 将 `logit` 向量转换成概率表示，最后输出具有最高概率值的词的索引值。
