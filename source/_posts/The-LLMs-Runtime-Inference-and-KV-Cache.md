@@ -356,6 +356,10 @@ Output X: generated new sequence [].
 8:         break
 ```
 
+引入 `KV 缓存` 后，对于第 $l$ 次迭代而言，其注意力机制的计算方式如下[^KVGif]：
+
+![](kv_cache_cacluation_demo.gif)
+
 ## 参考文献
 [^GPUPBUG]: [GPU Performance Background User's Guide](https://docs.nvidia.com/deeplearning/performance/dl-performance-gpu-background/index.html)
 [^A6000]: [NVIDIA RTX A6000](https://resources.nvidia.com/en-us-briefcase-for-datasheets/proviz-print-nvidia-1?ncid=no-ncid)
@@ -369,3 +373,4 @@ Output X: generated new sequence [].
 [^LLMInferenceWorkload]: [Understanding the LLM Inference Workload - Mark Moyou, NVIDIA](https://pytorch2024.sched.com/event/1fHnQ/understanding-the-llm-inference-workload-mark-moyou-nvidia)
 [^NIM]: [NIM for LLM Benchmarking Guide: Metrics](https://docs.nvidia.com/nim/benchmarking/llm/latest/metrics.html)
 [^CM]: [Difference Between Attention Mask and Causal Mask](https://discuss.huggingface.co/t/difference-between-attention-mask-and-causal-mask/104922)
+[^KVGif]: [Transformers KV Caching Explained](https://medium.com/@joaolages/kv-caching-explained-276520203249)
