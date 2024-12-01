@@ -48,8 +48,9 @@ copyright: false
 * [百度视频质量评测的实践之路](https://pan.baidu.com/s/1t4m9v2s5-Rt3u0U7HrVLqQ?pwd=46k6)
 * [LiveVideoStack 2022 北京站 优秀讲师](https://mp.weixin.qq.com/s/5YhBDDO5e818nQ_-qGeOTA)
 
-###### 2024: LLM in Action
+###### 2024: 撰写&翻译图书
 * [LLM in Action](https://wangwei1237.github.io/LLM_in_Action/)
+* [面向工程师和科学家的概率与统计学导论](https://wangwei1237.github.io/introduction_to_probability_and_statistics/)
 
 {% endmdline %}
 

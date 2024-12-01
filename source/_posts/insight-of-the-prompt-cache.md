@@ -13,7 +13,7 @@ tags:
 
 ![](context_caching.png)
 
-在介绍了 [Transformer](/2024/10/16/What-exactly-is-attention/) 模型、[GPT](/2024/10/31/From-Transformer-To-GPT/) 模型、[大模型的运行时推理和 KV Cache](/2024/11/16/The-LLMs-Runtime-Inference-and-KV-Cache/) 后，我们终于越来越接近于最原始的目标：OpenAI 2024 年 10 月 1 日发布的 [Prompt Caching in the API](https://openai.com/index/api-prompt-caching/)。这篇文章，我们就来介绍一下 `Prompt Cache` 相关技术的发展并对 OpenAI 的 `prompt caching` 技术方案进行简单的分析。
+在介绍了 [Transformer](/2024/10/16/What-exactly-is-attention/) 模型、[GPT](/2024/10/31/From-Transformer-To-GPT/) 模型、[大模型的运行时推理和 KV Cache](/2024/11/16/The-LLMs-Runtime-Inference-and-KV-Cache/) 后，我们终于越来越接近于最原始的目标：OpenAI 2024 年 10 月 1 日发布的 [Prompt Caching in the API](https://openai.com/index/api-prompt-caching/)。这篇文章，我们就来介绍一下 `Prompt Cache` 相关技术的发展并对 OpenAI 的 `Prompt Caching` 技术方案进行简单的分析。
 <!--more-->
 
 ## KV Cache
@@ -185,9 +185,9 @@ OpenAI 大概率也采用了类似 SARATHI 中的 `chunked-prefills` 技术，�
 
 ![](pic_prompt.png)
 
-一般而言，我会一次分析几百张图片，并且我们的 prompts 的长度非常大，平均长度在 1200 个 tokens 左右。而其中的角色设定、分析规则、打分规则的描述部分在 1000 个 tokens 左右，并且是固定不变的，变化的图片和文本miaon描述部分在 200 个 tokens 左右（其中图片固定 85 个 tokens）。所以在没有 `prompt caching` 之前，每次请求都会重复计算 1000 个 tokens（占比 80%），从而造成大量的重复计算，进而带来了更多的费用。
+一般而言，我会一次分析几百张图片，并且用于图片分析的 prompts 的长度非常大，平均长度在 1200 个 tokens 左右。而其中的角色设定、分析规则、打分规则的描述部分在 1000 个 tokens 左右，并且是固定不变的，变化的图片和文本miaon描述部分在 200 个 tokens 左右（其中图片固定 85 个 tokens）。所以在没有 `Prompt Caching` 之前，每次请求都会重复计算 1000 个 tokens（占比 80%），从而造成大量的重复计算，进而带来了更多的费用。
 
-在 `prompt caching` 之后，我每次请求只需要计算 200 个 tokens（占比 20%），从而节省了 80% 的计算量和费用，具体的 GPT-4o 的 API 响应如下所示：
+在 `Prompt Caching` 之后，我每次请求只需要计算 200 个 tokens（占比 20%），从而节省了 80% 的计算量和费用，具体的 GPT-4o 的 API 响应如下所示：
 
 ```
 "usage": {
@@ -203,7 +203,7 @@ OpenAI 大概率也采用了类似 SARATHI 中的 `chunked-prefills` 技术，�
 }
 ```
 
-从上述的结果可以发现，使用 `prompt caching` 之后，该请求有 1024 个 tokens（占比 90%）命中了缓存，从而节省了 90% 的费用。
+从上述的结果可以发现，使用 `Prompt Caching` 之后，该请求有 1024 个 tokens（占比 90%）命中了缓存，从而节省了 90% 的费用。
 
 ## 参考文献
 [^yelu_prompt_cache]: [Prompt Cache: Modular Attention Reuse For Low-Latency Inference](https://arxiv.org/abs/2311.04934v2)
@@ -214,5 +214,5 @@ OpenAI 大概率也采用了类似 SARATHI 中的 `chunked-prefills` 技术，�
 [^openai_pc_intro]: [Prompt Caching in the API](https://openai.com/index/api-prompt-caching/)
 [^gpt_semantic_cache]: [GPT Semantic Cache: Reducing LLM Costs and Latency via Semantic Embedding Caching](https://arxiv.org/abs/2411.05276v1)
 [^SARATHI]: [SARATHI: Efficient LLM Inference by Piggybacking Decodes with Chunked Prefills](https://arxiv.org/abs/2308.16369)
-[^pc_docs]: [Prompt caching: Reduce latency and cost with prompt caching](https://platform.openai.com/docs/guides/prompt-caching)
+[^pc_docs]: [Prompt caching: Reduce latency and cost with Prompt Caching](https://platform.openai.com/docs/guides/prompt-caching)
 [^git_gptcache]: [GPTCache : A Library for Creating Semantic Cache for LLM Queries](https://github.com/zilliztech/GPTCache)
