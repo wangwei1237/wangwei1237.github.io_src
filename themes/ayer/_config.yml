@@ -160,9 +160,10 @@ katex:
 
 # mermaid流程图 三个选项缺一不可(https://mermaid-js.github.io/mermaid/)
 mermaid:
-  enable: false
-  cdn: https://cdn.jsdelivr.net/npm/mermaid@8.9.2/dist/mermaid.min.js
-  theme: forest
+  enable: true
+  version: 11.6.0
+  cdn: https://cdn.jsdelivr.net/npm/mermaid@11.6.0/dist/mermaid.min.js
+  theme: base
 
 # 网站成立年份(默认为 2019，若填入年份小于当前年份，则显示为 2018-2019 类似的格式)
 since: 2020
