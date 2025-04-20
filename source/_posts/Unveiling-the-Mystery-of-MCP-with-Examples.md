@@ -257,3 +257,65 @@ flowchart LR
 * `MCP Servers`: 通过标准化的 `MCP 协议`，为 `MCP Client` 提供工具，同时具体的工具执行也是通过 `MCP Server` 来完成。
 * `Local Data Sources`: 本地数据资源：文件、数据库和 API。
 * `Remote Services`: 网络资源：文件、数据库和 API。
+
+### github-mcp-server 体验 MCP Server
+4 月 8 日 Github 官方开源了自己的 MCP Server——[github-mcp-server](https://github.com/github/github-mcp-server)，借助 github-mcp-server，我们可以通过自然语言与 Github 进行通信以重新定义 GitHub 自动化。github-mcp-server 是一个使用 golang 编写的 MCP Server，其底层使用 [go-github 包](https://github.com/google/go-github) 实现了对 Github API 的调用。
+
+以 `issue` 相关的工具为例，在 github-mcp-server 中，其具体的实现逻辑位于 [github-mcp-server/pkg/github/issues.go](https://github.com/github/github-mcp-server/blob/main/pkg/github/issues.go) 文件，其核心代码如下所示：
+
+```golang
+package github
+
+import (
+	"github.com/google/go-github/v69/github"
+)
+
+// GetIssue creates a tool to get details of a specific issue in a GitHub repository.
+func GetIssue(getClient GetClientFn, t translations.TranslationHelperFunc) (tool mcp.Tool, handler server.ToolHandlerFunc) {
+	return mcp.NewTool("get_issue",
+			mcp.WithDescription(t("TOOL_GET_ISSUE_DESCRIPTION", "Get details of a specific issue in a GitHub repository")),
+			...
+		), // 工具定义
+		func(ctx context.Context, request mcp.CallToolRequest) (*mcp.CallToolResult, error) {
+            ...
+			client, err := getClient(ctx)
+			issue, resp, err := client.Issues.Get(ctx, owner, repo, issueNumber)
+			r, err := json.Marshal(issue)
+			return mcp.NewToolResultText(string(r)), nil
+		} // 工具调用
+}
+```
+
+!!! note "VSCode 中使用 github-mcp-server"
+    1. 根据 github-mcp-server 的文档，我们在本地编译并生成 github-mcp-server 可执行文件
+    2. 在 VSCode 中编辑 `User/settings.json` 文件，增加文档中给出的 `MCP Server` 配置
+    ![](githubmcpserver-vscode-setting.png)
+    3. 使用 VSCode 的 GitHub Copilot 插件，并选择 `代理` 模式，大模型选择 GPT-4o，就可以使用自然语言来与 Github 进行交互。
+    ![](github_mcp_server_demo.gif)
+
+
+为了测试我们本地编译的 github-mcp-server 的可用性，我们可以采用如下的集中方式：
+
+1. 通过 stdio 管道的方式来与 github-mcp-server 进行交互。我们可以使用以下命令来启动 github-mcp-server：
+
+    ```bash
+    $ echo '{"jsonrpc":"2.0","id":1,"method":"tools/list"}' | /Users/wangwei17/Documents/Project/github/github-mcp-server/github-mcp-server stdio
+
+    $ GitHub MCP Server running on stdio
+    {"jsonrpc":"2.0","id":1,"result":{"tools":[{"description":"Add a comment to an existing issue", ...
+    ...
+    ...}]}}
+    ```
+
+2. 通过 @modelcontextprotocol/inspector 工具与 github-mcp-server 进行交互。
+
+    ```bash
+    $ npx @modelcontextprotocol/inspector github-mcp-server stdio
+
+    $ Starting MCP inspector...
+    ⚙️ Proxy server listening on port 6277
+    🔍 MCP Inspector is up and running at http://127.0.0.1:6274 🚀
+    ```
+
+    ![](mcp-inspector.png)
+
