@@ -655,4 +655,62 @@ async def handle_conversation(args: argparse.Namespace, query: HumanMessage,
 
 ![](human_check.png)
 
+## 思考
+### 1.MCP 的本质是什么？
+MCP 的本质**是通过抽象一个协议层实现架构解耦的架构优化技术**，从而将一个大单体拆解为微服务架构，从而可以将更多的开发者引入到这个大单体的生态中，从而可以突破原先的单体系统的瓶颈。
 
+使用 MCP 协议，任何开发者都可以用自己喜欢和熟悉的语言（而不用考虑宿主语言）来开发自己的 MCP Server 并共享出来，这种方式令开发者更乐于分享自己的工具和服务，从而形成良好的生态。开发者已经在 [Smithery](https://smithery.ai/) 平台上共享了近 5000 个 MCP Server，涵盖了天气、翻译、计算器、Github、数据库等多种功能。越来越多的 TOP 级产品也开始发布自己的 MCP Server，例如：Github、支付宝、百度地图……
+
+越简单的东西，越容易上手，越容易吸引更多的开发者参与进来，也越容易形成良好的生态。今年年初的时候我就像学习一下 ComfyUI 以对各种大模型进行编排实现非常酷炫的效果，例如 RunningHUB 上的这个 [WAN2.1 万相图生视频](https://www.runninghub.ai/post/1894610227340181506)，但是看到这个效果对应的背后的复杂的工作流，我就停住了脚步，迟迟没有下手。
+
+![](runninghub.png)
+
+
+### 2.MCP Server 的重点是什么？
+从共享工具的视角看，MCP Server 的开发是一件并不算很难的事情，看看现在的 MCP Server 的数量我们就可以感受到。但是，从工具使用（MCP Hosts）的视觉看，如何编排更大规模的工具仍然是一件非常复杂的事情。
+
+新的技术必然会伴随着新的组织方式和新的思维方式。每一个工具都需要一个 MCP Server？如何对工具分门别类？如何进行级联查询？因此，未来，MCP Server 的重点在于如何组织好着庞大的工具，以便 MCP Hosts 可以更加方便的使用 MCP Server 获取工具，从而解决实际问题。
+
+MCP Server 的不是重点，重点是如何能为 MCP Hosts 所用，重中之重是 MCP Hosts 如何编排 MCP Server 解决实际问题。
+
+### 3.选择 stdio 还是 SSE 作为通信协议？
+根据 MCP 的[官方文档](https://modelcontextprotocol.io/docs/concepts/architecture)，MCP 协议支持两种传输协议：`stdio` 和 `sse`。在 [Claude Desktop App with HTTP-with-SSE-transport?](https://github.com/orgs/modelcontextprotocol/discussions/16) 这个讨论帖子中，也有用户提到了希望 Claude Desktop App 支持 SSE 协议的传输方式，但是目前看起来，Claude Desktop 仍然只支持 `stdio` 的传输方式。
+
+```mermaid
+flowchart LR
+    subgraph "Host"
+        client1[MCP Client]
+        client2[MCP Client]
+    end
+    subgraph "Server Process"
+        server1[MCP Server]
+    end
+    subgraph "Server Process"
+        server2[MCP Server]
+    end
+
+    client1 e1@-->|Transport Layer <br> stdio| server1
+    client2 e2@-->|Transport Layer <br> sse| server2
+
+    e1@{ animate: true }
+    e2@{ animate: true }
+```
+
+SSE 协议的优点在于 MCP Server 的中心化管理，但是从应用的角度看，这种中心化管理的意义并不大。同时，如果采用中心化管理，MCP Server 中涉及到敏感秘钥信息的时候，如果做好安全管理又是一个问题。
+
+个人更推荐使用 `stdio` 的通信协议，因为这种方式更加简单，也更易于管理。
+
+## MCP 的网络资源列表
+### 1.MCP 官方资源
+* [官方的开源组织 Model Context Protocol](https://github.com/modelcontextprotocol)
+* [官方的文档 modelcontextprotocol](https://modelcontextprotocol.io/introduction)
+* [官方的 MCP Server 列表](https://github.com/modelcontextprotocol/servers)
+* [Claude Blog](https://www.anthropic.com/news/model-context-protocol)
+
+### 2.社区的 MCP Server 的列表
+* [MCP.so](https://mcp.so/)
+* [Cursor Directory](https://cursor.directory/)
+* [Pulsemcp](https://www.pulsemcp.com/)
+* [Glama MCP Servers](https://glama.ai/mcp/servers)
+* [Smithery](https://smithery.ai/)
+* [ModelScope MCP 广场](https://modelscope.cn/mcp)
