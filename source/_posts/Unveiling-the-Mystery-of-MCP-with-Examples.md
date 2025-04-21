@@ -258,7 +258,7 @@ flowchart LR
 * `Local Data Sources`: 本地数据资源：文件、数据库和 API。
 * `Remote Services`: 网络资源：文件、数据库和 API。
 
-### github-mcp-server 体验 MCP Server
+## 应用 github-mcp-server
 4 月 8 日 Github 官方开源了自己的 MCP Server——[github-mcp-server](https://github.com/github/github-mcp-server)，借助 github-mcp-server，我们可以通过自然语言与 Github 进行通信以重新定义 GitHub 自动化。github-mcp-server 是一个使用 golang 编写的 MCP Server，其底层使用 [go-github 包](https://github.com/google/go-github) 实现了对 Github API 的调用。
 
 以 `issue` 相关的工具为例，在 github-mcp-server 中，其具体的实现逻辑位于 [github-mcp-server/pkg/github/issues.go](https://github.com/github/github-mcp-server/blob/main/pkg/github/issues.go) 文件，其核心代码如下所示：
@@ -319,3 +319,67 @@ func GetIssue(getClient GetClientFn, t translations.TranslationHelperFunc) (tool
 
     ![](mcp-inspector.png)
 
+## 编写 SendMail MCP Server
+使用 Python 的 [`mcp`](https://pypi.org/project/mcp/) 库，可以快速开发一个 MCP Server。我们以发送邮件为例，来编写一个简单的 MCP Server。
+
+```python
+from mcp.server.fastmcp import FastMCP
+import json
+
+# initialize server
+mcp = FastMCP("sendmail-server")
+USER_AGENT = "sendmail-app/1.0"
+
+async def Send_mail(mailto: str):
+    """ Mock function to send a email to {mailto}. """
+    return {
+        "mailto": mailto,
+        "subject": "Hello from MCP",
+        "body": "This is a test email sent from MCP server.",
+        "status": "sent"
+    }
+    
+@mcp.tool()
+async def send(mailto: str):
+    """ It send a mail to a specific user. 
+    Args:
+        mailto (str): The user's email address for who can received the email are required.
+    Returns:
+        dict: The send status.
+    """
+
+    status = await Send_mail(mailto)
+    if status:
+        return json.dumps(status)
+    return None
+
+if __name__ == "__main__":
+    mcp.run(transport="stdio")
+```
+
+利用 @modelcontextprotocol/inspector 测试我们编写的 sendmail MCP Server 是否可用：
+
+```bash
+$ npx @modelcontextprotocol/inspector python3.13 sendmail.py
+Starting MCP inspector...
+⚙️ Proxy server listening on port 6277
+🔍 MCP Inspector is up and running at http://127.0.0.1:6274 🚀
+```
+
+![](sendmail-inspector.png)
+
+修改 VSCode 的 `User/settings.json` 文件，增加 ` sendmail MCP Server` 的相关配置：
+
+![](sendmail-setting.png)
+
+使用 VSCode 的 GitHub Copilot 插件，使用自然语言来与 sendmail MCP Server 进行交互：
+
+![](sendmail_mcp_server_demo.gif)
+
+!!! note "MCP Server 平台"
+    [Smithery](https://smithery.ai/) 是一个基于 MCP 协议的开源平台，提供了多种 MCP Server 的实现，包括天气、翻译、计算器等功能。类似的平台还有：
+    * [modelcontextprotocol/servers](https://github.com/modelcontextprotocol/servers)
+    * [modelscope MCP 广场](https://modelscope.cn/mcp)
+    我们可以在这些平台上直接使用这些 MCP Server，或者参考平台上的 MCP Server 代码来实现自己的 MCP Server。
+
+## MCP Client
