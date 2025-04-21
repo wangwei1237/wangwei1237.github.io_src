@@ -319,7 +319,7 @@ func GetIssue(getClient GetClientFn, t translations.TranslationHelperFunc) (tool
 
     ![](mcp-inspector.png)
 
-## 编写 SendMail MCP Server
+## 开发 SendMail MCP Server
 使用 Python 的 [`mcp`](https://pypi.org/project/mcp/) 库，可以快速开发一个 MCP Server。我们以发送邮件为例，来编写一个简单的 MCP Server。
 
 ```python
@@ -381,5 +381,11 @@ Starting MCP inspector...
     * [modelcontextprotocol/servers](https://github.com/modelcontextprotocol/servers)
     * [modelscope MCP 广场](https://modelscope.cn/mcp)
     我们可以在这些平台上直接使用这些 MCP Server，或者参考平台上的 MCP Server 代码来实现自己的 MCP Server。
+
+!!! note "MCP 的强大扩展能力"
+    从如上的 github-mcp-server、weather-mcp-server 的例子中，我们可以看到：我们并没有修改 VSCode 的源代码，也没有修改 Github Copilot 插件的源代码，我们只是通过修改了 settings.json 文件就把 golang 语言编写的 github-mcp-server 和 python 语言编写的 sendmail-mcp-server 集成到了 Github Copilot 插件中。这样做的好处在于：
+    * 通过抽象出一层 MCP 协议，降低了不同语言之间的耦合度，降低了源码变动带来的风险和成本
+    * 开发者可以使用自己更擅长、更喜欢的编程语言来发布 MCP Server
+    
 
 ## MCP Client
