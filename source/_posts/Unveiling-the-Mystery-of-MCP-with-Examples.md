@@ -389,3 +389,270 @@ Starting MCP inspector...
     
 
 ## MCP Client
+我们可以使用 VSCode 中的 GitHub Copilot 或者 cline 插件来作为 `MCP Hosts`，但是这种 `MCP Hosts` 很难集成到我们现有的工作流系统中。因此，除了这种 IDE 类型的 `MCP Hosts` 之外，我们还会遇到基于源码的 `MCP Hosts`，以便将 MCP 的强大能力集成到现有的工作流系统中。
+
+我选择 python 语言编写的 [adhikasp/mcp-client-cli](https://github.com/adhikasp/mcp-client-cli) 作为 `MCP Hosts` 来探索 MCP，该项目目前的 [stars](https://github.com/search?q=mcp+client+language%3APython&type=repositories&l=Python&s=stars&o=desc) 数相对较多，支持的能力也比较丰富。在该项目的文档中，有如下的描述：
+
+> A simple CLI program to run LLM prompt and implement Model Context Protocol (MCP) client.
+> 
+> You can use any MCP-compatible servers from the convenience of your terminal.
+>
+> This act as alternative client beside Claude Desktop. Additionally you can use any LLM provider like OpenAI, Groq, or local LLM model via llama.
+
+`adhikasp/mcp-client-cli` 是作为一个 python 库来提供的，因此可以作为一个本地命令来使用：
+
+```bash
+$ pip install mcp-client-cli
+$ which llm 
+/Library/Frameworks/Python.framework/Versions/3.13/bin/llm
+$ cat /Library/Frameworks/Python.framework/Versions/3.13/bin/llm
+#!/Library/Frameworks/Python.framework/Versions/3.13/bin/python3.13
+# -*- coding: utf-8 -*-
+import re
+import sys
+from mcp_client_cli.cli import main
+if __name__ == '__main__':
+    sys.argv[0] = re.sub(r'(-script\.pyw|\.exe)?$', '', sys.argv[0])
+    sys.exit(main())
+```
+
+![](mcp_client_usage_demo.gif)
+
+我们也可以把 [adhikasp/mcp-client-cli](https://github.com/adhikasp/mcp-client-cli) 克隆到本地，直接使用 python 运行该项目的 `cli.py` 文件来使用：
+
+```bash
+$ git clone https://github.com/adhikasp/mcp-client-cli.git
+$ cd mcp-client-cli
+$ pip install -e .
+$ python3.13 -m src.mcp_client_cli.cli "wangwei1237/wangwei1237.github.io_src仓库中，评论数最多的 issue 是哪个？"
+```
+
+![](mcp-cli-develop.png)
+
+## 配置 adhikasp/mcp-client-cli
+首先修改 `~/.llm/config.json` 配置文件为 `adhikasp/mcp-client-cli` 增加大语言模型配置和 `MCP Server`（[github-mcp-server](https://github.com/github/github-mcp-server)，[dbhub](https://github.com/bytebase/dbhub)，[weather-mcp-server](https://github.com/CodeByWaqas/weather-mcp-server)，sendmail）
+
+```json
+{
+  "systemPrompt": "You are an AI assistant helping a software engineer...",
+  "llm": {
+    "provider": "openai",
+    "model": "gpt-4o-mini-2024-07-18",
+    "api_key": "",
+    "temperature": 0.7,
+    "base_url": "https://api.openai.com/v1"
+  },
+  "mcpServers": {
+    "github": {
+      "command": "/Users/wangwei17/Documents/Project/github/github-mcp-server/github-mcp-server",
+      "args": [
+        "stdio"
+      ],
+      "env": {},
+      "enabled": true,
+      "requires_confirmation": [
+        "list_issues",
+        "create_issue",
+        "update_issue"
+      ]
+    },
+    "dbhub-demo": {
+      "command": "/usr/local/bin/node",
+      "args": [
+        "/Users/wangwei17/Documents/Project/github/dbhub/dist/index.js",
+        "--transport",
+        "stdio",
+        "--dsn",
+        "sqlite:///Users/wangwei17/.llm/conversations.db"
+      ],
+      "env": {},
+      "enabled": true,
+      "requires_confirmation": [
+        "run_query"
+      ]
+    },
+    "weather": {
+      "command": "/usr/local/bin/python3.13",
+      "args": [
+        "/Users/wangwei17/Documents/Project/github/weather-mcp-server/src/resources/server.py"
+      ],
+      "env": {},
+      "enabled": true,
+      "requires_confirmation": []
+    },
+    "sendmail": {
+      "command": "/usr/local/bin/python3.13",
+      "args": [
+        "/Users/wangwei17/Documents/Project/github/sendmail/sendmail.py"
+      ],
+      "enabled": true,
+      "requires_confirmation": [],
+      "env": {}
+    }
+  }
+}
+```
+
+* mcpServers.server.command: 指定 MCP Server 的执行命令
+* mcpServers.server.args: 指定 MCP Server 的执行参数
+* mcpServers.server.env: 指定 MCP Server 的环境变量，也可以通过 `export` 命令来设置 MCP Server 执行时用到的环境变量。例如，github-mcp-server 的 `GITHUB_PERSONAL_ACCESS_TOKEN`、weather-mcp-server 的 `WEATHER_API_KEY`……
+* mcpServers.server.enabled: 是否启用该 MCP Server，尤其是当 MCP Servers 提供的工具非常多，需要进行级联选择工具时，可以在选择工具之前先选择 MCP Server 并用该字段来控制当前的 MCP Server 是否进行后续工具的筛选，这样可以减少不必要的计算资源消耗。
+* mcpServers.server.requires_confirmation: 是否需要人工确认，默认值为 false。对于一些需要人工确认的操作，例如：删除文件、发送邮件等操作，可以设置为 true。这样在执行这些操作时，会弹出一个确认框，要求用户确认后才能执行。
+
+![](mcp-cli-listtools.png)
+
+## adhikasp/mcp-client-cli 的特点
+根据 [adhikasp/mcp-client-cli 的结构图](https://github.com/adhikasp/mcp-client-cli/blob/master/c4_diagram.png) 以及源码，我们可以一窥 adhikasp/mcp-client-cli 究竟有哪些特点。源码面前了无秘密。
+
+![](mcp-client-cli-c4-diagram.png)
+
+### 1.对话持久化，支持多轮对话
+`adhikasp/mcp-client-cli` 是一个基于 [LangChain](https://python.langchain.com/docs/introduction/) 开发的 `MCP Host`，通过 LangChain 提供的底层能力实现了 Agent 的多轮对话能力。
+
+每一轮对话，`adhikasp/mcp-client-cli` 都会生成一个 `thread_id` 来标识该轮对话的唯一性，同时该 `thread_id` 会持久化到 sqlite 数据库（`conversations.db`）中的 `last_conversation` 表。每一次对话的内容也会持久化到 sqlite 数据库（`conversations.db`）中的 `checkpointer` 表。根据如上两个表的持久化信息，我们就可以在后续的对话中，使用 `thread_id` 来获取之前的对话内容，从而实现多轮对话的能力。
+
+![](last_conversation.png)
+
+```python
+# 如果包含参数 c，则表示是连续对话，设置 is_continuation 为 True
+def parse_query(args: argparse.Namespace) -> tuple[HumanMessage, bool]:
+    query_text = ""
+    if query_parts:
+        if query_parts[0] == 'c':
+            is_continuation = True
+            query_text = ' '.join(query_parts[1:])
+    ...
+    ...
+
+# 如果是连续对话，则从 last_conversation 表中获取上一次对话的 thread_id，并从 checkpointer 表中获取上一次对话的内容，并追加到当前对话内容中。
+async def handle_conversation(args: argparse.Namespace, query: HumanMessage, 
+                            is_conversation_continuation: bool, app_config: AppConfig) -> None:
+    conversation_manager = ConversationManager(SQLITE_DB)
+    
+    async with AsyncSqliteSaver.from_conn_string(SQLITE_DB) as checkpointer:
+        store = SqliteStore(SQLITE_DB)
+        memories = await get_memories(store)
+        formatted_memories = "\n".join(f"- {memory}" for memory in memories)
+        agent_executor = create_react_agent(
+            model, tools, state_schema=AgentState, 
+            state_modifier=prompt, checkpointer=checkpointer, store=store
+        )
+    thread_id = (await conversation_manager.get_last_id() if is_conversation_continuation 
+                    else uuid.uuid4().hex)
+    ......
+```
+
+```bash
+$ python3.13 -m src.mcp_client_cli.cli "What's the captical of the China?"
+$ python3.13 -m src.mcp_client_cli.cli c "What’s the weather like tomorrow?"
+```
+
+![](mcp_client_cli_conversation_demo.gif)
+
+### 2.支持粘贴板和多模态输入
+对于粘贴板和图片输入的支持代码，可以参考 `parse_query()`：
+
+```python
+# 可以通过剪贴板或者管道的方式来输入数据，同时支持图像数据的输入
+def parse_query(args: argparse.Namespace) -> tuple[HumanMessage, bool]:
+    # Handle clipboard content if requested
+    if query_parts and query_parts[0] == 'cb':
+        # Remove 'cb' from query parts
+        query_parts = query_parts[1:]
+        # Try to get content from clipboard
+        clipboard_result = get_clipboard_content()
+        if clipboard_result:
+            content, mime_type = clipboard_result
+            if mime_type:  # It's an image
+                stdin_image = base64.b64encode(content).decode('utf-8')
+            else:  # It's text
+                stdin_content = content
+                ...
+    # Check if there's input from pipe
+    elif not sys.stdin.isatty():
+        stdin_data = sys.stdin.buffer.read()
+        # Try to detect if it's an image
+        image_type = imghdr.what(None, h=stdin_data)
+        if image_type:
+            # It's an image, encode it as base64
+            stdin_image = base64.b64encode(stdin_data).decode('utf-8')
+            mime_type = mimetypes.guess_type(f"dummy.{image_type}")[0] or f"image/{image_type}"
+        else:
+            # It's text
+            stdin_content = stdin_data.decode('utf-8').strip()
+```
+
+```bash
+$ cat ../wangwei1237.github.io_src/source/_posts/Unveiling-the-Mystery-of-MCP-with-Examples/mcp-client-cli-c4-diagram.png | python3.13 -m src.mcp_client_cli.cli "请描述一下这张图中的信息"
+$ python3.13 -m src.mcp_client_cli.cli c "在图中，Conversation Manager 是通过什么数据库作为持久化存储的？"
+```
+
+![](mcp_client_cli_image_understanding.gif)
+
+### 3.重要信息存储在系统环境变量中，安全性更高
+不同的 `MCP Server` 在运行时，需要一定的鉴权信息，例如：github-mcp-server 的 `GITHUB_PERSONAL_ACCESS_TOKEN`、weather-mcp-server 的 `WEATHER_API_KEY` 等等。
+
+虽然 `adhikasp/mcp-client-cli` 可以在 `~/.llm/config.json` 中的 `mcpServers.server.env` 中配置这些信息，但是 `~/.llm/config.json` 作为系统的一部分，可能需要托管在 git 仓库中，在这种情况下，可能会带来信息的泄露，因此这种方式并不安全。
+
+通过阅读 `adhikasp/mcp-client-cli` 的源码，我们可以看到，`adhikasp/mcp-client-cli` 会优先从系统环境变量中获取这些信息，如果没有，则会从 `~/.llm/config.json` 中获取。因此，我们可以将敏感信息存储在系统环境变量中，以此来避免信息的泄露。
+
+```python
+async def handle_conversation(args: argparse.Namespace, query: HumanMessage, 
+                            is_conversation_continuation: bool, app_config: AppConfig) -> None:
+    """Handle the main conversation flow."""
+    server_configs = [
+        McpServerConfig(
+            server_name=name,
+            server_param=StdioServerParameters(
+                command=config.command,
+                args=config.args or [],
+                env={**(config.env or {}), **os.environ} # 配置文件中的环境变量与系统环境变量合并
+            ),
+            exclude_tools=config.exclude_tools or []
+        )
+        for name, config in app_config.get_enabled_servers().items()
+    ]
+    ...
+```
+
+### 4.支持对话过程中的人工确认
+adhikasp/mcp-client-cli 使用 `OutputHandler` 和 `agent_executor.astream(...) ` 的流式交互逻辑，实现了在工具调用前进行人工确认的功能。为了避免过度的人工确认，还在配置中增加了 `mcpServers.server.requires_confirmation` 字段来控制在执行工具之前是否需要人工确认。只有 `mcpServers.server.requires_confirmation= true` 的工具才会在执行之前进行人工确认。
+
+```python
+# 在工具调用之前，检查是否需要人工确认，src/mcp_client_cli/output.py
+def confirm_tool_call(self, config: dict, chunk: any) -> bool:
+    if not self._is_tool_call_requested(chunk, config):
+        return True
+
+    self.stop()
+    is_confirmed = self._ask_tool_call_confirmation()
+    if not is_confirmed:
+        self.md += "# Tool call denied"
+        return False
+        
+    if not self.text_only:
+        self.start()
+    return True
+
+async def handle_conversation(args: argparse.Namespace, query: HumanMessage, 
+                            is_conversation_continuation: bool, app_config: AppConfig) -> None:
+    output = OutputHandler(text_only=args.text_only, only_last_message=args.no_intermediates)
+    output.start()
+    try:
+        async for chunk in agent_executor.astream(
+            input_messages,
+            stream_mode=["messages", "values"],
+            config={"configurable": {"thread_id": thread_id, "user_id": "myself"}, 
+                    "recursion_limit": 100}
+        ):
+            output.update(chunk)
+            if not args.no_confirmations: # 如果需要确认，并且用户没有点击确认，则停止
+                if not output.confirm_tool_call(app_config.__dict__, chunk):
+                    break
+    finally:
+        output.finish()
+```
+
+![](human_check.png)
+
+
