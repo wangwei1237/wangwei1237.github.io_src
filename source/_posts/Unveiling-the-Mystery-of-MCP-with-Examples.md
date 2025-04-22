@@ -501,6 +501,42 @@ $ python3.13 -m src.mcp_client_cli.cli "wangwei1237/wangwei1237.github.io_src仓
 
 ![](mcp-cli-listtools.png)
 
+使用 adhikasp/mcp-client-cli 查询天气的时序图如下所示：
+
+```mermaid
+sequenceDiagram
+    autonumber
+    participant Host as MCP Host<br>(adhikasp/mcp-client-cli)
+    participant Client as MCP Client<br>(mcp client)
+    participant Server as MCP Server<br>(weather-mcp-server)
+    participant Tool as Tool<br>(OpenWeatherMap API)
+    participant LLM as MCP LLM<br>(GPT/Claude/……)
+    
+    Host->>Client: 初始化 MCP 客户端
+    Client->>Server: 请求工具列表
+    activate Server
+    Server-->>Client: 返回工具列表
+    deactivate Server
+    Client-->>Host: 返回工具列表
+    Host->>LLM: 组合<用户Query>+<系统提示词>+<工具列表>
+    activate LLM
+    LLM-->>Host:function: weather<br>params:{city:Beijing, date:tomorrow}
+    deactivate LLM
+    Host->>Client: mcp.call("weather", {"city": "Beijing", "date": "tomorrow"})
+    Client->>Server: mcp.call("weather", {"city": "Beijing", "date": "tomorrow"})
+    Server->>Tool: GET /weather?city=Beijing&date=tomorrow
+    activate Tool
+    Tool-->>Server: { "temp": 38, "humidity": 65 }
+    deactivate Tool
+    Server-->>Client: { "temp": 38, "humidity": 65 }
+    Client-->>Host: { "temp": 38, "humidity": 65 }
+    Host->>LLM: 组合<用户Query>+<系统提示词>+<工具列表>+<工具结果>
+    activate LLM
+    LLM-->>Host: 明天北京气温 38℃，气温较高，湿度较大，请注意避免中暑
+    deactivate LLM
+    note over Host,LLM: 
+```
+
 ## adhikasp/mcp-client-cli 的特点
 根据 [adhikasp/mcp-client-cli 的结构图](https://github.com/adhikasp/mcp-client-cli/blob/master/c4_diagram.png) 以及源码，我们可以一窥 adhikasp/mcp-client-cli 究竟有哪些特点。源码面前了无秘密。
 
