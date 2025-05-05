@@ -74,6 +74,131 @@ API-DSW 提供了 每月 250 计算时（大约 35 个小时）、共计 3 个�
     在我的使用过程中，我发现在某些特殊的场景下，处于安全性的控制，我们是无法使用 ProxyClient 的，例如：使用 [LLaMa-Factory](https://github.com/hiyouga/LLaMA-Factory) 的 [WebUI](https://llamafactory.readthedocs.io/en/latest/getting_started/webui.html) 进行模型的微调时，此时必须使用在线的方式打开 DSW 实例，才能打开 LLaMa-Factory 的 WebUI 界面。
 
 ## 使用 llama.cpp 部署 Qwen3-4B
+### 启动 DSW 实例
+在 [人工智能平台PAI-控制台](https://pai.console.aliyun.com/) 中找到我们申请的 PAI-DSW 实例，并启动。
+
+![](start_dsw.png)
+
+`ssh dsw-<instanceID>` 远程连接到 DSW 实例。
+
+![](connect_dsw.png)
+
+### 安装 llama.cpp
+克隆 llama.cpp 的代码仓库并进入到 llama.cpp 目录：
+
+```bash
+git clone https://github.com/ggml-org/llama.cpp
+cd llama.cpp
+```
+
+根据 [Build llama.cpp locally-CUDA](https://github.com/ggml-org/llama.cpp/blob/master/docs/build.md#cuda) 文档中的说明，编译 CUDA 版本的 llama.cpp。DSW 实例中已经安装了 CUDA 12.1 的驱动，其安装目录位于 /usr/local/cuda-12.1，所以我们可以直接使用 `cmake -DGGML_CUDA=ON` 命令来编译 CUDA 版本的 llama.cpp。如果在编译过程提示找不到 CUDA 的头文件和库文件，我们可以通过 `cmake -DCMAKE_CUDA_COMPILER=/usr/local/cuda-12.1/bin/nvcc` 命令来指定 CUDA 的安装目录。
+
+```bash
+mkdir build
+cmake -B build -DGGMML_CUDA=ON -DCMAKE_CUDA_COMPILER=/usr/local/cuda-12.1/bin/nvcc
+cmake --build build --config Release
+```
+
+编译完成后，我们可以在 build/bin 目录下找到编译好的可执行文件。
+
+![](llama.cpp_cmd.cpp.png)
+
+我们可以使用 llama.cpp 目录下的 `convert-hf-to-gguf.py` 脚本将 Qwen3-4B 的模型文件转换为 GGUF 格式的模型文件。我们可以在 [ModelScope](https://modelscope.cn/models) 上找到 Qwen3-4B 的模型文件，下载完成后，使用 `convert-hf-to-gguf.py` 脚本进行转换。在使用 `convert-hf-to-gguf.py` 之前，我们需要首先安装相关的依赖库：
+
+```bash
+cd llama.cpp
+pip install -r requirements.txt
+```
+
+### 下载 Qwen3-4B 模型文件
+使用 `modelscope` 命令下载 Qwen3-4B 模型文件：
+
+```bash
+cd /mnt/workspace/models/
+modelscope download --model Qwen/Qwen3-4B --local_dir ./Qwen3-4B
+```
+
+![](ms_download_llm.png)
+
+从图中可以看到，下载 Qwen3-4B 模型文件的速度非常快，最高的下载速度达到了 200MB/s，对于 Qwen3-4B 这样的 7GB 的模型文件，基本上不到 1 分钟就可以下载完成。
+
+使用 `convert-hf-to-gguf.py` 脚本将 Qwen3-4B 模型文件转换为 GGUF 格式的模型文件：
+
+```bash
+cd llama.cpp
+python3 convert_hf_to_gguf.py /mnt/workspace/models/Qwen3-4B
+```
+
+![](GGUF.png)
+
+### llama-cli 运行 Qwen3-4B
+通过 `llama-cli` 启动 Qwen3-4B 的交互模式，以便我们可以通过命令行与模型进行交互。
+
+```bash
+llama-cli -m /mnt/workspace/models/Qwen3-4B/Qwen3-4B-F16.gguf \
+ --jinja \ 
+ --color \
+ -ngl 99 \
+ -fa \
+ -sm row \
+ --temp 0.6 \
+ --top-k 20 \
+ --top-p 0.95 \
+ --min-p 0 \
+ -c 40960 \
+ -n 32768 \
+ --no-context-shift
+```
+
+* -m：指定加载的 GGUF 模型文件
+* --jinja：启用 Jinja 模板支持，用于 prompt 模版，如 chat 模式
+* --color：使用颜色输出
+* -ngl：使用最多可用 GPU 层数，尽可能多地将模型加载到 GPU，从而加速推理
+* -fa：启用 Flash Attention，提升注意力机制性能，需要 GPU 支持
+* -sm row：启用 row-wise attention 排布优化，row 表示矩阵行优先计算
+* --temp：指定温度值，控制随机性，值越小越确定，值越大越随机
+* --top-k：指定 top-k 采样
+* --top-p：指定 top-p 采样
+* --min-p：指定罕见词的概率限制
+* -c：指定上下文的 tokens 长度
+* -n：指定生成的 token 数量
+* --no-context-shift：禁用“滑动窗口”机制，保持固定上下文，适合多轮对话或长文本生成
+
+![](llama_cli.png)
+
+### llama-server 运行 Qwen3-8B
+通过 `llama-server` 启动 Qwen3-4B 的服务端，以便可以通过 OpenAI 规范的 API 进行调用。
+
+```bash
+./llama-server -m /mnt/workspace/models/Qwen3-4B/Qwen3-4B-F16.gguf \
+ --jinja \
+ --reasoning-format deepseek \
+ -ngl 99 \
+ -fa \
+ -sm row \
+ --temp 0.6 \
+ --top-k 20 \
+ --top-p 0.95 \
+ --min-p 0 \
+ -c 40960 \
+ -n 32768 \
+ --no-context-shift \
+ --port 8080
+```
+
+我们把 `curl` 请求组织在脚本 `qwen34b.sh` 中，脚本内容如下：
+
+```bash
+curl --location --request POST 'http://localhost:8080/v1/chat/completions' \
+ --header 'Content-Type: application/json' \
+ --header 'appid;' \
+ --data-raw '{"model":"Qwen3-4B","messages":[{"role":"user","content":"Strawberry里有几个 r"}],"stream": false}'
+```
+
+`sh qwen34b.sh` 的结果如下：
+
+![](llama_server.png)
+
 
 
 
