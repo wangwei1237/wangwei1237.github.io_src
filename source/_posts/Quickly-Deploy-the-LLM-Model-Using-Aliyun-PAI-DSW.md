@@ -206,7 +206,7 @@ curl --location --request POST 'http://localhost:8080/v1/chat/completions' \
 
 !!! warning "自定义服务访问功能的注意事项"
     * 自定义服务访问功能主要用于开发阶段，方便开发者将服务分享给协同开发者以方便测试和验证。
-    * 当 DSW 实例关闭后，实例内的自定义服务也将无法访问。
+    * g当 DSW 实例关闭后，实例内的自定义服务也将无法访问。
     * 自定义服务访问功能需要的 NAT 网关、弹性公网 IP 都是单独的云产品，需要额外计费，计费说明请参见 [公网 NAT 网关计费说明](https://help.aliyun.com/zh/nat-gateway/product-overview/billing-overview-1?spm=a2c4g.11186623.0.0.5f2c74c88Tu6gJ#title-x86-3l6-0na)、[弹性公网 IP 计费说明](https://help.aliyun.com/zh/eip/product-overview/billing-methods/?spm=a2c4g.11186623.0.0.5f2c74c88Tu6gJ#ariaid-title1)。
 
 具体的配置可以参考 [PAI-DSW 的官方文档——在公网中访问实例中的服务](https://help.aliyun.com/zh/pai/user-guide/custom-services-access-configurations?spm=a2c4g.11186623.help-menu-30347.d_3_3_4_10.6e9158e0f0MrlF&scm=20140722.H_2847325._.OR_help-T_cn~zh-V_1)，在我的使用过程中，我选择的是 **方案一：在新建DSW实例页配置**，整体配置过程也比较简单，这里不再赘述。
@@ -250,8 +250,8 @@ curl --location --request POST 'http://120.55.12.216:8080/v1/chat/completions' \
 
 ![](qwen3_iterm.png)
 
-
-
+!!! warning "公网访问的注意事项"
+    NAT 网关、弹性公网 IP 都是单独的云产品，需要额外计费，只要申请后就会产生费用，因此建议在不需要公网访问时，及时在控制台中删除 NAT 网关和弹性公网 IP，以避免不必要的费用。
 
 
 
