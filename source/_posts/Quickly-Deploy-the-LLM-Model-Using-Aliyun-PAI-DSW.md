@@ -199,6 +199,58 @@ curl --location --request POST 'http://localhost:8080/v1/chat/completions' \
 
 ![](llama_server.png)
 
+## 在公网中访问实例中的服务
+我们之前在 DSW 实例中启动的 `llama-server` 服务是无法在公网中访问的，因此我们只能在 DSW 实例中通过 `http://localhost:8080/v1/chat/completions` 的方式来访问 `llama-server` 服务。
+
+如果我们想要在公网中访问实例中的模型服务时，DSW 也提供了自定义服务访问配置的功能，以实现在公网中访问 DSW 中的模型服务。
+
+!!! warning "自定义服务访问功能的注意事项"
+    * 自定义服务访问功能主要用于开发阶段，方便开发者将服务分享给协同开发者以方便测试和验证。
+    * 当 DSW 实例关闭后，实例内的自定义服务也将无法访问。
+    * 自定义服务访问功能需要的 NAT 网关、弹性公网 IP 都是单独的云产品，需要额外计费，计费说明请参见 [公网 NAT 网关计费说明](https://help.aliyun.com/zh/nat-gateway/product-overview/billing-overview-1?spm=a2c4g.11186623.0.0.5f2c74c88Tu6gJ#title-x86-3l6-0na)、[弹性公网 IP 计费说明](https://help.aliyun.com/zh/eip/product-overview/billing-methods/?spm=a2c4g.11186623.0.0.5f2c74c88Tu6gJ#ariaid-title1)。
+
+具体的配置可以参考 [PAI-DSW 的官方文档——在公网中访问实例中的服务](https://help.aliyun.com/zh/pai/user-guide/custom-services-access-configurations?spm=a2c4g.11186623.help-menu-30347.d_3_3_4_10.6e9158e0f0MrlF&scm=20140722.H_2847325._.OR_help-T_cn~zh-V_1)，在我的使用过程中，我选择的是 **方案一：在新建DSW实例页配置**，整体配置过程也比较简单，这里不再赘述。
+
+配置完成后，当启动 DSW 实例后，我们可以在对应实例的配置页面中找到公网访问的地址：
+
+![](nat.png)
+
+通过 `llama-server` 启动 Qwen3-4B 的服务端：
+
+```bash
+./llama-server -m /mnt/workspace/models/Qwen3-4B/Qwen3-4B-F16.gguf \
+ --jinja \
+ --reasoning-format deepseek \
+ -ngl 99 \
+ -fa \
+ -sm row \
+ --temp 0.6 \
+ --top-k 20 \
+ --top-p 0.95 \
+ --min-p 0 \
+ -c 40960 \
+ -n 32768 \
+ --no-context-shift \
+ --port 8080 \
+ --host 0.0.0.0
+```
+
+我们可以通过在浏览器中访问 `http://120.55.12.216:8080/` 请求刚才部署的 Qwen3-4B 模型服务：
+
+![](qwen_url.png)
+
+我们还可以在本地终端中，使用 `curl` 命令请求 DSW 实例中部署的 Qwen3-4B 模型服务：
+
+```bash
+curl --location --request POST 'http://120.55.12.216:8080/v1/chat/completions' \
+--header 'Content-Type: application/json' \
+--header 'appid;' \
+--data-raw '{"model":"Qwen3-4B","messages":[{"role":"user","content":"Strawberry里有几个 r"}],"stream": false}'
+```
+
+![](qwen3_iterm.png)
+
+
 
 
 
