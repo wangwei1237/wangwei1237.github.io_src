@@ -37,5 +37,5 @@ cp introduction_to_probability_and_statistics/sitemap.xml itpas.xml
 cp m2m_sitemap.xml m2m_e_sitemap.xml && sed -i "s/gitee/github/g" m2m_e_sitemap.xml
 
 cd .. 
-cp -r docs/* public/shares && cd public/shares && rm -rf GraphQL_in_Action.pdf WebAssembly-in-Action.pdf
+cp -r docs/* public/shares && cd public/shares && rm -rf GraphQL_in_Action.pdf WebAssembly-in-Action.pdf Digital_Video_and_HD_Algorithms_and_Interfaces_2nd_ed.pdf
 cd .. 

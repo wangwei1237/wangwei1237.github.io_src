@@ -83,7 +83,7 @@ date: 2020-06-17 16:50:12
 %}
 
 {% valkyrurl
-[url=/shares/Digital_Video_and_HD_Algorithms_and_Interfaces_2nd_ed.pdf]
+[url=https://www.amazon.com/Digital-Video-HD-Algorithms-Interfaces/dp/0123919266]
 [title="Dgital Video and HD Algorithms and Interfaces(2nd Edition)"]
 [avatar=/books/index/digital_video_HD_algorithms.jpg]
 %}
