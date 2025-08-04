@@ -135,7 +135,7 @@ music:
 
 # 访问量统计(不蒜子)
 busuanzi:
-  enable: false
+  enable: true
 
 # 友盟cnzz统计(url填js代码src链接)
 cnzz:
