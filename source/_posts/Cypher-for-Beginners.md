@@ -5,9 +5,9 @@ top: false
 date: 2025-08-09 16:47:32
 authors:
 categories:
-  - Knowledge Graph
-tags:
   - Neo4j
+tags:
+  - Knowledge Graph
   - Cypher
 ---
 
@@ -30,7 +30,7 @@ tags:
 Alice 是 Bob 的朋友，在 Neo4j 中可以表示为：
 
 ```cypher
-(:Person {name: "Alice"})-[:FRIEND_OF]->(:Person {name: "Bob"})
+(Alice:Person)-[:FRIEND_OF]->(Bob:Person)
 ```
 
 ### Neo4j Desktop 安装与使用
@@ -78,4 +78,110 @@ Cypher 是 Neo4j 的声明式图查询语言，类似 SQL，但专为图模型�
 * 箭头 -> 或 <- 表示关系方向
 * 属性用花括号 {} 表示
 * 标签用冒号 : 表示
+
+### 创建节点和关系
+```cypher
+CREATE (p1:Person {name: "Alice", age: 30}), 
+       (p2:Person {name: "Bob", age: 17})
+```
+
+```cypher
+MATCH (a:Person {name: "Alice"}), (b:Person {name: "Bob"})
+CREATE (a)-[:FRIEND_OF]->(b)
+```
+
+### 查询节点和关系
+```cypher
+MATCH path=(:Person)-[:FRIEND_OF]->(:Person) 
+RETURN path
+```
+
+![](3.png)
+
+### 条件查询
+
+```cypher
+MATCH (p:Person) 
+WHERE p.age > 18
+RETURN p
+```
+
+![](4.png)
+
+### 属性设置与更新
+
+```cypher
+MATCH (p1:Person {name: "Alice"})
+SET p1.gender = "female"
+
+MATCH (p2:Person {name: "Bob"})
+SET p2.gender = "male"
+
+RETURN p1, p2
+```
+
+![](5.png)
+
+### 删除节点和关系
+`DETACH DELETE` 会同时删除节点及其所有关系。
+
+```cypher
+MATCH (p:Person {name: "Alice"})
+DETACH DELETE p
+```
+
+## Cypher 语法速查表
+
+!!! note "Neo4j Cypher 语法速查表"
+    更多的 Cypher 语法可以参考 [Neo4j Cypher 语法速查表](/2025/08/08/Neo4j-Cypher-Syntax-Cheat-Sheet/)。
+
+
+## HPO（The Human Phenotype Ontology）
+[人类表型本体论（HPO）](https://hpo.jax.org/) 提供了一套标准化的词汇，用于描述人类疾病中出现的表型异常。HPO 是 Monarch Initiative 的核心成果，致力于生物医学和模式生物数据的语义整合，其最终目标是推动生物医学研究的发展。作为 Monarch Initiative 的一部分，HPO 是全球基因组与健康联盟（GA4GH）战略路线图中的 13 个驱动项目之一的核心组成部分。HPO 中的每个术语都描述了一种表型异常，例如房间隔缺损。HPO 目前包含超过 18,000 个术语，以及超过 156,000 个与遗传性疾病相关的注释。目前，借助 HPO 项目及其他相关项目，人们已经开发出用于表型驱动的鉴别诊断、基因组诊断和转化医学研究的相关软件。
+
+**接下来，我们将利用 HPO 数据构建一个简单的 KG，并使用 Cypher 查询语句对其进行探索。**
+
+### Neo4j 插件安装
+在 [Knowledge Graphs And LLMs in Action](https://www.manning.com/books/knowledge-graphs-and-llms-in-action) 一书中，提供了根据 HPO 数据构建 KG 的代码示例（[chapter_03_code](https://github.com/alenegro81/knowledge-graphs-and-llms-in-action/tree/main/chapters/ch03)）。我们可以使用该代码来构建 HPO KG。
+
+该代码使用了 Neo4j 的 `APOC` 插件和 `neosemantics` 插件，因此，在运行代码之前，我们需要确保 Neo4j Desktop 中安装了这两个插件。
+
+Neo4j Desktop 中的插件中心提供了 `APOC` 插件，我们直接安装即可，但是 `neosemantics` 插件需要手动安装。我们可以从 [neosemantics GitHub 仓库](https://github.com/neo4j-contrib/neosemantics) 下载插件的 `.jar` 文件，并将其放置在 Neo4j Desktop 的 `plugins` 目录下。
+
+插件安装完毕后，我们需要修改 Neo4j 的配置文件，以允许 `APOC` 和 `neosemantics` 插件访问数据库。通过 Neo4j Desktop 插件中心安装的插件会自动增加这些配置项，但是如果是手动安装的插件（例如 `neosemantics`），我们需要手动添加以下配置到 Neo4j 的 `neo4j.conf` 文件中：
+
+```bash
+# A comma separated list of procedures and user defined functions that are allowed
+# full access to the database through unsupported/insecure internal APIs.
+dbms.security.procedures.unrestricted=gds.*,n10s.*
+
+# A comma separated list of procedures to be loaded by default.
+# Leaving this unconfigured will load all procedures found.
+dbms.security.procedures.allowlist=gds.*,n10s.*,apoc.*
+```
+
+然后重启 Neo4j 数据库实例，使配置和插件生效。
+
+![](8.jpg)
+
+### 构建 HPO KG
+按照 [chapter_03_code](https://github.com/alenegro81/knowledge-graphs-and-llms-in-action/tree/main/chapters/ch03) 中的说明，我们可以构建 HPO KG。
+
+!!! warning "python 版本问题"
+    务必注意，执行代码需要使用 3.10 以下的 python 版本。否则，会报如下的错误：
+    
+    ```bash
+    AttributeError: module 'pkgutil' has no attribute 'ImpImporter'. Did you mean: 'zipimporter'?
+    ```
+
+```bash
+$ /usr/bin/python3 chapters/ch03/importer/import_hpo.py
+```
+
+执行上述命令后，我们就把 HPO 数据导入到 Neo4j 数据库中，并形成了一个简单的 KG。
+
+![](9.png)
+
+
+
 
