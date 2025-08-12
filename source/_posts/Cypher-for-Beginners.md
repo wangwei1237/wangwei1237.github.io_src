@@ -182,6 +182,45 @@ $ /usr/bin/python3 chapters/ch03/importer/import_hpo.py
 
 ![](9.png)
 
+### 查询 HPO KG
+我们现在想要查询一下，与 `1 型糖尿病`（`Diabetes Mellitus Type 1`）关联的表型特征（`Phnotypic Feature`）。我们可以使用以下 Cypher 查询语句：
 
+```cypher
+MATCH path=(dis:HpoDisease)-[:HAS_PHENOTYPIC_FEATURE]->(pho:HpoPhenotype)
+WHERE dis.id = "OMIM:222100"
+RETURN path
+```
 
+![](10.png)
 
+在如上的查询中，我们得到了与 `1 型糖尿病` 相关的表型特征。那么，作为一个临床医生而言，他们还想要知道，有哪些疾病还会与这些表型特征相关联。我们可以使用以下 Cypher 查询语句：
+
+```cypher
+MATCH path=(dis:HpoDisease)-[:HAS_PHENOTYPIC_FEATURE]->(phe:HpoPhenotype)
+WHERE dis.id = "OMIM:222100"
+WITH phe AS Type_1_Diabetes_Phe, path AS Type_1_Diabetes_Path
+MATCH path = (dis:HpoDisease)-[:HAS_PHENOTYPIC_FEATURE]->(Type_1_Diabetes_Phe)
+RETURN Type_1_Diabetes_Path, path
+```
+
+![](11.png)
+
+我们还可以继续查询，在和 `1 型糖尿病` 相关的表型特征中有关联的疾病中，这些疾病有这些表型特征的特征个数，并按照所包含的特征个数的多少进行降序排列。
+
+```cypher
+MATCH path=(dis:HpoDisease)-[:HAS_PHENOTYPIC_FEATURE]->(phe:HpoPhenotype)
+WHERE dis.id = "OMIM:222100"
+WITH phe AS Type_1_Diabetes_Phe, path AS Type_1_Diabetes_Path
+MATCH path = (dis:HpoDisease)-[:HAS_PHENOTYPIC_FEATURE]->(Type_1_Diabetes_Phe)
+UNWIND dis AS nodes
+RETURN dis.id AS disease_id, 
+dis.label AS disease_name,
+collect(Type_1_Diabetes_Phe.label) AS features,
+COUNT(nodes) AS num_of_features
+ORDER BY num_of_features DESC, disease_name
+LIMIT 5
+```
+
+![](12.png)
+
+从如上的结果中，我们能看出，在与 `1 型糖尿病` 相关的 8 个表型特征中，`Bardet-Biedl syndrome 2` 疾病包含了其中的 3 个表型特征。
