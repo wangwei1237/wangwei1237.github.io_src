@@ -112,22 +112,163 @@ YIELD nodePropertiesWritten, componentCount, componentDistribution
 * 规模敏感性：对于不同规模的知识图谱，WCC的评估标准可能需要调整。小规模专业图谱和大规模通用图谱的评估标准应该有所不同。
 
 ## 2. Louvain Modularity 算法
+在知识图谱的质量评估体系中，除了连通性分析外，社区结构的合理性也是衡量图谱质量的重要维度。而 Louvain Modularity（鲁汶模块度）正是一个能够揭示知识图谱内在组织结构质量的强大算法。Louvain Modularity 不仅能够发现图谱中的自然社区划分，还能够量化评估图中社区结构的合理程度。
+
+### 2.1 Louvain Modularity 算法简介
+在网络科学中，**Modularity（模块度）** [^2]是用来衡量网络社区结构质量的重要指标。Newman 和 Girvan 在 2004 年提出了 **Modularity（模块度）** 的概念，并通过比较实际网络中的边分布与随机网络中的期望边分布，来评估社区划分的合理性。
+
+Louvain 算法[^3]是由比利时鲁汶大学的研究者在 2008 年提出的一种高效的社区发现算法。该算法能够快速识别大规模网络中的社区结构，并计算相应的模块度值。Louvain Modularity 则是指使用 Louvain 算法发现社区结构后计算得到的模块度值，它综合反映了知识图谱中实体聚类的合理性和社区间边界的清晰度。
+
+### 2.2 Louvain Modularity 的计算方法
+在 Networks: An Introduction 一书中[^4]，模块度的定义如下：
+
+$$
+Q = \frac{1}{2m} \sum_{ij} \left( A_{ij} - \gamma \frac{k_i k_j}{2m} \right) \delta(c_i, c_j)
+$$
+
+其中：
+
+* $m$：图中边的总数
+* $A_{ij}$：图的邻接矩阵元素（节点 $i$ 和 $j$ 之间有边则为 1，否则为 0）
+* $\gamma$：分辨率参数。$\gamma$ 的不同取值会影响社区划分的精细程度，较小的 $\gamma$ 可能会检测出更大型、包含节点更多的社区；较大的 $\gamma$ 则可能会检测出更多小型、更精细的社区。通过调整 $\gamma$，可以适配不同尺度的社区结构分析需求。
+* $k_i$、$k_j$：节点 $i$ 和 $j$ 的度
+* $c_i、c_j$：节点 $i$ 和 $j$ 所属的社区
+* $\delta(c_i, c_j)$：如果两节点属于同一社区则为 1，否则为 0
+
+例如，在学术研究的网络图谱中，学者之间往往通过合作关系产生链接。如果该学术研究网络具有良好的社区结构，那么同一研究领域的学者之间应该有更密集的合作，而不同领域的学者之间的合作则相对较少。模块度就是用来量化这种“内部紧密、外部稀疏”特性的指标。
+
+模块度值的范围通常在 -0.5 到 1 之间：
+
+* $Q$ < 0：社区内连接比随机期望还要稀少
+* $Q \approx$ 0：网络接近随机图，无明显社区结构
+* $Q$ > 0.3：通常认为存在显著的社区结构
+* $Q$ > 0.5：表示社区结构非常明显
+
+Louvain 算法具备如下的优点：
+
+* 时间复杂度近似 $O(n \log_n)$，适用于大规模网络
+* 能够发现多层次的社区结构
+* 可以通过模块度优化来确保社区划分的合理性
+* 对不同类型的网络都有良好的表现
+
+### 2.3 Louvain Modularity 在知识图谱质量评估中的作用
+* 知识组织结构评估：在知识图谱中，语义相关的实体往往通过关系紧密连接。Louvain Modularity 能够评估这种语义聚类的质量。高模块度值表明相关实体被有效聚集在同一社区，低模块度值可能暗示实体间关系的语义一致性较差。另外，通过分析发现的社区结构，可以检验知识图谱中不同主题领域的边界是否清晰，明确的社区边界反映良好的主题区分，模糊的社区结构可能表明主题交叉过于复杂或分类不当。
+
+* 数据质量诊断：如果知识图谱中存在大量错误关系，会导致不相关实体被错误连接，从而降低模块度值。通过监控模块度变化，可以间接评估数据清洗的效果。实体消歧错误会导致本应分离的实体被合并，或相关实体被错误分离，这些都会在社区结构中体现出来，过度消歧会产生异常紧密的社区，消歧不足则会导致社区结构过于分散。
+
+* 图谱完整性分析：模块度不仅反映社区结构的存在，也间接反映了知识的密度分布，如果某些社区内部连接过于稀疏，可能表明该领域知识不完整；如果所有社区密度都较低，则可能暗示整体知识的密度不足。通过分析社区间的边，可以评估跨领域知识的连接质量，合理的跨社区连接反映良好的知识整合，过多或过少的跨社区连接都可能表明图谱的结构存在问题。
+
+* 图谱演化监控：在知识图谱的持续更新过程中，Louvain Modularity 可以用来监控图谱结构的稳定性。模块度的剧烈波动可能表明新增数据与现有结构不协调，渐进式的模块度变化通常表明健康的图谱演化。新领域知识的加入应该形成新的社区或合理扩展现有社区，新社区的形成表明新领域知识的有效整合，而现有社区的合理扩展反映知识补充的质量。
+
+### 2.4 Louvain Modularity 的局限性
+尽管 Louvain Modularity 是一个强大的评估工具，但它也存在一些局限性：
+
+* 算法局限性：Louvain 算法存在分辨率限制问题，这可能导致无法发现小于某个规模的社区，从而导致分析过程忽略了细粒度的专业领域。另外，与 WCC 不同，Louvain 算法的结果可能因初始条件或节点处理顺序的不同而有所变化，因此需要多次运行取平均值以增强器健壮性。
+
+* 知识图谱特异性：知识图谱中存在多种类型的关系，简单的无权重处理可能无法充分反映不同关系的重要性。
+
+### 2.5 与 WCC 的比较
+WCC（弱联通分量）主要关注图谱的整体连通性，而 Louvain Modularity 更关注内部结构的合理性，两者在知识图谱质量评估中各有侧重：
+
+* WCC 回答：图谱是否连通？
+* Louvain Modularity 回答：连通的图谱结构是否合理？
+
+两者的结合使用可以提供更全面的质量评估，在实际应用中，我们可以先用 WCC 检测图的基本连通性，然后再用 Louvain Modularity 来评估图的结构合理性。
+
+对于 **1.1 WCC 算法简介** 中提到的社交网络图，如果我们可以通过 `gds.louvain.write` 方法计算 Louvain Modularity，并将结果写入节点属性中：
+
+```Cypher
+CALL gds.louvain.write('social-graph', {writeProperty: 'componentLouvainId'})
+YIELD communityCount, modularity, modularities, communityDistribution
+```
+
+如上的代码可以得到以下结果：
+
+| communityCount | modularity | modularities | communityDistribution |
+| -------------- | ---------- | ------------ | --------------------- |
+| 2              | 0.32       | [0.32]       | {<br/>  min: 2,<br/>  p5: 2,<br/>  max: 3,<br/>  p999: 3,<br/>  p99: 3,<br/>  p1: 2,<br/>  p10: 2,<br/>  p90: 3,<br/>  p50: 2,<br/>  p25: 2,<br/>  p75: 3,<br/>  p95: 3,<br/>  mean: 2.5<br/>} |
 
 ## 3. GDS 库
+在 Neo4j 数据库中，GDS（Graph Data Science）是一个强大的图数据科学库，它提供了高效实现的通用图形算法的并行版本，并以 Cypher 过程的形式供开发者使用。此外，GDS 还包括机器学习的 pipeline 以用于训练监督模型来解决图问题，例如预测图中缺失的关系。[^5]
 
-### 3.1 安装 GDS 插件
+我们可以按照 [Cypher 初学者指南](/2025/08/09/Cypher-for-Beginners/#neo4j-%E6%8F%92%E4%BB%B6%E5%AE%89%E8%A3%85) 中的插件安装步骤来安装 GDS 库。
 
-在 Neo4j 数据库中，GDS（Graph Data Science）是一个强大的图数据科学库，它提供了多种算法来处理和分析图形数据。为了使用 GDS 的功能，首先需要确保你的 Neo4j 实例已经安装了 GDS 插件。你可以通过以下步骤进行安装：
-
-1. **访问 Neo4j 网站**：打开 [Neo4j Graph Data Science](https://neo4j.com/labs/graph-data-science/) 页面。
-2. **下载 GDS 插件**：根据你使用的 Neo4j 版本和操作系统类型，选择合适的 GDS 插件包并下载。
-3. **上传到 Neo4j**: 将下载的 `.jar` 文件上传到你的 Neo4j 服务器上。通常这可以通过 Neo4j Desktop 或直接连接到运行中的 Neo4j 服务来完成。
-4. **启用 GDS 插件**：登录到 Neo4j 浏览器或命令行界面，执行如下 Cypher 语句以启用 GDS 插件：
-   ```cypher
-   CALL dbms.components() YIELD
+对于非 Neo4j Desktop 用户，可以参照 Neo4j 官方文档中的 [Graph Data Science Installation](https://neo4j.com/docs/graph-data-science/current/installation/) 的内容来安装对应版本的 GDS 库。
 
 ## 4. 使用 GDS 进行图质量评估
+在 在 [Knowledge Graphs And LLMs in Action](https://www.manning.com/books/knowledge-graphs-and-llms-in-action) 一书中的第 4 章中，作者给出了使用 GDS 中的 WCC 和 Louvain 算法来评估 PPI [^6]图质量评估的例子。
+
+### 4.1 PPI 简介
+Protein-Protein Interactions (PPIs，蛋白质-蛋白质相互作用) 是指细胞内或细胞间两个或多个蛋白质分子通过物理结合形成复合物的过程，是生命活动中至关重要的分子机制之一。
+
+PPI 的核心特点主要包括：
+* 分子基础：蛋白质通过表面的特定结构域（如酶的活性位点、结合口袋等）或氨基酸残基（如疏水相互作用、氢键、离子键等）发生特异性结合。
+* 普遍性：几乎所有细胞功能（如信号传导、代谢调控、DNA 复制、免疫反应等）都依赖 PPIs 实现。例如，酶与底物的结合、抗体与抗原的识别、蛋白质复合体（如核糖体、剪接体）的组装等。
+
+PPIs 的研究有助于揭示生命活动的分子网络，为理解疾病机制和开发靶向药物提供关键依据。
+
+### 4.2 PPI 图数据导入
+利用 [import_seed.py](https://github.com/alenegro81/knowledge-graphs-and-llms-in-action/blob/main/chapters/ch04/importer/import_seed.py) 导入 PPI 图数据。
+
+利用如下的代码查询图中不同的节点类型和对应的节点数量：
+
+```Cypher
+MATCH (n)
+UNWIND labels(n) AS label
+RETURN label, count(*) AS count
+ORDER BY count DESC;
+```
+
+![](ppi_node_cnt.png)
+
+### 4.3 创建图的投影
+
+```Cypher
+CALL gds.graph.project(
+  'ppi-graph',
+  'PPIProtein',
+  {
+      INTERACTS_WITH: {
+          orientation: 'UNDIRECTED'
+      }
+  }
+)
+```
+
+![](ppi_project.png)
+
+### 4.4 计算 WCC 与 Louvain Modularity
+
+使用如下的代码计算 WCC：
+
+```Cypher
+CALL gds.wcc.write('ppi-graph', { writeProperty: 'componentId' })
+YIELD nodePropertiesWritten, componentCount, componentDistribution;
+```
+
+![](ppi_wcc.png)
+
+使用如下的代码计算 Louvain Modularity：
+
+```Cypher
+CALL gds.louvain.write('ppi-graph', {writeProperty: 'componentLouvainId'})
+YIELD communityCount, modularity, modularities, communityDistribution
+```
+
+![](ppi_louvain.png)
+
+综合 WCC 和 Louvain Modularity 的结果，我们可以看到：
+
+* 最大的一个弱联通分量包含了 21521 个节点，这说明 99.6% 的节点都包含在一个巨大的弱联通分量中，表明图的连通性非常好。
+* Louvain Modularity 的值为 0.39，表明图中存在非常显著的社区结构，相关实体被有效聚集在同一社区，社区间边界也相对清晰。
+
+在对比 WCC 与 Louvain Modularity 的计算耗时我们发现，WCC 的计算耗时只有 285 ms，而 Louvain Modularity 的计算耗时却高达 10285 ms，可见，Louvain Modularity 的计算复杂度要高于 WCC。
 
 
 ## 参考文献
 [^1]: [Weakly Connected Components](https://neo4j.com/docs/graph-data-science/current/algorithms/wcc/)
+[^2]: [Modularity](https://networkx.org/documentation/stable/reference/algorithms/generated/networkx.algorithms.community.quality.modularity.html#r6937dc4d2017-1)
+[^3]: [Louvain](https://neo4j.com/docs/graph-data-science/current/algorithms/louvain/)
+[^4]: [Networks: An Introduction](https://academic.oup.com/book/27303?login=false)
+[^5]: [Neo4j Graph Data Science](https://neo4j.com/docs/graph-data-science/current/introduction/)
+[^6]: [Brief Introduction of Protein-Protein Interaction (PPI)](https://www.creative-proteomics.com/blog/brief-introduction-protein-protein.htm)
