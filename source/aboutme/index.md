@@ -52,6 +52,9 @@ copyright: false
 * [LLM in Action](https://wangwei1237.github.io/LLM_in_Action/)
 * [面向工程师和科学家的概率与统计学导论](https://wangwei1237.github.io/introduction_to_probability_and_statistics/)
 
+###### 2025: QECon 大会出品人
+* [QECon 2025 北京站——数据驱动测试与精准测试专场出品人](https://www.qecon.com.cn/SJ-BJ2025)
+
 {% endmdline %}
 
 ###### 可以通过如下方式来帮助站点完善内容：
