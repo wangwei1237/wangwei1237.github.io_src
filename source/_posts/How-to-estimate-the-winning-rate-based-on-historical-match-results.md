@@ -346,8 +346,36 @@ A        A  0.0608 0.2246  -0.3795   0.5011
     完整的 R 代码和输入数据可以点击链接 [bt.R](https://github.com/wangwei1237/wangwei1237.github.io_src/blob/master/source/_posts/How-to-estimate-the-winning-rate-based-on-historical-match-results/bt.R)、[matches_2.csv](https://github.com/wangwei1237/wangwei1237.github.io_src/blob/master/source/_posts/How-to-estimate-the-winning-rate-based-on-historical-match-results/matches_2.csv)获取。
 
 ## 如何进行排序？
-在 LMArena 的 *LMArena's Ranking Method* [^6] 这篇博客中，作者提到 LMArena 的排名方法进行了详细的描述。
+用户偏好打分，本质上还是使用抽样的方式来估计群体参数，因此采用绝对 Elo 分值对模型能力排序有时候也并不那么客观。有可能 A、B 两个模型的能力实际上差不多，但是刚好在观察到的打分结果中，$Elo\_A = 1500$、$Elo\_B = 1498$。难道这就能说明模型 A 的能力要比模型 B 好吗？
 
+如前所述，对于每一个模型，我们均可以通过 Bradley-Terry 模型计算出该模型的能力参数、以及能力参数对应的 95% 置信区间。因此，基于 Bradley-Terry 模型，我们可以估计出每一个模型的实际能力、实际能力的下限、实际能力的上限。
+
+为了让排序更为合理，LMArena 根据模型的实际能力、实际能力的下限、实际能力的上限这三个数据提供了 `Rank Spread` 的排序方式。在 LMArena 的 *LMArena's Ranking Method* [^6] 这篇博客中，作者对 `Rank Spread` 的排名方法进行了详细的描述。
+
+对于模型 $M$ 而言：
+
+* 模型 $M$ 的最佳排名为：$1+\#\{置信区间下限 > 模型 M 置信区间上限的模型数量\}$。
+* 模型 $M$ 的最差排名为：$1+\#\{置信区间上限 > 模型 M 置信区间下限的模型数量\}$。
+
+> $1+$ 确保排名不会为零，并且可能的最佳排名是 $1$。
+
+![](Raw-Ranking_v5)
+
+对于上图中的模型 C 而言：
+
+* 模型 C 的 Elo 分数为 1400，按照 Elo 分数排序，模型 C 的排名为第 3 名。
+* 置信区间下限大于模型 C 置信区间上限（1420）的模型只有模型 A，因此模型 C 的最佳排名为 $1 + 1 = 2$。
+* 置信区间上限大于模型 C 置信区间下限（1380）的模型有模型 A、B、D、E 四个模型，因此模型 C 的最差排名为 $1 + 4 = 5$。
+* 最终，模型 C 的 `Rank Spread` 为 $2 \Longleftrightarrow	 5$。
+
+对于模型 B 而言：
+
+* 模型 B 的 Elo 分数为 1418，按照 Elo 分数排序，模型 B 的排名为第 2 名。
+* 置信区间下限大于模型 B 置信区间上限（1418）的模型只有模型 A，因此模型 B 的最佳排名为 $1 + 1 = 2$。
+* 置信区间上限大于模型 B 置信区间下限的模型有模型 A、C、D 三个模型，因此模型 B 的最差排名为 $1 + 3 = 4$。
+* 最终，模型 B 的 `Rank Spread` 为 $2 \Longleftrightarrow	 4$。
+
+因此，当两个模型的 `Rank Spread` 有重叠时，那么他们就属于同级别模型（如上所示的模型 B 和模型 C），我们可以认为他们在能力上是属于统一梯队的。当然就和体育赛事一样，虽然两名选手都是产不多的视频，但实际比赛结果只能有一个冠军。因此，我们可以认为 Elo 分数排序（唯一排序）就代表在当前的数据下，模型的实际能力排序结果。
 
 ## 参考文献
 [^1]: [刚刚，马斯克Grok 4.1低调发布！通用能力碾压其他一切模型](https://mp.weixin.qq.com/s/6V3M1BFho0Y2L26SrgOT4g)
