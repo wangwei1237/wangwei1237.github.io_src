@@ -1,8 +1,8 @@
 ---
-title: Agent 中的 Context Engineering
+title: Context Engineering for AI Agents
 reward: false
 top: false
-date: 2025-11-28 16:50:51
+date: 2025-11-29 10:50:51
 authors:
 categories:
   - LLM
@@ -15,7 +15,15 @@ tags:
 
 ![](CE.jpeg)
 
+2025 年 6 月 25 日，在 Andrej Karpathy [推文](https://x.com/karpathy/status/1937902205765607626) 的推动下，*上下文工程*（*Context Engineering*）一词迅速在 AI 开发者社区中爆火。
+
+> +1 for "context engineering" over "prompt engineering".
+
+但是当时主要精力放在了大模型评估的工作上，因此一直没有时间来深入研究 *上下文工程*（*Context Engineering*）。直到最近，在我们构建端到端的 TestingAgent 时，我们遇到了因上下文窗口限制，多轮交互后初始重要字段丢失，导致 TestingAgent 执行失败的问题。我想，是时候来深入研究一下 *上下文工程*（*Context Engineering*）了。
+
 <!--more-->
+
+![2025 年每周发布的大模型数量趋势图](lm_trend.png)
 
 ## 1. Workflow & Agent
 *Building effective agents*[^8] 介绍了 *workflow* 和 *agent* 的区别，这两者之间最本质的区别在于：究竟是由谁来控制执行流程。
@@ -37,7 +45,7 @@ tags:
 
 对于软件交付领域而言，端到端的 CodingAgent 或者 TestingAgent 因为需要多步迭代、并且在不同的迭代过程中需要根据当前的结果与状态来调整执行步骤进而完成代码编写或者软件测试工作，因此简单的 *workflow* 不足以完成这样的工作，必须采用 *Agent* 才能实现这种复杂的任务。
 
-![00d6dc12dfbcff77181d77f96b323027](00d6dc12dfbcff77181d77f96b323027.png)
+![](00d6dc12dfbcff77181d77f96b323027.png)
 
 假设我们要测试一个电商网站的登录功能，TestAgent 会：
 
@@ -59,7 +67,7 @@ tags:
 
 因此，*Context Rot* 提醒我们：在一段持续的对话或长文本生成过程中，随着输入信息（Context）的不断累积，大语言模型会逐渐丧失对早期关键信息的“注意力”，导致回答质量下降、逻辑断层或指令遗忘。
 
-![224c5f534db954028ae9e44474887478](224c5f534db954028ae9e44474887478.jpg)
+![](224c5f534db954028ae9e44474887478.jpg)
 
 在 *Context Rot* 的限制下，大语言模型的上下文窗口是一种边际收益递减的有限资源。长上下文能力不应该仅仅看作是模型的一项技术指标，而更应该看作是一个需要精心设计和管理的系统工程。我们必须为大语言模型精心筛选信息，以避免 *Context Rot* 现象。
 
@@ -187,7 +195,7 @@ $$
 ### 5.2 Structured Note-Taking
 *笔记*（*note-taking*）与 *原始信息*（*raw information*）之间的核心区别，本质上是 **认知加工（*Cognitive Processing*）** 的介入程度。*原始信息* 是矿石——包含金子，但同时也包含了大量的泥土、杂质和石头）；而 *笔记* 是提炼后的金块——去除了杂质，改变了形态，并且还会打上了所有者的印记。从另一个角度讲：*笔记* 是我们思维的快照，具备一定的主观和个性化，是构建自己思维体系的有效形式之一。
 
-![4792b51210851a049a66959f577b0dd0](4792b51210851a049a66959f577b0dd0.jpg)
+![](4792b51210851a049a66959f577b0dd0.jpg)
 
 在 Agent 领域，*结构化笔记*——又称为 *Agent 记忆*——是一种 Agent 定期把 *笔记*（*note*）写入大模型上下文窗口之外的持久性存储介质中的技术。在 Agent 的后续执行过程中，Agent 会再次从这些持久性存储介质中把这些 *笔记* 拉回到上下文窗口。
 
@@ -230,10 +238,20 @@ $$
 
 由此，也能看出谷歌对于 *Context Engineering* 是多么的痴迷。
 
+2025 年 11 月 7 日，谷歌发表了一篇被称为 *Attention is all you need (V2)* 的论文 *Introducing Nested Learning: A new ML paradigm for continual learning*[^9]，论文提出了 *Nested Learning* 框架，从而让模型拥有了自我修改权重与多时间尺度连续记忆的能力，从而也可以很少的解决 *Context Rot* 问题。在 *Nested Learning* 框架下，当我们和大语言模型（*LLM*）对话的时候：
+
+* 模型的高频层，在飞速处理我们所说的每个词，理解我们的意图，生成回复，这部分记忆是临时的，对话结束可能就忘了。
+* 模型的中频层则在以一个稍慢的速度，分析整个对话的主题、我们的情绪、知识盲区，试图形成一个关于这次互动的概要记忆。
+* 模型的低频层则更慢，它整合过去一段时间里，跟我们的所有互动，模型可能会发现：“哦，这个用户最近总是在问关于古典音乐的问题，而且他似乎对巴赫特别感兴趣，是时候把‘该用户是古典音乐爱好者’这个标签存入关于他的长期档案里了”。
+
+与上下文工程不同的是，所有的这些记忆不再依赖于上下文窗口而存在，而是通过修改模型的权重直接存储于模型之中。目前看来，在线修改模型的权重，依然是一个非常复杂且昂贵的过程。因此，我仍旧认为，在可遇见的一段时间内，上下文工程依然是提升 Agent 在 *长程任务* 上执行能力的最有效手段。
+
 !!! note "后记"
-    ...
+    当我在研究 *Context Engineering* 的时候，恰好在工作中遇到了一件事情，这件事情让我深刻体会到了 *Context Engineering* 的强大。对于同一个原始任务，我和同事对比了两种不同的上下文构建策略构建出的上下文的结果差异，结果发现，精心筛选并组织的上下文，竟然让 Agent 的效果跨越了一个层级！真的令人惊艳，又让我更加痴迷于对 *Context Engineering* 的研究。
 
+    当我在研究 *Context Engineering* 的时候，恰好是谷歌发布 *Gemini3* 与 *Nano Banana Pro* 的时间，我们第一时间对这两个模型做了深入、全面的评测，正如 *[LMArena](https://lmarena.ai/leaderboard/)* 榜单上显示的那样，*Gemini3* 与 *Nano Banana Pro* 的表现确实非常亮眼。
 
+    得益于 *Gemini3* 与 *Nano Banana Pro* 的强大能力，我的*Context Engineering* 学习之旅也方便了很多，我不停的和 *Gemini3* 进行对话，询问它关于 *Context Engineering* 的各种问题，真的是收益匪浅。我还用 *Nano Banana Pro* 帮我生成了这篇文章中的所有漫画插图，效果真是令人惊艳。
 
 ## 参考文献
 [^1]: [Effective context engineering for AI agents](https://www.anthropic.com/engineering/effective-context-engineering-for-ai-agents)
@@ -244,3 +262,4 @@ $$
 [^6]: [Context Engineering: Sessions & Memory](https://www.kaggle.com/whitepaper-context-engineering-sessions-and-memory)
 [^7]: [Gemini 3 Developer Guide](https://ai.google.dev/gemini-api/docs/gemini-3?thinking=high)
 [^8]: [Building effective agents](https://www.anthropic.com/engineering/building-effective-agents)
+[^9]: [Introducing Nested Learning: A new ML paradigm for continual learning](https://research.google/blog/introducing-nested-learning-a-new-ml-paradigm-for-continual-learning/)
