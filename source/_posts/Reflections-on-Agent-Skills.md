@@ -173,7 +173,19 @@ if __name__ == "__main__":
 本质上讲：`Agent Skills` 通过工程层面的优化，改变了 **如何管理**、**如何交付**、**如何使用** 大模型能力的方式，让 `Agent` 的构建更加简便、可控。从技术层面看，`Agent Skills` 并没有改变 *LLM* 的底层原理，Transformer 架构没变、权重没变、预测下一个 token 的逻辑也没变……
 
 ### 6.2 上下文工程策略
-...
+`Agent Skills` 通过本地文件系统的组织结构，帮我们实现了 Agent 的高效管理与交付。同时，`Agent Skills` 的 *渐进式信息披露* 机制，让大模型在处理复杂任务时，只需要加载必要的信息即可。因此，从另一个角度讲，`Agent Skills` 其实还是一种非常有效的 *上下文工程策略*，从而避免了 `Context Rot` 的问题。
+
+`Skills` 与 `MCP` 的机制完全不同。在 `MCP` 架构中，无论模型是否会用到某个工具，都需要将所有的工具定义加载到 `Context Window` 中，从而会导致 `Context Window` 的无效膨胀。Cluade 在 *[Introducing advanced tool use on the Claude Developer Platform](https://www.anthropic.com/engineering/advanced-tool-use)*[^7] 中提出了 *Tool Search Tool* 能力来避免 `MCP` 中加载所有工具定义带来的 `Context Window` 膨胀的问题。
+
+![](tst.webp)
+
+在 `Skills` 之前，上下文工程的机制主要是如何在对话过程中精简 `Context Window`，而 `Skills` 则反其道而行之，采用 *非必要不加载* 的方式来精简 `Context Window`。
+
+![](ce-skills.jpg)
+
+`Skills` 的出现，扩展了上下文工程的思路，让我们在构建大模型应用时，有了更多的选择。传统的 *上下文工程* 主要解决长程任务的多轮对话过程因为 *对话历史* 和 *工具调用* 导致的 `Context Window` 膨胀，而 `Skills` 则主要解决系统提示词增加导致的 `Context Window` 膨胀问题。
+
+同时，我们也需要认识到：`Skills` 通过 *非必要不加载*（把不用的规则卸载）的方式解决系统提示词的膨胀，但是对于历史对话和工具调用的膨胀问题，`Skills` 仍然无能为力。
 
 ## 参考文献
 [^1]: [Introducing Agent Skills](https://claude.com/blog/skills)
@@ -182,4 +194,5 @@ if __name__ == "__main__":
 [^4]: [Extending Claude’s capabilities with skills and MCP servers](https://claude.com/blog/extending-claude-capabilities-with-skills-mcp-servers)
 [^5]: [OpenAI Developers: Agent Skills](https://developers.openai.com/codex/skills)
 [^6]: [Stop Building Agents, Build Skills Instead](https://www.youtube.com/watch?v=CEvIs9y1uog)
+[^7]: [Introducing advanced tool use on the Claude Developer Platform](https://www.anthropic.com/engineering/advanced-tool-use)
 
