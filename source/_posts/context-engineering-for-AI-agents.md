@@ -221,6 +221,10 @@ $$
 ## 6. Context Engineering 白皮书
 2025 年 11 月 16 日，谷歌发布了 *Context Engineering 白皮书*[^6]，白皮书中认为：Agent 真正的“智能”，并非仅仅源于底层模型，更重要还在于开发者如何为其“组装”上下文。
 
+> The journey from a simple conversational turn to a piece of persistent, actionable intelligence is governed by this practice, which involves dynamically assembling all necessary information—including conversation history, memories, and external knowledge—into the LLM’s context window. 
+> 
+> This entire process relies on the interplay between two distinct but interconnected systems: the immediate Session and the long-term Memory.
+
 谷歌在白皮书中详细介绍了现在 Agent 的两大基础：会话（*Sessions*） 与 记忆（*Memory*），同时也对构建 Agent 的众多底层基础设施的工程实践做了详细的探讨：
 
 * 压缩策略（*Compaction Strategies*）：如何让信息更紧凑。
