@@ -8,6 +8,12 @@
 
     <head>
       <meta charset="utf-8" />
+      <%- open_graph({
+      twitter_id: theme.twitter || config.twitter.username, 
+      twitter_card: 'summary_large_image',
+      twitter_site: theme.twitter || config.twitter.username
+      }) %>
+      
       <% var title = page.title; if (is_archive()) { title = __('archive_a'); if
       (is_month()) { title += ': ' + page.year + '/' + page.month; } else if
       (is_year()) { title += ': ' + page.year; } } else if (is_category()) {
