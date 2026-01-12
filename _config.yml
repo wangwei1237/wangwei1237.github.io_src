@@ -96,10 +96,6 @@ include:
 exclude:
 ignore:
 
-twitter:
-  username: wangwei1237 # 不带 @
-  card: summary_large_image # Twitter Card 类型: summary, summary_large_image, app, player
-
 # Extensions
 ## Plugins: https://hexo.io/plugins/
 ## Themes: https://hexo.io/themes/

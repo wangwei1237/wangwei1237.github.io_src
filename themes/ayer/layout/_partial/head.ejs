@@ -9,9 +9,9 @@
     <head>
       <meta charset="utf-8" />
       <%- open_graph({
-      twitter_id: config.twitter && config.twitter.username,
-      twitter_card: (config.twitter && config.twitter.card) || 'summary_large_image',
-      twitter_site: config.twitter && ('@' + config.twitter.username)
+      twitter_id: theme.twitter && theme.twitter.username,
+      twitter_card: (theme.twitter && theme.twitter.card) || 'summary_large_image',
+      twitter_site: theme.twitter && ('@' + theme.twitter.username)
       }) %>
       
       <% var title = page.title; if (is_archive()) { title = __('archive_a'); if

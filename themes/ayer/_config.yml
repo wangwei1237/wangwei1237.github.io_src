@@ -120,10 +120,16 @@ layout:
   sidebar_width: 8rem
 
 # GitHub Ribbons-封面右上角的forkme，换样式直接在source/images目录下替换forkme图片
-github: 
+github:
   # (关闭请设置为false)
   enable: false
   url: https://github.com/wangwei1237
+
+# Twitter Card 配置
+# 用于优化社交媒体分享时的展示效果
+twitter:
+  username: wangwei1237 # Twitter 用户名（不带 @ 符号）
+  card: summary_large_image # Twitter Card 类型: summary, summary_large_image, app, player
 
 # 网易云音乐插件
 music:
