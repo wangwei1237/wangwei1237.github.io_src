@@ -6,7 +6,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 This is a Hexo-based blog site (wangwei1237.github.io) that generates static content and integrates multiple external books from separate repositories. The site is bilingual-capable (Chinese primary) and includes custom plugins for enhanced markdown rendering.
 
-## Key Commands
+## Key Commands for Local Development
 
 ### Content Creation
 ```bash
@@ -16,12 +16,15 @@ hexo new post "Post Title"
 # Posts are created in source/_posts/ with front matter template from scaffolds/post.md
 ```
 
-### Deployment
+### Deployment & Testing
 ```bash
 # Deploy & Release the site in the local environment
 
 hexo server >/dev/null 2>&1 &  # Start local server in background
+
 ```
+
+And then, access the site at http://127.0.0.1:4000 to test new features.
 
 ## Build and Release Architecture
 
