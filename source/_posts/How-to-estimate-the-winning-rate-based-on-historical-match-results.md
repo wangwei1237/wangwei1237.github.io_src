@@ -377,6 +377,11 @@ A        A  0.0608 0.2246  -0.3795   0.5011
 
 因此，当两个模型的 `Rank Spread` 有重叠时，那么他们就属于同级别模型（如上所示的模型 B 和模型 C），我们可以认为他们在能力上是属于统一梯队的。当然就和体育赛事一样，虽然两名选手都是产不多的视频，但实际比赛结果只能有一个冠军。因此，我们可以认为 Elo 分数排序（唯一排序）就代表在当前的数据下，模型的实际能力排序结果。
 
+## 后记[^7]
+
+!!! note "Arena-Rank: Open Sourcing the Leaderboard Methodology"
+    值得高兴的是，LMArena 团队宣布开源他们的排行榜方法 [Arena-Rank](https://lmarena.ai/blog/arena-rank/)，并且提供了 [Python 版本](https://github.com/lmarena/arena-rank?ref=lmarena.ai) 的实现。我们可以使用 [lmarena-ai/arena-expert-5k](https://huggingface.co/datasets/lmarena-ai/arena-expert-5k) 数据集对 Arena-Rank 进行测试。
+
 ## 参考文献
 [^1]: [刚刚，马斯克Grok 4.1低调发布！通用能力碾压其他一切模型](https://mp.weixin.qq.com/s/6V3M1BFho0Y2L26SrgOT4g)
 [^2]: [全世界在等的Gemini 3终于来了！强到断崖领先，连马斯克OpenAI都夸好](https://mp.weixin.qq.com/s/1qvy9mH-KXGPQrBv3PGYag)
@@ -384,3 +389,4 @@ A        A  0.0608 0.2246  -0.3795   0.5011
 [^4]: [Statistical Extensions of the Bradley-Terry and Elo Models](https://news.lmarena.ai/extended-arena/)
 [^5]: [Bradley–Terry model](https://en.wikipedia.org/wiki/Bradley%E2%80%93Terry_model)
 [^6]: [LMArena's Ranking Method](https://news.lmarena.ai/ranking-method/)
+[^7]: [Arena-Rank](https://lmarena.ai/blog/arena-rank/)
