@@ -380,7 +380,7 @@ A        A  0.0608 0.2246  -0.3795   0.5011
 ## 后记[^7]
 
 !!! note "Arena-Rank: Open Sourcing the Leaderboard Methodology"
-    值得高兴的是，LMArena 团队宣布开源他们的排行榜方法 [Arena-Rank](https://lmarena.ai/blog/arena-rank/)，并且提供了 [Python 版本](https://github.com/lmarena/arena-rank?ref=lmarena.ai) 的实现。我们可以使用 [lmarena-ai/arena-expert-5k](https://huggingface.co/datasets/lmarena-ai/arena-expert-5k) 数据集对 Arena-Rank 进行测试。
+    值得高兴的是，2025 年 12 月 18 日，LMArena 团队宣布开源他们的排行榜方法 [Arena-Rank](https://lmarena.ai/blog/arena-rank/)，并且提供了 [Python 版本](https://github.com/lmarena/arena-rank?ref=lmarena.ai) 的实现。我们可以使用 [lmarena-ai/arena-expert-5k](https://huggingface.co/datasets/lmarena-ai/arena-expert-5k) 数据集对 Arena-Rank 进行测试。
 
 ## 参考文献
 [^1]: [刚刚，马斯克Grok 4.1低调发布！通用能力碾压其他一切模型](https://mp.weixin.qq.com/s/6V3M1BFho0Y2L26SrgOT4g)
