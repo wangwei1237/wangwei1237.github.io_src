@@ -14,7 +14,7 @@ tags:
   - Browser
 ---
 
-![](openclaw_chrome.png)
+![](1.png)
 
 在 [OpenClaw 初体验](/2026/02/22/First-Experience-with-OpenClaw/) 中，我在阿里云的 ECS 主机上部署了 OpenClaw，并用它做了些初步的尝试。有时候，可能想浏览某些网页，但是这些网页在手机上的浏览体验又不好，所以此时就可以通过 IM 软件让 OpenClaw 调用 Chrome 浏览器来帮我们打开页面并截图。
 
