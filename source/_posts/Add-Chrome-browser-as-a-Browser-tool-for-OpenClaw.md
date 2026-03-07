@@ -1,5 +1,5 @@
 ---
-title: 为 OpneClaw 增加 Chrome 作为 Browser 工具
+title: 为 OpneClaw 增加 Browser 工具
 reward: false
 top: false
 date: 2026-03-04 20:40:37
