@@ -142,6 +142,9 @@ openclaw browser --browser-profile openclaw snapshot
   openclaw browser --browser-profile openclaw screenshot
   ```
 
+!!! note "为什么作者中要加入 Gemini"？
+    在整个的部署过程中，遇到了太多的坑，没遇到一个坑，我就让 Gemini 帮我解决。我为整个的安装过程专门新建了一个 Gemini Session。当 Gemini 帮我解决一个坑后，我让 Gemini 把整个对话的内容进行梳理和总结，并形成了这篇文章的初稿。可以说，Gemini 是这篇文章的幕后英雄，有必要在作者栏中加上 Gemini。
+
 ## 参考文献
 [^1]: [Chromium in Ubuntu – deb to snap transition](https://ubuntu.com/blog/chromium-in-ubuntu-deb-to-snap-transition)
 [^2]: [Snap System architecture](https://snapcraft.io/docs/reference/system-architecture/)
