@@ -104,4 +104,36 @@ tags:
 
 ![](10_11.jpg)
 
+我稍加修改，就得到了一个可以直接使用的模型部署的 Skill——[**model-deploy**](https://github.com/wangwei1237/wangwei1237.github.io_src/tree/master/source/_posts/I-asked-OpenClaw-to-help-deploy-the-LLMs/model-deploy)。
+
+> 备注：该 Skill 在 MiniMax-M2.5 上测试通过，可以点击 [链接]((https://github.com/wangwei1237/wangwei1237.github.io_src/tree/master/source/_posts/I-asked-OpenClaw-to-help-deploy-the-LLMs/model-deploy)) 获取该 Skill 的代码。
+
+我把该 Skill 挂载到我的 OpenClaw 实例上，然后让它帮我部署模型。为了避免大模型使用 Session 会话中的对话历史获取知识，而没有从 `model-deploy` 技能获取知识，我首先用 `/new` 指令创建了一个新的对话 Session。
+
+![](12.jpg)
+
+🦞 能够知道它可以用 `model-deploy` 技能来部署模型，并且当部署过程中遇到 GPU 内存不足时，他还会问我怎么处理……
+整个过程，除了给 🦞 发布部署任务外，我就只和它通信了一次：告诉他在卡 2 上部署，仅此而已。
+
+## 思考与总结
+当然，`model-deploy` 这个 Skill 并不是完美的，它只能在 vLLM 推理引擎上部署 Qwen 系模型，但是这已经是一个非常有趣的开端了。
+
+只能控制一台服务器的 🦞 再厉害也仅仅是一个玩具。**链接即智能**，当 🦞 可以控制更大规模的集群的时候，它才能释放出无限的潜能，给与我们更大的想象空间。
+
+实践之后我发现：**Skill 是看起来简单，但是要写好是一件非常难的事情**。虽然，我在文章中说：
+
+> 我稍加修改，就得到了一个可以直接使用的模型部署的 Skill。
+
+但是，说实话，我还是花了一些时间来修改这个 Skill 的，并没有像我说的那样那么轻松、简单。
+
+另外，这个 Skill 我也仅仅在 MiniMax-M2.5 模型上测试通过，还没有在更大范围的模型上测试，有可能换个模型该 Skill 就不能用了。
+
+所以，如何构建出一个可用的、稳健的、好用的 Skill 是一个值得深入探讨的问题，还需要做更多的尝试。正如谷歌在 [SkillsBench: Benchmarking How Well Agent Skills Work Across Diverse Tasks](https://arxiv.org/html/2602.12670v1) 中发现的那样：
+
+> our evaluation yields four key findings: 
+> (1) **curated Skills** provide substantial but variable benefit (+16.2 percentage points average, with high variance across domains and configurations); 
+> (2) **self-generated Skills** provide negligible or negative benefit (–1.3pp average), demonstrating that effective Skills require human-curated domain expertise;  
+
+{%twitter https://x.com/wangwei1237/status/2030430467829444670%}
+
 
