@@ -104,9 +104,9 @@ tags:
 
 ![](10_11.jpg)
 
-我稍加修改，就得到了一个可以直接使用的模型部署的 Skill——[**model-deploy**](https://github.com/wangwei1237/wangwei1237.github.io_src/tree/master/source/_posts/I-asked-OpenClaw-to-help-deploy-the-LLMs/model-deploy)。
+我稍加修改，就得到了一个可以直接使用的模型部署的 Skill——[model-deploy](https://github.com/wangwei1237/wangwei1237.github.io_src/tree/master/source/_posts/I-asked-OpenClaw-to-help-deploy-the-LLMs/model-deploy)。
 
-> 备注：该 Skill 在 MiniMax-M2.5 上测试通过，可以点击 [链接]((https://github.com/wangwei1237/wangwei1237.github.io_src/tree/master/source/_posts/I-asked-OpenClaw-to-help-deploy-the-LLMs/model-deploy)) 获取该 Skill 的代码。或者使用 `clawhub search model-deploy`、`clawhub install model-deploy` 来安装该 Skill。
+> 备注：该 Skill 在 MiniMax-M2.5 上测试通过，可以点击 [链接](https://github.com/wangwei1237/wangwei1237.github.io_src/tree/master/source/_posts/I-asked-OpenClaw-to-help-deploy-the-LLMs/model-deploy) 获取该 Skill 的代码。或者使用 `clawhub search model-deploy`、`clawhub install model-deploy` 来安装该 Skill。
 
 我把该 Skill 挂载到我的 OpenClaw 实例上，然后让它帮我部署模型。为了避免大模型使用 Session 会话中的对话历史获取知识，而没有从 `model-deploy` 技能获取知识，我首先用 `/new` 指令创建了一个新的对话 Session。
 
