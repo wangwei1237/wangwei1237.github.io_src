@@ -4,6 +4,8 @@ reward: false
 top: false
 date: 2026-03-15 19:20:25
 authors:
+  - 王伟
+  - 付笑
 categories:
   - LLM
 tags:
@@ -14,13 +16,13 @@ tags:
 
 ![](1.png)
 
-虽然 LLM 的能力现在已经非常强大，但是对于多模态大模型的评测而言，仍然需要进行大量的人工评测工作。所以，我们也会看到，类似 [Arean](https://arena.ai/leaderboard) 平台的这种基于人类偏好打分的榜单，依然是我们评估大模型性能的有效参考。
+虽然 LLM 的能力现在已经非常强大，但是对于多模态大模型的评测而言，仍然需要进行大量的人工评测工作。所以，我们也会看到，类似 [Arena](https://arena.ai/leaderboard) 平台的这种基于人类偏好打分的榜单，依然是我们评估大模型性能的有效参考。
 
 我们参考 LMArena 团队开源的榜单算法 [Arena Rank](https://arena.ai/blog/arena-rank/) 构建了自己的大模型 Side-by-Side 评测系统，来满足我们对大模型评测的需求。
 <!--more-->
 
 ## Side-by-Side 评测系统
-与 LMArena 不同的是，在我的系统中，用户的偏好打分的样本是我们预先准备好的，而不是用户自己上传的。在我们的系统中，我们会讲待用户打分的样本组织成一个任务，同时我们会招募打分用户为这个任务打分。
+与 LMArena 不同的是，在我的系统中，用户的偏好打分的样本是我们预先准备好的，而不是用户自己上传的。在我们的系统中，我们会把待用户打分的样本组织成一个任务，同时我们会招募打分用户为这个任务打分。
 
 以文生图任务为例，平台的打分过程如下图所示：
 
@@ -67,7 +69,7 @@ graph LR
 ![](agent_types.jpeg)
 
 ### Workspace 文件加载时机
-OpenClaw 的行为主要由 `worksapce` 文件而非隐藏的 `prompt` 文件定义。正确设置 *SOUL.md*、*AGENTS.md*、*USER.md*、*MEMORY.md* 以及 *TOOLS.md* 等文件以及了解每个文件的作用及其加载时机，对于实现我们的目标至关重要。
+OpenClaw 的行为主要由 `workspace` 文件而非隐藏的 `prompt` 文件定义。正确设置 *SOUL.md*、*AGENTS.md*、*USER.md*、*MEMORY.md* 以及 *TOOLS.md* 等文件以及了解每个文件的作用及其加载时机，对于实现我们的目标至关重要。
 
 OpenClaw 会在 session 启动的时候去读取 `~/.openclaw/workspace/` 下的相关文件，具体的区别和作用如下所示[^7]：
 | 文件               |  作用                                                  | 加载时机          |
@@ -108,7 +110,7 @@ OpenClaw 会在 session 启动的时候去读取 `~/.openclaw/workspace/` 下的
 * per-account-channel-peer: isolate by account + channel + sender (recommended for multi-account inboxes). 
 ```
 
-当多个私聊、多个群聊以单独的 session 运行时，接下来需要考虑的问题就是：如何让这些相互隔离的 sessions 保持一定的信息互通（只互通关系的信息）。整个评测的过程是在不同的私聊、群聊中不停的切换，没有一定的跨 session 能力，🦞 就会给人一种暂时性失忆的印象。
+当多个私聊、多个群聊以单独的 session 运行时，接下来需要考虑的问题就是：如何让这些相互隔离的 sessions 保持一定的信息互通（只互通相关的信息）。整个评测的过程是在不同的私聊、群聊中不停的切换，没有一定的跨 session 能力，🦞 就会给人一种暂时性失忆的印象。
 
 **是的，有时候就是这么矛盾，既要保证信息隔离，又要保证一定的信息互通。**
 
@@ -141,7 +143,7 @@ OpenClaw 会在 session 启动的时候去读取 `~/.openclaw/workspace/` 下的
 ```
 
 ### 多 Agent 协同能力
-整个评估过程，核心会涉及到三个阶段：发起任务、跟进任务状态、销毁任务。可以用一个 Agent 来完成这所有的阶段，但是拆分成多个 Agent 实现起来可能会更容易维护。
+整个评估过程，核心会涉及到三个阶段：发起任务、跟进任务状态、销毁任务。可以用一个 Agent 来完成所有的阶段，但是拆分成多个 Agent 实现起来可能会更容易维护。
 
 * 每次任务都会重新执行 Main Agent，Main Agent 只负责发起任务并生成 Status Agent（跟进任务） 和 Killer Agent（销毁任务）
   * 每一次评估任务都会创建单独的 Status Agent 来跟踪当前的评估任务状态
@@ -172,7 +174,232 @@ openclaw cron add \
 ![](8.png)
 
 ## 工程实现
-》》》
+### 长短期记忆分离
+整个评估流程是相对固定的、需要长期记住的。但是每个评估任务是一个相对短期的概念，评测任务结束之后，OpenClaw 不需要对这个任务有任何的记忆。在这种场景下：
+
+* 长期记忆是整个业务流程，不依赖任何短期状态
+* 短期记忆是任务的状态，当 Status Agent、Killer Agent 唤醒时，需要依赖任务的状态来保持任务的连续性
+
+于是，在我们的设计中：长期记忆以 SKILL.md 的形式存在，而需要在多 seesions/Agents 之间通信的短期任务状态信息，我们放在一个共享文件中——类似多进程架构中的共享内存。
+
+在 SKILL.md 中对评测业务流进行详细的描述，同时也包含构建 Status Agent 和 Killer Agent 的策略与流程。
+
+于是，整体的目录结构就成了如下的样子：
+
+```bash
+llm-evals/
+├── eval_tasks.json  # 短期的任务状态文件，在 Skill 首次执行时创建
+├── SKILL.md # Main Agent
+├── status-sub-agent.md  # Status Agent
+├── killer-sub-agent.md  # Killer Agent
+└── scripts/ # CLIs
+    ├── check_eval_progress_tool.py 
+    ├── create_im_group_tool.py
+    └── trigger_report_tool.py
+```
+
+### Main Agent(SKILL.md)
+
+``````plaintext
+---
+name: llm-evals-skill
+description: 当用户提供任务参数时，使用此技能初始化一个新的 LLM 评估任务。它会持久化任务状态、发布招募消息，并创建子代理 sub_agent 执行任务。
+---
+
+# LLM 评估代理
+
+## 何时使用
+当用户提供新盲测或评估任务的参数时（例如，评估类型、评估链接、目标人数、奖励描述和截止日期），立即触发此技能。**请勿使用此技能来检查进度。**
+
+有关如何创建 *status-sub-agent* 并为其配置 cron 任务的详细信息，请参阅 `./skills/llm-Arena/status-sub-agent.md`。
+
+有关如何创建 *killer-sub-agent* 并为其配置 cron 任务的详细信息，请参阅 `./skills/llm-Arena/killer-sub-agent.md`。
+
+## eval_tasks.json 文件格式
+执行此技能时，请确保已从用户提示中提取以下参数：
+- `task_id`: 任务的唯一标识符,必填。
+- `creator`: 任务的创建人，即用户的用户名，必填。
+- `platform_task_id`: 评估平台任务的 ID，例如 `1234567`，可后继更新。
+- `status`: 任务状态，`INIT`——任务创建初始化, `RECRUITING`——招募众测用户, `EVALUATING`——评估打分中, `DONE`——任务完成，必填且只能是这 4 项。
+……
+
+## 指令
+
+严格按顺序执行以下步骤：
+1. **创建 Killer Agent**
+  请检查是否存在 `./skills/llm-Arena/llm-Arena/eval_tasks.json` 文件，如果文件不存在，则做如下的操作：
+  - 创建一个新的文件 `./skills/llm-Arena/llm-Arena/eval_tasks.json`，其内容为 "{}"
+  - 使用 cron 命令创建一个新的 Killer Agent，**openclaw cron 命令** 如下：
+
+   ```bash
+      FILE_CONTENT=$(cat "./skills/llm-Arena/killer-sub-agent.md")
+      MESSAGE="请严格执行如下任务流程： $FILE_CONTENT"
+      openclaw cron add \
+      --name "任务名称" \
+      --cron "*/3 * * * *" \
+      --tz "Asia/Shanghai" \
+      --session isolated \
+      --message "$MESSAGE"
+   ```
+
+2. **持久化任务状态**：
+   - 打开本地状态文件 `./skills/llm-Arena/llm-Arena/eval_tasks.json`。
+   - 为此 `task_id` 创建一个新的 JSON 对象，不要覆盖之前的对象，要在之前的对象基础上追加一个新的对象。
+   - 将初始 `status` 设置为 `"INIT"`。
+   - 将必须的输入保存到此对象中。
+   - 将更新后的 JSON 安全地写回磁盘。
+   - 汇报已经成功持久化此次任务状态文件给任务创建人，即给我发一条创建成功的消息，并给出状态文件内容。
+
+2. **创建 Status Agent**
+   - **定时任务创建**
+     1. 执行下面 `openclaw cron命令` 创建定时任务，注意，需要把 `task_id` 替换成本次任务的ID。
+     # …… <其他的限制条件>
+
+   - **openclaw cron命令**
+
+   ```bash
+      FILE_CONTENT=$(cat "./skills/llm-Arena/status-sub-agent.md")
+      MESSAGE="当前任务ID 为 task_id, 请为这个任务严格执行如下任务流程： $FILE_CONTENT"
+      openclaw cron add \
+      --name "任务名称" \
+      --cron "*/3 * * * *" \
+      --tz "Asia/Shanghai" \
+      --session isolated \
+      --message "$MESSAGE"
+   ```
+   - **openclaw cron命令行执行之后的返回信息**
+    1. `openclaw cron` 命令如果执行成功后会返回 显示类似如下格式的 json 信息：
+         ```json
+               {
+                  "id": "b818d9ca-3cea-48de-805e-2b42c9ae0d60",
+                  "name": "test-cron-wukong",
+                  "enabled": true,
+                  "createdAtMs": 1773210163484,
+                  "updatedAtMs": 1773210163484,
+                  "schedule": {
+                     "kind": "cron",
+                     "expr": "0 10 * * *",
+                     "tz": "Asia/Shanghai"
+                  },
+                  "sessionTarget": "isolated",
+                  "wakeMode": "now",
+                  "payload": {
+                     "kind": "agentTurn",
+                     "message": "test message"
+                  },
+                  "delivery": {
+                     "mode": "announce",
+                     "channel": "last"
+                  },
+                  "state": {
+                     "nextRunAtMs": 1773280800000
+                  }
+               }
+         ```
+    2. **关键返回字段字段说明** id任务唯一ID（后续编辑/删除需要用到, name任务名称, enabled是否启用, createdAtMs创建时间（毫秒时间戳）, schedule调度配置（cron 表达式 + 时区）, sessionTarget运行模式（main 或 isolated）, payload任务内容（message 即你要执行的指令）, delivery交付方式, state.nextRunAtMs下次执行时间。
+
+
+3. **发布招募消息**：
+   - 根据 `theme` 和 `reward_desc` 撰写一条吸引人的招募消息，注意，务必带上本次任务的ID`task_id` 信息。
+   - **请勿在消息中包含 `eval_link` 信息**。相反，请指示感兴趣的用户通过回复消息或遵循特定的行动号召来报名。
+   - 将此消息发送到 `im_recruit_group_id`。
+   - 修改任务状态为 `RECRUITING` 招募中。
+
+## 约束与边界情况
+1. **错误反馈**:
+   - 如果出现任何失败, 需要立刻通知用户, 并说明失败原因。
+``````
+
+### eval_tasks 文件
+
+![](task_json.png)
+
+### Status Agent
+
+``````plaintext
+# 评估生命周期心跳
+
+本文档是 评测任务生命周期任务 Status Agent 的指导说明文档。
+使用本文档作为系统提示词，来控制评测任务的整体生命周期和状态，包括检查报名情况、创建 IM 群组、向待处理用户发送提醒、生成报告。
+
+## 何时使用
+维护评测任务的生命周期时需要严格按照本文档指导执行任务。它需要一个 `task_id` 来知道需要推进哪个评估任务的状态机。 所有任务相关的信息都在这个文档中：`./skills/llm-Arena/eval_tasks.json`。
+
+## 指令
+
+1. **读取任务状态**：
+   ……
+
+2. **处理 `RECRUITING` 状态**：
+   ……
+
+3. **处理 `EVALUATING` 状态**：
+   ……
+
+4. **处理 `DONE` 状态**:
+   - 保持静默，不再处理任何操作。
+
+## 约束与边界情况
+- **幂等性**：切勿多次创建 IM 群组。在创建之前始终验证 `im_sub_group_id` 是否为 null。
+- **数据隔离**：确保仅查询和发送消息给与传递给此技能的特定 `task_id` 相关的用户。不要在不同任务之间交叉污染数据。
+……
+``````
+
+### Killer Agent
+
+``````plaintext
+# Killer Agent
+
+使用本文档来对 Status Agent 任务完成情况进行检测，当 Status Agent 对应的任务完成时，就需要结束对应的 Status Agent 任务。
+
+## 指令
+
+1. **读取任务状态**：
+   ……
+
+2. **处理 `DONE` 状态**：
+   从 `./skills/llm-Arena/eval_tasks.json` 中提取 `cron_task_id`，使用如下的命令删除对应的 Status Agent 任务。
+
+   ```bash
+   openclaw cron rm cron_task_id
+   ```
+``````
+
+### 报名消息处理
+默认情况下，当用户在群聊中 @OpenClaw 报名的时候，OpenClaw 还是会正常回复用户的信息，但是这是一种看起来非常糟糕的体验。我们正常发任务的时候，用户的报名信息我们是不需要回复的，我们只会默默记录哪些用户报名了。
+
+![](baoming.png)
+
+由于创建任务和招募打分人员是在不同的会话，所以这两个对话的上下文是割裂的，因此如果仅在 SKILL.md 中定义规则（私聊发布任务时加载）无法满足我们的需求。如前所述，我们可以把对应的指令放在 `TOOLS.md` 文件中：
+
+```plaintext
+## LLM 评估任务创建与用户报名处理规范
+
+当用户在群聊中回复"报名"、"+1"或其他表示有空参与的消息时：
+1. **不需要回复** - 用户的报名消息不需要回复
+2. **判断用户参加的任务id** - 根据上下文对话信息，` 中的以及 `./skills/llm-Arena/eval_tasks.json任务记录，判断用户参加的是哪个任务，用于更新对应任务的记录。
+3. **默默更新**
+   - 将用户ID以 list 形式写入 `./skills/llm-Arena/eval_tasks.json` 的 `participants` 字段
+   - 格式：`"participants": ["user1", "user2"]`
+4. **禁止操作** - 禁止修改 `./skills/llm-Arena/eval_tasks.json` 中任何一个任务的 `status` 字段。
+```
+
+![](baoming_1.png)
+
+## 写好 Skill 真不容易
+写 Skill 比写代码难多了，写Skill很简单，写好了挺难。
+
+我们在开发如上的 Skill 的时候，其实只花了不到半个小时就写好了最初版本的 Skill，但是调试、优化却花了 3 天多的时间。
+
+并且，和调试代码也不一样，调试 Skill 也比较麻烦。我们调试代码时，如果有语法错误，编译就会报错，反馈非常及时。但是，如果 Skill 写错了，模型也能跑，但是结果可能不对，这种调试的反馈路径就会非常长。
+
+另外，目前不同的模型对于 Skill 的理解和支持粒度也不同，在某个模型上运行良好的 Skill，可能换一个模型就会出现问题。
+
+因此，在调试 Skill 时，不能单纯的只看结果，还需要对整个处理过程中的所有中间过程（工具调用、执行结果……）进行仔细的检查与分析，以发现其中可以优化的地方。
+
+在调试过程中，我们可以用 OpenClaw 提供的 WEBUI 来查看每一次对话的详细信息，从而观察，OpenClaw 在任务执行过程中，究竟都做了什么。
+
+![](debug.png)
 
 ## 参考文献
 [^1]: [OpenClaw: Workspace Required](https://docs.openclaw.ai/concepts/agent#workspace-required)
