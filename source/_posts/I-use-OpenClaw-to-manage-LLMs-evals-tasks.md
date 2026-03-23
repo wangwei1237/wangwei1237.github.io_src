@@ -152,7 +152,7 @@ OpenClaw 会在 session 启动的时候去读取 `~/.openclaw/workspace/` 下的
 * Status Agent 和 Killer Agent 会周期性的醒来并执行相应的任务。
 * 当 Killer Agent 检测到任务完成时，会终止相应的 Status Agent，以释放资源。
 
-![](4.png)
+![](8.png)
 
 OpenClaw 中的 Cron 即是调度器、更是一个非常强大的 Agent Spawn 工具[^8]。
 
@@ -170,8 +170,6 @@ openclaw cron add \
 ```
 
 此时，每次定时任务触发，OpenClaw 都会强制生成一个全新的 Session ID（以 cron:<job.id> 作为 Session Key），并且完全不会复用之前的闲置会话，从而避免任务多次执行过程中的上下文污染。
-
-![](8.png)
 
 ## 工程实现
 ### 长短期记忆分离
