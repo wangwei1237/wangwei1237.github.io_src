@@ -5,6 +5,7 @@ date: 2020-02-18 09:41:36
 authors:
   - 王伟
   - 姚贤杰
+math: true
 categories:
   - IVQA
 tags: 

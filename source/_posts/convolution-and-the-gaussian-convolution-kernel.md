@@ -4,6 +4,7 @@ reward: false
 top: false
 date: 2021-04-14 09:51:31
 authors:
+math: true
 categories:
   - 算法与数学
 tags:

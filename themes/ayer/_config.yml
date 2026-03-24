@@ -161,7 +161,7 @@ mathjax: false
 # 需要更换hexo渲染器，npm un hexo-renderer-marked -S && npm i hexo-renderer-markdown-it-katex -S
 katex:
   enable: true # true
-  allpost: true
+  allpost: false
   copy_tex: true
 
 # mermaid流程图 三个选项缺一不可(https://mermaid-js.github.io/mermaid/)

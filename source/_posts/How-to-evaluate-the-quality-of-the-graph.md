@@ -4,6 +4,7 @@ reward: false
 top: false
 date: 2025-08-23 09:16:00
 authors:
+math: true
 categories:
   - Neo4j
 tags:

@@ -6,6 +6,7 @@ date: 2026-03-15 19:20:25
 authors:
   - 王伟
   - 付笑
+math: true
 categories:
   - LLM
 tags:

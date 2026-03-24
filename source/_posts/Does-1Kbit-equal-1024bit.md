@@ -4,6 +4,7 @@ reward: false
 top: false
 date: 2022-06-19 11:17:53
 authors:
+math: true
 categories:
   - 软件理论
 tags:

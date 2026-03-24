@@ -4,6 +4,7 @@ reward: false
 top: false
 date: 2024-12-01 10:58:56
 authors:
+math: true
 categories:
   - 总结
 tags:
