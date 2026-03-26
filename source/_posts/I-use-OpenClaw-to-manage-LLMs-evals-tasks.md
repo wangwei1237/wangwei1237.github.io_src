@@ -7,6 +7,7 @@ authors:
   - 王伟
   - 付笑
 math: true
+mermaid: true
 categories:
   - LLM
 tags:

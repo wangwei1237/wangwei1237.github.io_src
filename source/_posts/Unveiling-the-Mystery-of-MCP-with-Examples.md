@@ -4,6 +4,7 @@ reward: false
 top: false
 date: 2025-04-17 09:30:10
 authors:
+mermaid: true
 categories:
   - LLM
 tags:
