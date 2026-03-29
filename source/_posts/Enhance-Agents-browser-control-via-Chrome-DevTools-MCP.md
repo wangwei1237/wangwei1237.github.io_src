@@ -171,6 +171,8 @@ sequenceDiagram
     Agent->>Agent: 分析数据并定位问题
 ```
 
+{% bilibili 116311841640072 %}
+
 **Chrome DevTools MCP 的优势：**
 
 * **复用活跃会话**: 这是真正的杀手锏。当你在 Mac 上已经登录了公司内部的复杂集成系统或评测看板时，Agent 可以直接通过 MCP 连入你当前正在使用、带有完整 Cookie 和身份态的浏览器标签页。无需让 AI 去学习如何登录，实现了人类与 Agent 之间调试工作的无缝切换。
