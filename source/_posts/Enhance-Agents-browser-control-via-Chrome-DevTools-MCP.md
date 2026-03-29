@@ -78,7 +78,7 @@ Playwright 的设计哲学是隔离与确定性。默认情况下，它每次启
 辅助场景下，Playwright 是流水线上的“无情机器”，适合确定性的 E2E 测试和后台爬虫，但不适合作为需要与人类环境共享上下文的“AI 副驾驶”。
 
 ## Browser-use
-Browser-use 是目前开源社区极具代表性的高层 Agent 框架。值得注意的是，其最新版本已经进行了一次重大的底层重构：彻底抛弃了 Playwright，全面转向直接使用纯 CDP (Chrome DevTools Protocol) 与浏览器进行通信，以追求更极致的性能。
+Browser-use 是目前开源社区极具代表性的高层 Agent 框架。值得注意的是，从 [0.6.0](https://github.com/browser-use/browser-use/blob/0.6.0rc1/pyproject.toml) 版本开始，Browser-use 作了一次重大底层重构：彻底抛弃了 Playwright，全面转向直接使用纯 CDP (Chrome DevTools Protocol) 与浏览器进行通信，以追求更极致的性能。
 
 Browser-use 的核心哲学是视觉驱动。它不关心网页底层用了什么前端框架，而是直接对网页进行截图，提取出可交互元素的边界框（Bbox），并将这些带有坐标标签的图片喂给具备视觉能力的大模型（如 Claude 3.5 Sonnet）。大模型像人类一样“看”网页，然后输出诸如“点击带有购物车图标的按钮”的自然语言指令。
 
@@ -184,6 +184,22 @@ sequenceDiagram
 对大模型的逻辑推理和代码编写能力要求极高，因为它操作的不再是直观的 UI，而是底层的 JSON 数据和 JS 运行时。
 
 整体看，Chrome DevTools MCP 配合 AI Coding Agent 是构建大模型自动化评测流水线、进行复杂集群环境调试的首选协议层方案。
+
+## 不同方式之间的对比
+| 评估维度 | Playwright | Browser-use (纯 CDP 版) | Chrome DevTools MCP |
+| :--- | :--- | :--- | :--- |
+| **抽象层级** | 底层通信 | 高层业务 Agent | 标准协议中间件 |
+| **驱动方式** | 纯代码驱动 | 视觉与自然语言 | Function Calling |
+| **应对 UI 变化的稳定性** | 极低（高度依赖 DOM 结构） | **极高（像人类一样视觉识别）** | 中等（依赖模型动态生成查询脚本） |
+| **状态共享与免登录能力** | 困难（默认沙盒环境） | 弱（需 AI 自主操作登录表单） | **极强（直接复用已登录会话）** |
+| **Token 消耗** | 零消耗（无需 LLM 介入） | 极高（大量多模态图像计算） | 极低（仅传递结构化的短文本和 JSON） |
+| **核心适用场景** | CI/CD 流水线、纯确定性爬虫 | 跨应用 C 端操作、非结构化任务辅助 | 内部复杂系统集成、实时异常排查调试 |
+
+3 月 29 日，OpenClaw 的作者 Peter Steinberger 发了一篇推文，推文中也提到：
+
+> The Chrome extension has been removed since Google added native access in 144+, which is simpler, but yes, it does require a one-time setting change.
+
+{%twitter https://x.com/steipete/status/2037988925818519763 %}
 
 ## 参考文献
 [^1]: [Harness Engineering: Why the Best AI Engineers in 2026 Stopped Writing Code](https://x.com/heynavtoor/status/2037200578842157462)
