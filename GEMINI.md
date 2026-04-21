@@ -47,7 +47,9 @@ The full site assembly (including books) is handled by shell scripts:
 ### Content Creation
 - **New Post**: `hexo new post "Title"` (Generates file in `source/_posts/`).
 - **Asset Folders**: Enabled (`post_asset_folder: true`). Images and other assets should be placed in a folder named after the post file.
-  - **Commit Rule**: When adding or updating a post, ensure both the `.md` file and its corresponding asset folder are created and staged together to avoid broken links. Always check `git status` before committing.
+  - **Commit Rule**: When adding or updating a post, ensure both the `.md` file and its corresponding asset folder are created and staged together to avoid broken links. 
+    - **Enforcement**: ALWAYS execute `git status` before any commit to verify all related files are detected. 
+    - **Atomic Commit**: NEVER commit a Markdown file without its associated asset folder if it exists. If they are not together, stage them together before the commit.
 - **Front Matter**: Posts require specific fields:
   ```yaml
   ---
