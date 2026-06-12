@@ -15,9 +15,9 @@ Skill 是一种**过程性知识**，用于指导模型完成某一类任务。S
 - 信息缺失、失败、边界场景下是否处理合理；
 - Skill 输出是否能被 Agent、Hook 或 Workflow 后续消费。
 
-```text
-Skill Test 是测“方案是否可靠”；而对应的 Agent Test 是测“执行是否正确”。
-```
+!!! note "备注"
+    Skill Test 是测“方案是否可靠”；而对应的 Agent Test 是测“执行是否正确”。
+    
 
 ## 2. 测试边界
 
@@ -55,9 +55,9 @@ Skill Test 是测“方案是否可靠”；而对应的 Agent Test 是测“执
 
 Skill 测试默认采用 **dry-run** 模式：
 
-```text
-不执行命令、不修改文件、不调用外部服务，只输出计划或结构化说明。
-```
+!!! note "备注"
+    不执行命令、不修改文件、不调用外部服务，只输出计划或结构化说明。
+
 
 推荐测试层级：
 
@@ -206,10 +206,9 @@ Plan Case 必须要求：
 
 推荐 Query：
 
-```text
-如果用户 Query 是：“xxxx”，你会怎么做？
-不要实际执行工具，不要修改文件，只输出计划。
-```
+!!! note "备注"
+    如果用户 Query 是：“xxxx”，你会怎么做？
+    不要实际执行工具，不要修改文件，只输出计划。
 
 示例：
 
@@ -410,15 +409,15 @@ Plan Case 必须要求：
 
 每个 Skill 至少包含 6 个 测试用例：
 
-```text
-trigger_positive: 1
-trigger_negative: 1
-plan: 1
-contract: 1
-edge: 1
-failure: 1
-```
-
+!!! note "备注"
+    * trigger_positive: 1
+    * trigger_negative: 1
+    * plan: 1
+    * contract: 1
+    * edge: 1
+    * failure: 1
+    
+    
 ## 10. 编写原则
 
 1. **字段统一**：所有 Case 保持相同字段结构，空值也保留。
@@ -446,12 +445,11 @@ failure: 1
 
 通过阈值建议：
 
-```text
->= 85：通过
-70 - 84：需人工 Review
-< 70：失败
-```
-
+!!! note "备注"
+    * 85+：通过
+    * 70 - 84：需人工 Review
+    * < 70：失败
+  
 ## 12. 完整模板
 
 ```yaml
