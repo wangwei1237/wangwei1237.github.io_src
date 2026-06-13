@@ -1,0 +1,65 @@
+const { BaseSpider } = require("./baseSpider");
+
+class MusicSpider extends BaseSpider {
+    constructor(cookie) {
+        super(cookie);
+    }
+    /**
+     *爬取书本内容
+     * @param {number} subjectId
+     */
+    crawl(subjectId) {
+        return this.superagent
+            .get(this.ENDPOINT.MUSIC + subjectId)
+            .set("Cookie", this.cookie)
+            .then((res) => {
+                var musicInfo = this.parsePlainText(res.text);
+                return { ...musicInfo, url: this.ENDPOINT.MUSIC + subjectId };
+            })
+            .catch((err) => this.fallbackCard("music", subjectId, err));
+    }
+    /**
+     * 解析文本数据
+     * @param {string} plainText
+     */
+    parsePlainText(plainText) {
+        var $ = this.cheerio.load(plainText);
+        var info = {
+            title: $("h1").text().replace(/\s/g, ""),
+        };
+        var musicInfo = $("#info").find(".pl").toArray();
+        musicInfo.forEach((element) => {
+            var itemName = $(element).text().replace(/\s/g, "");
+            if (itemName.indexOf("表演者") !== -1) {
+                var actors = itemName.replace("表演者:", "");
+                actors = actors.replace(/\s/g, "").split("/");
+                info = {
+                    ...info,
+                    actors: actors.slice(0, 2).join("/"),
+                };
+            } else if (itemName.indexOf("发行时间") !== -1) {
+                var publishDate = element.next.data.replace(/\s/g, "");
+                info = {
+                    ...info,
+                    publishDate: publishDate,
+                };
+            } else if (itemName.indexOf("流派") !== -1) {
+                var genre = element.next.data.replace(/\s/g, "");
+                info = {
+                    ...info,
+                    genre: genre,
+                };
+            }
+        });
+        var bg = $("#mainpic").children(".ckd-collect").children(".nbg");
+        var bgUrl = $(bg).children("img")[0].attribs.src;
+        info = {
+            ...info,
+            rate: $(".rating_num").text().replace(/\s/g, ""),
+            img: "https://images.weserv.nl/?url=" + bgUrl,
+        };
+        return info;
+    }
+}
+
+module.exports.MusicSpider = MusicSpider;

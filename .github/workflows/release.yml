@@ -31,6 +31,7 @@ jobs:
           /bin/cp -rf misc/markdown-it-katex_index.js node_modules/@abreto/markdown-it-katex/index.js
           /bin/cp -rf misc/@mdline/mdline-formatter-html/component/App.svelte node_modules/@mdline/mdline-formatter-html/component/App.svelte
           /bin/cp -rf misc/hexo-admonition/* node_modules/hexo-admonition/
+          /bin/cp -rf misc/hexo-douban-card/* node_modules/hexo-douban-card/
           hexo clean && hexo generate
 
       - name: build the books
