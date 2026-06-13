@@ -108,7 +108,7 @@ cases:
   - id: "trigger_001"
     type: "trigger"
     title: "API 测试请求应触发 api-test-flow"
-    query: "如果要测试登录接口是否符合预期，你会调用哪个 skill？"
+    query: "测试登录接口是否符合预期"
     inputs:
       files: []
       context: {}
@@ -217,8 +217,7 @@ Plan Case 必须要求：
   type: "plan"
   title: "API 测试 Skill 应给出正确执行计划"
   query: >
-    如果用户 Query 是：“请根据 PRD 验证登录接口是否符合预期”，你会怎么做？
-    不要实际执行工具，不要修改文件，只输出计划。
+    请根据 PRD 验证登录接口是否符合预期。
   inputs:
     files:
       - "examples/login_prd.md"
@@ -407,15 +406,11 @@ Plan Case 必须要求：
 
 ## 9. 最小测试集要求
 
-每个 Skill 至少包含 6 个 测试用例：
+每个 Skill 至少包含 2 个 测试用例：
 
 !!! note "备注"
     * trigger_positive: 1
     * trigger_negative: 1
-    * plan: 1
-    * contract: 1
-    * edge: 1
-    * failure: 1
     
     
 ## 10. 编写原则
@@ -430,8 +425,7 @@ Plan Case 必须要求：
 
 
 ## 11. 评估方式
-
-推荐评分 Rubric：
+### 11.1 评分 Rubric
 
 | 维度 | 分数 |
 |---|---:|
@@ -449,7 +443,44 @@ Plan Case 必须要求：
     * 85+：通过
     * 70 - 84：需人工 Review
     * < 70：失败
-  
+
+### 11.2 skill-testing
+
+!!! note "skill-testing"
+    skill-testing 是一个用于测试 skill 的 skill，其具体实现参见：[https://github.com/wangwei1237/agent-skills/tree/main/skill-testing](https://github.com/wangwei1237/agent-skills/tree/main/skill-testing)。
+
+可以使用 [`skill-testing`](https://github.com/wangwei1237/agent-skills/tree/main/skill-testing) Skill 方便对 skill 进行测试。
+
+`skill-testing` 的作用是：用标准化的测试用例文件 `tests/skill_cases.yaml` 来验证某个 Skill 是否会被正确触发、是否按预期规划、是否遵守 dry-run 约束，以及输出是否符合契约。
+
+它主要做几件事：
+
+1. 读取并校验 `skill_cases.yaml`  
+   检查是否包含 `version`、`skill.name`、`defaults.mode`、`defaults.execution`、`cases`，以及每个 case 的 `query`、`expected`、`assertions` 等字段。
+
+2. 为每个测试用例生成 dry-run prompt  
+   比如触发类 case 会被改写成：“如果用户这样问，你会用什么 skill？不要执行工具，只输出选择的 skill 和原因。”
+
+3. 捕获 Agent 响应  
+   默认要求用隔离子代理逐个回答测试 prompt，避免测试过程真的执行被测技能的业务逻辑。
+
+4. 归一化响应格式  
+   把原始回答整理成固定 Markdown 结构，包括：
+   - `selected_skill`
+   - `status`
+   - `artifacts`
+   - `routing`
+   - `next_action`
+   - summary、证据、原始响应
+
+5. 运行 scorer 评分  
+   根据 YAML 里的 `expected.skill`、`must_include`、`must_not_include`、`artifacts`、`routing`、`assertions` 判断每个 case 是否通过。
+
+6. 输出测试报告  
+   最终生成 `Skill Test Report`，包含通过数、失败数、总结果、每个 case 的分数和失败原因。
+
+`skill-testing` 是用来测试 Skill 行为契约的，不是用来执行 Skill 真实任务的。它验证“该不该触发、怎么计划、有没有越界”，并通过可复现的 dry-run 响应和报告给出结论。
+
 ## 12. 完整模板
 
 ```yaml
@@ -511,9 +542,7 @@ cases:
   - id: "plan_001"
     type: "plan"
     title: "<计划测试场景>"
-    query: >
-      如果用户 Query 是：“<用户请求>”，你会怎么做？
-      不要实际执行工具，不要修改文件，只输出计划。
+    query: > <用户请求>
     inputs:
       files: []
       context: {}
