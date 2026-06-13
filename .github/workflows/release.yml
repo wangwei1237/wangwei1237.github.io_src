@@ -1,4 +1,4 @@
-on: 
+on:
   push:
     branches:
       - master
@@ -10,11 +10,11 @@ jobs:
     runs-on: ubuntu-latest
     name: build and release for the 17g website
     steps:
-      - name: Setup Node.js 10.x 
+      - name: Setup Node.js 24.x
         uses: actions/setup-node@v2
         with:
-          node-version: "14" 
-        
+          node-version: "24"
+
       - name: Install hexo
         run: |
           npm install hexo-cli -g
@@ -25,7 +25,7 @@ jobs:
       - name: build the main website
         working-directory: ${{ github.workspace }}
         run: |
-          npm install 
+          npm install
           /bin/cp -rf misc/bilibili-embed-convert/* node_modules/bilibili-embed-convert/
           /bin/cp -rf misc/hexo-asset-image_index.js node_modules/hexo-asset-image/index.js
           /bin/cp -rf misc/markdown-it-katex_index.js node_modules/@abreto/markdown-it-katex/index.js
@@ -35,10 +35,10 @@ jobs:
 
       - name: build the books
         working-directory: ${{ github.workspace }}/../
-        run: | 
+        run: |
           cp wangwei1237.github.io_src/build_books.sh .
           /bin/bash ./build_books.sh "${{ github.workspace }}/../"
-      
+
       - name: release the website
         working-directory: ${{ github.workspace }}
         run: |
@@ -70,6 +70,3 @@ jobs:
       #    git config --global user.name "Wang Wei"
       #    git add . && git commit -m "${{ github.event.head_commit.message }} ${{ github.event.action }} from ${{ github.event.client_payload.from }}: ${{ github.event.client_payload.msg }}"
       #    git push https://wangwei1237:${{ secrets.DEPLOY_GITEE_TOKEN }}@gitee.com/wangwei1237/wangwei1237.git master
-
-
-
