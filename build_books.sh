@@ -8,14 +8,15 @@ fi
 
 ROOT_PATH=$1
 
-BOOKS=('chaos-engineering' 
-'digital_video_concepts' 
-'temperature-of-the-idioms' 
-'monolith-to-microservices' 
-'discovery-the-unpredictable-risk' 
+BOOKS=('chaos-engineering'
+'digital_video_concepts'
+'temperature-of-the-idioms'
+'monolith-to-microservices'
+'discovery-the-unpredictable-risk'
 'Kubernetes-in-Action-Second-Edition'
 'LLM_in_Action'
-'introduction_to_probability_and_statistics')
+'introduction_to_probability_and_statistics'
+'Skills-Test-Specification')
 
 mkdir -p ${ROOT_PATH}/books && cd ${ROOT_PATH}/books
 URL=""

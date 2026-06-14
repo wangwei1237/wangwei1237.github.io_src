@@ -8,14 +8,15 @@ fi
 
 ROOT_PATH=$1
 
-BOOKS=('chaos-engineering' 
-'digital_video_concepts' 
-'temperature-of-the-idioms' 
-'monolith-to-microservices' 
-'discovery-the-unpredictable-risk' 
+BOOKS=('chaos-engineering'
+'digital_video_concepts'
+'temperature-of-the-idioms'
+'monolith-to-microservices'
+'discovery-the-unpredictable-risk'
 'Kubernetes-in-Action-Second-Edition'
 'LLM_in_Action'
-'introduction_to_probability_and_statistics')
+'introduction_to_probability_and_statistics'
+'Skills-Test-Specification')
 
 cd public
 for ((i=0; i <${#BOOKS[@]}; i++))
@@ -36,6 +37,6 @@ cp LLM_in_Action/sitemap.xml llm_sitemap.xml
 cp introduction_to_probability_and_statistics/sitemap.xml itpas.xml
 cp m2m_sitemap.xml m2m_e_sitemap.xml && sed -i "s/gitee/github/g" m2m_e_sitemap.xml
 
-cd .. 
+cd ..
 cp -r docs/* public/shares && cd public/shares && rm -rf GraphQL_in_Action.pdf WebAssembly-in-Action.pdf Digital_Video_and_HD_Algorithms_and_Interfaces_2nd_ed.pdf
-cd .. 
+cd ..
