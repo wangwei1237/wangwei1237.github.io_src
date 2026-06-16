@@ -9,16 +9,16 @@
     "server": "hexo server"
   },
   "hexo": {
-    "version": "5.4.0"
+    "version": "7.3.0"
   },
   "dependencies": {
     "co": "^4.6.0",
     "emoji": "^0.3.2",
-    "hexo": "^5.4.0",
+    "hexo": "^7.3.0",
     "hexo-admonition": "^1.1.2",
     "hexo-asset-image": "^1.0.0",
-    "hexo-deployer-git": "^3.0.0",
-    "hexo-douban-card": "^1.2.2",
+    "hexo-deployer-git": "^4.0.0",
+    "hexo-douban-card": "^1.4.0",
     "hexo-filter-mermaid-diagrams": "^1.0.5",
     "hexo-generator-archive": "^1.0.0",
     "hexo-generator-category": "^1.0.0",
@@ -31,11 +31,11 @@
     "hexo-generator-tag": "^1.0.0",
     "hexo-jupyter-notebook": "0.0.3",
     "hexo-pdf": "^1.1.1",
-    "hexo-renderer-ejs": "^1.0.0",
+    "hexo-renderer-ejs": "^2.0.0",
     "hexo-renderer-markdown-it": "^5.0.0",
     "hexo-renderer-markdown-it-katex": "^3.4.4",
-    "hexo-renderer-stylus": "^2.0.1",
-    "hexo-server": "^2.0.0",
+    "hexo-renderer-stylus": "^3.0.1",
+    "hexo-server": "^3.0.0",
     "hexo-tag-bilibili": "^0.3.1",
     "hexo-tag-chart": "^1.0.8",
     "hexo-tag-echarts3": "^1.1.2",
@@ -43,8 +43,38 @@
     "hexo-tag-twitter": "^1.0.3",
     "hexo-tag-videojs2": "^0.7.4",
     "hexo-valkyr-url": "^1.1.0",
-    "katex": "^0.13.3",
+    "katex": "^0.16.47",
     "markdown-it-emoji": "^2.0.0",
     "twemoji": "^13.0.2"
+  },
+  "overrides": {
+    "brace-expansion": "1.1.13",
+    "cookiejar": "2.1.4",
+    "cross-spawn": "7.0.6",
+    "hexo-asset-image": {
+      "cheerio": "1.0.0-rc.12"
+    },
+    "decode-uri-component": "0.4.1",
+    "form-data": "3.0.5",
+    "js-yaml": "4.2.0",
+    "katex": "$katex",
+    "lodash": "4.18.1",
+    "minimatch": "3.1.4",
+    "minimist": "1.2.8",
+    "mkdirp": "0.5.6",
+    "moment": "2.30.1",
+    "nunjucks": "3.2.4",
+    "on-headers": "1.1.0",
+    "picomatch": "2.3.2",
+    "qs": "6.15.2",
+    "semver": "7.8.4",
+    "send": "1.2.1",
+    "serve-static": "2.2.1",
+    "underscore": "1.13.8",
+    "ejs": "3.1.10",
+    "trim": "1.0.1",
+    "trim-newlines": "5.0.0",
+    "yargs-parser": "13.1.2",
+    "nth-check": "2.0.1"
   }
 }

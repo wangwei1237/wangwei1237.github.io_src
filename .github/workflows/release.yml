@@ -10,10 +10,10 @@ jobs:
     runs-on: ubuntu-latest
     name: build and release for the 17g website
     steps:
-      - name: Setup Node.js 14.x
+      - name: Setup Node.js 20.x
         uses: actions/setup-node@v4
         with:
-          node-version: "14"
+          node-version: "20"
 
       - name: Install hexo
         run: |
@@ -25,13 +25,15 @@ jobs:
       - name: build the main website
         working-directory: ${{ github.workspace }}
         run: |
-          npm install
+          npm ci
           /bin/cp -rf misc/bilibili-embed-convert/* node_modules/bilibili-embed-convert/
           /bin/cp -rf misc/hexo-asset-image_index.js node_modules/hexo-asset-image/index.js
           /bin/cp -rf misc/markdown-it-katex_index.js node_modules/@abreto/markdown-it-katex/index.js
           /bin/cp -rf misc/@mdline/mdline-formatter-html/component/App.svelte node_modules/@mdline/mdline-formatter-html/component/App.svelte
           /bin/cp -rf misc/hexo-admonition/* node_modules/hexo-admonition/
           /bin/cp -rf misc/hexo-douban-card/* node_modules/hexo-douban-card/
+          /bin/cp -rf misc/hexo-generator-seo-friendly-sitemap/lib/* node_modules/hexo-generator-seo-friendly-sitemap/lib/
+          /bin/cp -rf misc/hexo-generator-seo-friendly-sitemap/views/* node_modules/hexo-generator-seo-friendly-sitemap/views/
           hexo clean && hexo generate
 
       - name: build the books
