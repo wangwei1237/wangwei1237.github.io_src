@@ -2,6 +2,7 @@
 title: 面向 Coding Agent 的多仓库 Git Worktree
 reward: false
 top: false
+math: true
 mermaid: true
 date: 2026-07-18 20:55:42
 authors:
@@ -208,3 +209,164 @@ flowchart LR
 ![](3.png)
 
 ![](4.png)
+
+## 3. REQ-ID 冲突
+正当我们要利用 worktree 让 Coding Agent 并行开发多个需求的时候，我们发现我们高兴的太早了。我们启动了 2 个 Session，每个 Session 都在不同的 Worktree 中开发不同的需求。但是，我们发现这个两个 worktree 中生成的 REQ-ID 是同一个。
+
+当 `docs/requirements/` 目录下的最新需求目录为 `REQ-30` 时，两个 Coding Agent 生成的 REQ-ID 都是 `REQ-31`。
+
+![](5.png)
+
+从需求实现上来看，这也没有什么问题。最大的问题在于：如果 `REQ-ID` 一致，那么父仓库 `versus` 代码合并时就会存在不可避免的代码冲突。哎呀，想想都头疼。
+
+**很多实践就是这样，看着很简单，但是真正上手，却发现有解不完的问题。但是，这不就是创新的过程吗？**
+
+这是一个典型的分布式架构下，多进程并行处理相同的数据时存在的 **“丢失更新”** 的问题。
+
+![](6.jpg)
+
+经过调研，我们希望采用 Git Worktree 的“并行”特性来解决这个问题：
+* Git 不允许同一个本地分支同时被多个 worktree checkout。如果目标 branch 已经在另一个 worktree 中被 checkout，那么 git worktree add 会拒绝创建一个新的 worktree。
+
+于是我们优化了 `wt.sh` 脚本，每创建一个 worktree 时，就在主仓库的 `.wt` 目录下，写入 `REQ-ID` 信息。在分配 `REQ-ID` 时，统一从 `.wt` 目录下读取已分配的 `REQ-ID`，避免并发冲突。
+
+```bash
+ROOT_DIR="$(cd "$(dirname "$0")/.." && pwd)"
+WT_ROOT="${WT_ROOT:-$ROOT_DIR/..}"  # worktree 存放根目录，默认主仓库父目
+WT_META_DIR="$ROOT_DIR/.wt"         # 注册表目录（.gitignore 已忽略）
+
+write_meta() {
+    local id=$1 path=$2 branch=$3 be=$4 fe=$5 req_id=${6:-}
+    echo "WT_REQ_ID=$req_id" > "$WT_META_DIR/$id.meta"
+}
+```
+
+同时，采用 `feat/req-id` 作为分支名，如果 `feat/req-id` 已经被 checkout，那么 worktree 的创建就会失败。然后 Coding Agent 就会重新创建 worktree，从而消除并发带来的 `REQ-ID` 一致的问题。 
+
+```bash
+req_id=$(allocate_req_id)
+ 
+info "[1/6] 创建 Git Worktree（基于 master）..."
+if ! git -C "$ROOT_DIR" worktree add "$wt_path" -b "feat/$id" master 2>&1; then
+    error "创建 worktree 失败"
+    exit 1
+fi
+```
+
+整体流程如下所示：
+
+```mermaid
+flowchart LR
+    START["Coding Agent 创建 Worktree"] --> SCAN["扫描主仓库 .wt/*.meta<br/>读取 WT_REQ_ID 信息"]
+    SCAN --> ALLOC["得到新的 req-id"]
+    ALLOC --> BRANCH["使用 feat/req-id<br/>作为 Worktree 绑定分支"]
+    BRANCH --> CREATE{"git worktree add"}
+
+    CREATE -- "成功" --> META["写入 .wt/&lt;worktree&gt;.meta<br/>记录 WT_REQ_ID 和 Worktree 信息"]
+    META --> DONE["新 Worktree"]
+
+    CREATE -- "失败" --> RETRY["Coding Agent 重新发起创建"]
+    RETRY --> SCAN
+```
+
+下面我们启动 2 个 Coding Agent Sessions 并并行执行 2 个需求开发任务。从实际的运行结果看，两个 Coding Agent 分别创建了 REQ-42、REQ-43 两个 Worktree，并且成功地将它们绑定到了对应的需求分支上。
+
+![启动 2 个 Session 并行执行两个任务](m_1.png)
+
+![分别生成 REQ-42、REQ-43，未发生 REQ-ID 冲突](m_2.png)
+
+![两个 worktree 分别绑定 REQ-42、REQ-43，合并代码的时候不会存在代码冲突](m_3.png)
+
+![PRD Agent 完成对应需求的扩充与澄清](m_4.png)
+
+!!! warning "注意"
+    实际上，如上的方案在多人并行开发时依然存在 `REQ-ID` 冲突的问题。但是，当我们已经实现同一台开发机器上并行 *N* 个开发任务时，我们是否还有必要采用 *N* 个工程师来并行开发需求？
+    
+    我认为，当前的方案虽然不完美，但是已经解决了我们所面临的问题。没必要采用更加复杂的方案来解决可能不会发生的问题。
+
+
+## 4. 多 Worktree 并行开发
+目前，虽然 LLM Arena 平台可以满足我们的评测需求，但是仍然有许多交互体验问题需要优化，例如：
+- 分类管理页面没有设置分页；并且创建新分类时，父分类 ID 需要手动填写，整体的交互体验并不是特别优化。
+- 模型效果页面存在当页面滑动到最底部时，会出现媒体资源卡片显示不对齐的问题，存在较大的空白区域，整体页面视觉不美观。
+
+![](prds.jpg)
+
+以前，我们会采用 Harness Engineering 串行优化这些需求。当我们把 Harness Engineering 升级到 worktree 模式后，我们就可以并行开发这些需求了。
+
+![](prds_1.png)
+
+![](prds_2.png)
+
+![](prds_3.png)
+
+![](prds_4.png)
+
+当 Coding Agent 可以在不同的、相互隔离的 worktree 中并行开发不同的需求时，开发吞吐量瞬间翻倍，真是飞一般的感觉。
+
+![](prds_5.png)
+
+## 5. teamwork-preview 编排
+截止到现在，我们对于 7 个 Sub-Agents 的编排规则位于 `versus/CLAUDE.md` 中。
+
+``````bash
+## 自动化工作流
+
+### 流水线概览
+
+```
+用户: "开启7个Agent协作实现XXX需求"
+│
+▼
+[0] worktree-manager       →  创建隔离 Worktree + 分配端口
+│
+▼ status=completed（主会话 EnterWorktree(path=...) 切换）
+[1] requirement-designer   →  产出 PRD.md + 分配需求 ID
+│
+▼ status=awaiting_review
+⏸ 人工审核 PRD（用户确认后继续）
+│
+▼ 用户确认 → status=completed
+[2] go-api-implementer     →  产出 Go 代码 + api-summary.md
+│
+▼ status=completed（自动流转）
+[3] frontend-engineer      →  产出 React 代码
+│
+▼ status=completed（自动流转）
+[4] test-case-designer     →  产出 api-test-cases.json + e2e-test-cases.json
+│
+▼ status=completed（自动流转，串行启动）
+[5] integration-test-runner (worktree端口)  →  [6] e2e-test-executor (worktree端口+1)
+│                                           │
+▼                                           ▼
+status=has_bugs → Bug修复循环               status=all_passed → 流水线完成
+```
+``````
+
+因此，每次我们都要重复输入相同的提示词指令：
+> 开启 7 个 Agent 协作，实现：……
+
+虽然还不到 10 个词，但是再也不想重复输入了。恰好，7 月 14 日，谷歌发推文宣传 Antigravity 中新特性 Agent Teams。只需要运行 `/teamwork-preview`，就可启动一个由专业子代理组成的动态团队，他们在后台协调、规划、构建和验证复杂的工程任务。
+
+{% twitter https://x.com/antigravity/status/2076720528937611363 %}
+
+受此启发，我决定也实现一个类似的 `/teamwork-preview` 指令，这样就可以通过一条指令启动整个协作流程，而无需重复输入提示词。
+> /teamwork-preview ……
+
+在 Claude Code 中，可以通过创建对应的 Skills 来实现类似的功能。于是，我们把 CLAUDE.md 中对 Sub-Agents 的定义迁移到 `teamwork-preview` Skill 中，从而实现了类似谷歌的 `/teamwork-preview` 的效果。
+
+![](teamwork.png)
+
+因此，`/teamwork-preview` 是一个基于 skills 编排 sub-agents 的工作流：
+- 通过 skills 优化知识编排和索引效率；
+- 通过外挂的状态文件增强 主 agent 的任务恢复能力；
+- 通过 管理类 skill 实现工作流编排，通过 技能类 skills 增强 sub-agents 的能力；
+
+![](teamwork-arch.png)
+
+## 6. 总结
+类似分布式、多进程并发问题在 AI 时代下也依然存在。采用什么架构来更优美的编排我们的 Agents、Skills 仍然属于架构范畴，任然需要一定的架构约束。
+
+我们总认为，AI 可以帮我们做非常多的事情；有了 AI，我们就可以不用向之前那样去刻苦学习哪些底层的原理、架构知识……
+
+因此，恰恰相反，AI 时代下，我们需要更认真的去学习、了解底层原理、架构知识。
