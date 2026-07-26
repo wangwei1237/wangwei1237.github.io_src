@@ -8,7 +8,7 @@ copyright: false
 ## 王伟 | 17哥
 ###### 嗨，我是王伟，大家都喊我17哥，一名 LLM Evals Engineer，技术观察者。喜欢读书、写作、逛 GitHub，喜欢研究新的技术。从事过质量改进和效率提升的相关工作，也从事过产品分析的相关工作，还从事过视频相关方向的工作，目前从事 LLMs、Agent 相关的工作。
 
-###### <i class="fa fa-map-marker" style="color:#0681D0"></i> 北京 <br /><i class="fa fa-github" style="color:#0681D0"></i> [wangwei1237](https://github.com/wangwei1237) <br /><i class="fa fa-twitter" style="color:#0681D0"></i> [wangwei1237](https://x.com/wangwei1237) <br /> <i class="fa fa-envelope" style="color:#0681D0"></i> [wangwei1237](mailto:wangwei1237@gmail.com)
+###### <i class="fa fa-map-marker" style="color:#0681D0"></i> 北京 <br /><i class="fa fa-github" style="color:#0681D0"></i> [wangwei1237](https://github.com/wangwei1237) <br /><span role="img" aria-label="X" style="display:inline-block;width:0.9em;height:0.9em;background:url('/aboutme/index/x.svg') center/contain no-repeat;vertical-align:-0.05em"></span> [wangwei1237](https://x.com/wangwei1237) <br /> <i class="fa fa-envelope" style="color:#0681D0"></i> [wangwei1237](mailto:wangwei1237@gmail.com)
 
 {% mdline %}
 ###### 2012-2016: 业务测试
@@ -52,8 +52,12 @@ copyright: false
 * [LLM in Action](https://wangwei1237.github.io/LLM_in_Action/)
 * [面向工程师和科学家的概率与统计学导论](https://wangwei1237.github.io/introduction_to_probability_and_statistics/)
 
-###### 2025: QECon 大会出品人
+###### 2025-2026: 大模型落地实践
 * [QECon 2025 北京站——数据驱动测试与精准测试专场出品人](https://www.qecon.com.cn/SJ-BJ2025)
+* [大模型评测](https://lj.baidu.com/sbs/)
+* 大模型驱动客户端智能测试探索
+* Harness & Loop Engineering 探索
+* ……
 
 {% endmdline %}
 
