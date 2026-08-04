@@ -16,7 +16,8 @@ BOOKS=('chaos-engineering'
 'Kubernetes-in-Action-Second-Edition'
 'LLM_in_Action'
 'introduction_to_probability_and_statistics'
-'Skills-Test-Specification')
+'Skills-Test-Specification'
+'software-architecture-hard-parts-zh')
 
 mkdir -p ${ROOT_PATH}/books && cd ${ROOT_PATH}/books
 URL=""
