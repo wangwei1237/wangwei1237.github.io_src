@@ -4,6 +4,13 @@ date: 2020-06-17 16:50:12
 ---
 ## 原创
 {% valkyrurl
+[url=/software-architecture-hard-parts-zh/]
+[title="Software Architecture: The Hard Parts（中文版）"]
+[avatar=/software-architecture-hard-parts-zh/images/cover.png]
+[desc="Codex 直翻版本"]
+%}
+
+{% valkyrurl
 [url=/introduction_to_probability_and_statistics/]
 [title="Introduction to Probability and Statistics for Engineers and Scientists（中文版）"]
 [avatar=/introduction_to_probability_and_statistics/cover.png]
