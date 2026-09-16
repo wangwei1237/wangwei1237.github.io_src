@@ -11,6 +11,7 @@ categories:
 tags:
   - Agent
   - Skill Evolution
+  - paper
 ---
 
 ![](1.jpg)

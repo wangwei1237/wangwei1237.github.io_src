@@ -10,8 +10,8 @@ categories:
   - LLM
 tags:
   - Harness-Bench
-  - Agent
   - Agent 评估
+  - paper
 ---
 
 ![](harness-bench-framework.png)
