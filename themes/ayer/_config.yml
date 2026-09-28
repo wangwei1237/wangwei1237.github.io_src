@@ -210,7 +210,7 @@ friends_link:
 # 1、Valine[一款快速、简洁且高效的无后端评论系统](https://github.com/xCss/Valine)
 # 启用Valine必须先创建leancloud应用， 获取 id|key 填入即可
 leancloud:
-  enable: true
+  enable: false
   app_id: ppRS6IT7xMHmCl54L7ynIC2Z-gzGzoHsz
   app_key: qEmM49ZlU6LOwXCHjzMUECKu
 # Valine配置
@@ -231,8 +231,13 @@ gitalk:
 
 # 3、Twikoo(https://github.com/imaegoo/twikoo)
 twikoo:
-  enable: false
-  envId: #
+  enable: true
+  envId: blog-d3gu9b4oo05897e3f
+  placeholder: "快来评论吧~" # 和你原来valine提示文字保持一致
+  avatar: mp
+  commentCount: true # 文章列表显示评论数量
+  visitor: false # 是否显示文章访问统计，按需开启
+  darkMode: auto # 跟随博客深色模式
 
 # 4、MiniValine
 # See: https://github.com/MiniValine/MiniValine
