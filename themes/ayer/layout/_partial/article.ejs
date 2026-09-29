@@ -68,5 +68,5 @@
   post.slug, title: post.title, url: config.url+url_for(post.path) }) %> <% } %>
   <% if (is_post()) { %> <%- partial('post/gitalk') %> <% } %> <% if
   (theme.minivaline && theme.minivaline.enable && !post.no_minivaline){ %> <%-
-  partial('post/minivaline') %> <% } %> <% if (is_post()) { %> <%- partial('post/twikoo') %> <% } %>
+  partial('post/minivaline') %> <% } %> <% if (is_post() || is_page()) { %> <%- partial('post/twikoo') %> <% } %>
 </article>

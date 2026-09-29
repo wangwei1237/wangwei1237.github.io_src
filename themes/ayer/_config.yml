@@ -233,11 +233,6 @@ gitalk:
 twikoo:
   enable: true
   envId: blog-d3gu9b4oo05897e3f
-  placeholder: "快来评论吧~" # 和你原来valine提示文字保持一致
-  avatar: mp
-  commentCount: true # 文章列表显示评论数量
-  visitor: false # 是否显示文章访问统计，按需开启
-  darkMode: auto # 跟随博客深色模式
 
 # 4、MiniValine
 # See: https://github.com/MiniValine/MiniValine
