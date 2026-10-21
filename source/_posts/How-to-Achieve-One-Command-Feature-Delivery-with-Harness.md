@@ -2,7 +2,7 @@
 title: 如何利用 Harness “一句话交付产品功能”？
 reward: false
 top: false
-mermaid: true
+pele: true
 date: 2026-05-28 16:43:01
 authors:
   - 王伟

@@ -2,7 +2,7 @@
 title: 面向 Coding Agent 的多仓库 Git Worktree
 reward: false
 top: false
-mermaid: true
+pele: true
 date: 2026-07-18 20:55:42
 authors:
   - 王伟
