@@ -55,3 +55,5 @@ partial('post/clipboard') %> <% } %>
     mermaid.initialize({ theme: "<%= theme.mermaid.theme %>" });
   }
 </script>
+<!-- Pele -->
+<% if (theme.pele && theme.pele.enable) { %> <%- partial('pele') %> <% } %>

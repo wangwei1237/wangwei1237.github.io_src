@@ -13,7 +13,7 @@
       twitter_card: (theme.twitter && theme.twitter.card) || 'summary_large_image',
       twitter_site: theme.twitter && ('@' + theme.twitter.username)
       }) %>
-      
+
       <% var title = page.title; if (is_archive()) { title = __('archive_a'); if
       (is_month()) { title += ': ' + page.year + '/' + page.month; } else if
       (is_year()) { title += ': ' + page.year; } } else if (is_category()) {
@@ -52,9 +52,14 @@
       />
       <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.0.19/dist/sweetalert2.min.js"></script>
 
-      <!-- mermaid -->
-      <% if (theme.mermaid.enable && (theme.mermaid.allpost || page.mermaid)) { %>
+      <!-- mermaid / pele -->
+      <% var usePele = theme.pele && theme.pele.enable && page.pele !== false && (theme.pele.allpost || page.pele); %>
+      <% var useMermaid = !usePele && theme.mermaid.enable && (theme.mermaid.allpost || page.mermaid); %>
+      <% if (useMermaid) { %>
       <script src="<%= theme.mermaid.cdn %>"></script>
+      <% } %>
+      <% if (usePele) { %>
+      <script src="<%= theme.pele.cdn %>"></script>
       <% } %>
       <style>
         .swal2-styled.swal2-confirm {

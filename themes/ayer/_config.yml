@@ -170,6 +170,20 @@ mermaid:
   cdn: https://cdn.jsdelivr.net/npm/mermaid@11.13.0/dist/mermaid.min.js
   theme: base
 
+# pele流程图(https://pele.run/)，轻量级的 Mermaid 渲染库，与 mermaid 共用 ```mermaid 代码块
+# allpost 设置为 false 时，只有头部设置 pele: true 的文章才使用 pele 渲染
+# 同一页面同时满足 mermaid 和 pele 的开启条件时，优先使用 pele；文章头部设置 pele: false 可强制使用 mermaid
+pele:
+  enable: true
+  allpost: false
+  version: 1.8.0
+  cdn: https://cdn.jsdelivr.net/npm/pele@1.8.0/dist/pele.global.js
+  # pele 渲染失败时，是否自动回退到 mermaid 渲染(使用上面 mermaid.cdn 按需加载)
+  fallback: true
+  # 传给 pele.mount() 的选项，参考 https://pele.run/api#renderoptions
+  options:
+    zoom: auto
+
 # 网站成立年份(默认为 2019，若填入年份小于当前年份，则显示为 2018-2019 类似的格式)
 since: 2020
 
