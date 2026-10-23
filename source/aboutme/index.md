@@ -57,6 +57,7 @@ copyright: false
 * [大模型评测](https://lj.baidu.com/sbs/)
 * 大模型驱动客户端智能测试探索
 * Harness & Loop Engineering 探索
+* [ADPS](https://adpsagent.com/zh/patterns/) 社区专家组
 * ……
 
 {% endmdline %}
