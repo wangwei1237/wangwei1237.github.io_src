@@ -77,7 +77,7 @@ $$
 我们可以使用 [arithmetic intensity](https://docs.nvidia.com/deeplearning/performance/dl-performance-gpu-background/index.html)——每次内存 IO 对应的计算量——来区分计算密集型任务和内存密集型任务。如果 `arithmetic intensity` 大于 GPU 的每 IO 操作的计算量，则可以认为改任务是计算密集型任务，否则就是 IO 密集型任务。[^GPUPBUG]
 
 $$
-\text{arithmetic intensity} = \frac{\text{\#ops}}{\text{\#bytes}}
+\text{arithmetic intensity} = \frac{\text{number of operations}}{\text{bytes transferred}}
 $$
 
 $$
