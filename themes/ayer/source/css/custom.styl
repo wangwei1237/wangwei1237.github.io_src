@@ -83,3 +83,141 @@ if hexo-config('pele.enable')
             background: #100f0f;
         }
     }
+
+// Responsive Markdown columns imported from Obsidian.
+.ayer-horizontal
+  display flex
+  gap 20px
+  margin 24px 0
+  align-items stretch
+  .ayer-horizontal-column
+    flex 1 1 0
+    min-width 0
+    padding 16px
+    border 1px solid #dce3eb
+    border-radius 8px
+    overflow-wrap anywhere
+    > :first-child
+      margin-top 0
+    > :last-child
+      margin-bottom 0
+    img
+      display block
+      max-width 100%
+      height auto
+      margin 0 auto
+
+@media (max-width: 900px)
+  .ayer-horizontal
+    flex-direction column
+    .ayer-horizontal-column
+      box-sizing border-box
+      width 100%
+
+// Code cards: keep these overrides in the shipped stylesheet (no bundle rebuild).
+.article-entry .highlight
+  background #18212f
+  color #e2e8f0
+  border 1px solid #303e50
+  border-radius 12px
+  margin 24px 0
+  padding 20px
+  box-shadow 0 4px 16px rgba(15, 23, 42, .08)
+  font-size 14px
+  line-height 1.8
+  scrollbar-width thin
+  scrollbar-color #526176 #18212f
+  &::-webkit-scrollbar
+    height 6px
+    background transparent
+  &::-webkit-scrollbar-track
+    background transparent
+  &::-webkit-scrollbar-thumb
+    background #526176
+    border-radius 6px
+  pre
+    background transparent
+    color inherit
+    font-family "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace
+    font-size inherit
+    line-height inherit
+    overflow visible
+  .line
+    color #e2e8f0
+  table, tbody, tr, td
+    background transparent
+    border 0
+  .gutter
+    user-select none
+    border-right 1px solid #303e50
+    pre
+      padding-right 16px
+      color #8594a8
+      .line
+        color inherit
+  .code
+    padding-left 20px
+  .comment, .quote
+    color #94a3b8
+  .keyword, .selector-tag, .literal
+    color #c4b5fd
+  .string, .addition
+    color #a7d9b1
+  .number, .symbol, .bullet
+    color #f0c68a
+  .title, .function .title, .section
+    color #93c5fd
+  .built_in, .attribute, .attr
+    color #7dd3cf
+  .deletion
+    color #fda4af
+  .strong
+    font-weight 700
+  .emphasis
+    font-style italic
+  ::selection
+    background #385377
+    color #fff
+  .btn-copy
+    opacity 1
+    top 8px
+    right 8px
+    padding 5px 9px
+    border 1px solid #425268
+    border-radius 6px
+    background #253245
+    color #dce6f2
+    font-weight 500
+    &:hover
+      background #35465c
+    &:focus-visible
+      outline 2px solid #93c5fd
+      outline-offset 3px
+  &:has(.btn-copy)
+    padding-top 44px
+
+// Prose fences read like documents while preserving the original text.
+.article-entry .highlight.markdown
+  table
+    width 100%
+    table-layout fixed
+  .gutter
+    display none
+  .code
+    padding-left 0
+  .code pre
+    white-space pre-wrap
+    overflow-wrap anywhere
+    word-break normal
+
+@media (max-width: 600px)
+  .article-entry .highlight
+    padding 16px 12px
+    border-radius 8px
+    font-size 13px
+    .code
+      padding-left 12px
+    &.markdown .code
+      padding-left 0
+    &:has(.btn-copy)
+      padding-top 44px
