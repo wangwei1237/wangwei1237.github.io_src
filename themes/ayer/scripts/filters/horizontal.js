@@ -9,9 +9,5 @@ hexo.extend.filter.register('before_post_render', function (data) {
         hexo.render.renderSync({ text: column.trim(), engine: 'markdown' }) + '</div>');
       return '<div class="ayer-horizontal">\n' + columns.join('\n') + '\n</div>\n';
     });
-  // Keep Obsidian note titles readable without exposing its callout marker.
-  if (data.source === '_posts/Verification-System.md') {
-    data.content = data.content.replace(/^> \[!note\] (.+)$/gm, '> **$1**');
-  }
   return data;
 }, 8);

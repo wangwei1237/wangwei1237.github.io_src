@@ -265,6 +265,7 @@ flowchart TB
 - 在 `benchmark-checklist` 中，是这样描述的：_Answer each question with evidence from a run, not a guess about the code._
 - 在 `blast-radius` 中，pstack 要求：_Find the one or two facts the whole thing depends on and prove them by running code._
 - 在 `interrogate` 中，对于可能的风险，要求：_Adversaries try to break a change or a design. A finding survives only when a run proves it._
+- 在 `poteto-mode` 中，为了避免模型幻觉，明确要求：_Cite only principles whose leaf SKILL.md you read this session._
 - ……
 
 ## pstack coding 哲学
@@ -407,8 +408,8 @@ Property-based 测试通常由三个核心部分构成：
 2. Generators（生成器）：开发者用代码描述合法输入的 “形状” 和分布（数据结构、领域对象、操作序列等），框架据此自动探索输入空间。
 3. Shrinking（收缩）：一旦某个随机输入撞出了 bug，框架会自动剥离无关部分，将其化简为最小可复现反例，直接帮我们干掉一半的调试工作。
 
-> [!note] 不同 PBT 工具的差异
- 传统 PBT 工具（例如，QuickCheck、Hypothesis 以及 Antithesis 开源的 Hegel/Bombadil）主要测试函数、库或 UI，而 Antithesis 平台把 PBT 扩展到整个分布式系统——在确定性仿真环境里把网络分区、宕机、并发调度等都作为随机输入空间，检验系统级的 Always/Sometimes 性质并支持确定性回放。
+!!! note "不同 PBT 工具的差异"
+    传统 PBT 工具（例如，QuickCheck、Hypothesis 以及 Antithesis 开源的 Hegel/Bombadil）主要测试函数、库或 UI，而 Antithesis 平台把 PBT 扩展到整个分布式系统——在确定性仿真环境里把网络分区、宕机、并发调度等都作为随机输入空间，检验系统级的 Always/Sometimes 性质并支持确定性回放。
 
 PBT 与 Fuzzing 测试的差异：
 
@@ -419,8 +420,8 @@ PBT 与 Fuzzing 测试的差异：
 | 输入怎么生成 | 结构先验驱动：开发者熟悉业务，显式描述合法数据的类型，能深入复杂的业务状态         | 覆盖率驱动：常把输入看作原始字节流或弱结构数据，靠代码插桩监控覆盖率，自动变异出能走到新代码分支的输入 |
 | 可读性    | 语义级 Shrinking，直接吐出最小、人类易读的操作序列                | 产出导致崩溃的原始字节数据，偏底层数据而非高阶业务语义                         |
 
-> [!note] 趋势观察
- 目前，PBT 与 Fuzzing 测试的边界正越来越模糊，Fuzzing 测试也引入了结构感知和业务断言，PBT 也吸收了覆盖率引导。像 Antithesis 这样的全系统确定性仿真测试，本质上就是把 Fuzzing 测试的探索与故障注入能力和 PBT 的高阶属性断言融合成了一套体系。
+!!! note "趋势观察"
+    目前，PBT 与 Fuzzing 测试的边界正越来越模糊，Fuzzing 测试也引入了结构感知和业务断言，PBT 也吸收了覆盖率引导。像 Antithesis 这样的全系统确定性仿真测试，本质上就是把 Fuzzing 测试的探索与故障注入能力和 PBT 的高阶属性断言融合成了一套体系。
 
 ### `TLA+`
 `TLA+`（Temporal Logic of Actions，动作时序逻辑）是由图灵奖得主 Leslie Lamport（LaTeX、Paxos、Mutex 等作者）设计的一套重点面向并发与分布式系统的形式化规格语言体系，配合模型检验工具，在编码前把系统逻辑“跑一遍数学上的所有可能”，从而在设计阶段就能够发现隐蔽的正确性缺陷。
@@ -507,8 +508,8 @@ If the lesson needs judgment and cannot be encoded, make the instruction more pr
 2. 用上层的静态分析、运行时/形式化验证，把更多的错误挡在人类接手之前，用更低的边界成本获得最大的 ROI
 3. 把信任建立在 _可执行、可证伪的现实反馈_，而不是模型的口头承诺，实践是检验真理的唯一标准，用运行时执行作为反馈信号
 
-> [!note] 思考
- pstack 的 Verify 体系，本质上是把 Verify 方式从廉价易忘的 Prompt 和昂贵的人工 Review，系统性地迁移到了版本依赖、强静态分析、运行时验证、形式化验证等持续向上固化的 looping 反馈闭环之上。
+!!! note "思考"
+    pstack 的 Verify 体系，本质上是把 Verify 方式从廉价易忘的 Prompt 和昂贵的人工 Review，系统性地迁移到了版本依赖、强静态分析、运行时验证、形式化验证等持续向上固化的 looping 反馈闭环之上。
 
 ![](20261126102744.png)
 

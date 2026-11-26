@@ -221,3 +221,20 @@ if hexo-config('pele.enable')
       padding-left 0
     &:has(.btn-copy)
       padding-top 44px
+
+@media (max-width: 768px)
+  .article-entry table:not(.highlight table):not(.gist table)
+    display block
+    box-sizing border-box
+    max-width 100%
+    overflow-x auto
+    th, td
+      white-space normal
+      overflow-wrap break-word
+      vertical-align top
+    td
+      min-width 6em
+
+body.darkmode .article-entry .admonition.note
+  background-color #20332c
+  color #dfede6
