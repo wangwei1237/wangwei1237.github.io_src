@@ -516,6 +516,7 @@ If the lesson needs judgment and cannot be encoded, make the instruction more pr
 ## pstack 实践
 AI Coding Agent 常见的问题就是：虚假汇报，改完代码、跑通编译和单元测试就宣布任务完成。但编译通过、单测全绿并不等同于用户视角功能正常。`create-verification-skill` 是一个 Meta Skill，强制为项目沉淀一套脚本化、可重复、面向 Agent 的真实应用驱动与取证方案，把 _Prove It Works_ 沉淀为仓库、组织资产。
 
+### create-verification-skill
 手动执行 `/pstack:create-verification-skill` 生成 versus 平台的 e2e skill `verify-versus`。
 
 ```horizontal
@@ -530,3 +531,74 @@ AI Coding Agent 常见的问题就是：虚假汇报，改完代码、跑通编�
 ---
 ![](20261126142109.png)
 ```
+
+### teach
+```markdown
+/pstack:teach 请帮我分析目前前端的性能瓶颈在哪里？尤其是移动端场景下。
+```
+
+移动端最大的瓶颈在首屏 JS。所有页面和重型库打进了同一个 3.7MB 的主包，gzip 压缩后 967KB。打开任何一个页面都要先把整包下载、解析、执行完，React 才开始渲染。另外，上次修 IM 加载超时时写的 defer-bundle 插件其实没有生效。
+
+#### 首屏：一个包装下了全部页面
+App.tsx 通过 `@/views` 静态 import 了全部 25 个视图，代码里没有用 `React.lazy` 或动态 `import()`。打开排行榜时，ModelsView（7100 行）、TaskStatusView（4800 行）这些页面的代码也会一起下载和解析。我用 sourcemap 按包统计了主包的组成。数字是压缩前的源码量，只能看相对比例：
+
+|来源|源码量|实际用在哪|
+|---|---|---|
+|业务代码|~2976KB|25 个页面全部在内|
+|recharts|880KB|数据集详情、看板图表|
+|xlsx|874KB|只在导入导出时用|
+|mermaid 核心|730KB|只在文本里有 mermaid 图时用|
+|katex|602KB|只在文本里有公式时用|
+|react-dom|532KB|必需|
+
+xlsx、recharts、mermaid、katex 加起来超过 3MB 源码，大多数用户在大多数页面上用不到它们。mermaid 的各类图表已经被 Vite 自动拆成了独立 chunk，只有核心部分还留在主包里。
+
+移动端受影响大，原因有两个。下载方面，967KB 在弱 4G 下要几秒。执行方面，手机 CPU 解析和编译 3.7MB JS 比桌面慢好几倍，中低端 Android 和如流 webview 更明显。这两个数字是我估算的，没有在真机上测。
+
+加载过程如下：
+```mermaid
+flowchart LR
+  A[HTML 壳 + 骨架屏] --> B[下载主包 967KB gzip] --> C[解析执行 3.7MB] --> D[React 挂载]
+```
+React 挂载之后还有三步操作：
+```mermaid
+flowchart LR
+  A[HTML 壳 + 骨架屏] --> B[下载主包 967KB gzip] --> C[解析执行 3.7MB] --> D[React 挂载]
+  D --> E[/user/info 鉴权/] --> F[页面数据] --> G[图片：原图尺寸]
+```
+后面这三步是串行的，骨架屏要一直等到 `页面数据` 才算完成。
+
+#### defer-bundle 插件没有生效
+plugins/deferBundlePlugin.ts 的作用是把主包推迟到 `window.onload` 之后再加载，这样 IM 的 iframe onLoad 判定只需要等 HTML 壳。但已提交的 vite.config.ts 里 `plugins` 仍然只有 `[react()]`，插件文件写了却没注册。我刚 build 了一次，`dist/index.html` 里还是普通的 `<script type="module" src=...>`。浏览器要等 module 脚本执行完才触发 load 事件，所以 IM 的 onLoad 仍然要等整个 3.7MB 包。
+
+那次修复（`ea5e73f versus-89`）真正上线的只有 _去掉 Tailwind CDN_ 这一半，它消除了 300KB 的网络 I/O 同步阻塞，所以问题确实缓解了。
+
+插件漏注册的原因我推测和 `wt.sh` 有关，这一点没有确认。`wt.sh` 会在 worktree 里改端口，并对 `vite.config.ts` 执行 `assume-unchanged`（scripts/wt.sh:289）。之后在 worktree 里对这个文件的任何修改，`git status` 都看不到，也就不会被提交。开发者本地的 vite.config 很可能是注册了插件的，所以本地实测 `loadEventEnd` 20ms 也说得通。
+
+#### 次要因素
+以下几点我只看了代码，没有在设备上测量：
+- 11 个列表页的滚动加载只往列表里追加数据，没有做虚拟化，滚得越久 DOM 越大。
+- 模型效果页的瀑布流和筛选胶囊大量使用 `backdrop-blur-md`（全站共 26 处）。毛玻璃效果在低端 Android webview 上比较消耗 GPU，滚动时可能掉帧。
+- 任务详情页有 10s 轮询，页面切到后台时轮询还在继续。
+
+可以继续深入的方向：按收益排序，依次是注册 defer 插件、按路由 `lazy` 拆包、打分页改用缩略图。也可以接一台真机，用 Chrome DevTools 的 Performance 面板抓一次火焰图，验证我上面估算的移动端执行时间。你想先看哪个？
+
+```horizontal
+![](20261127104806.png)
+---
+![](20261127111027.png)
+```
+
+``` markdown
+/teamwork-preview 请针对移动端进行网页加载的性能优化。
+```
+
+在 `pstack:teach` 的帮助下，我们把首屏的加载时间从 6s 优化到了 1s，具体的优化效果如下所示：
+
+| 指标              | 改前      | 现在           | 目标       |
+| --------------- | ------- | ------------ | -------- |
+| 首屏 JS（gzip）     | 约 967KB | 98–118KB     | ≤ 450KB  |
+| 慢速 4G 下骨架屏      | 5646ms  | 约 937ms      | ≤ 3000ms |
+| 4G 下骨架屏         | 1947ms  | 约 340ms      | ≤ 1200ms |
+| CPU 4x 下最长任务    | 774ms   | 无超过 50ms 的任务 | ≤ 450ms  |
+| 慢速 4G 下 load 事件 | 5626ms  | 185ms        | ≤ 300ms  |
